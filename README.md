@@ -30,6 +30,17 @@ W A S D to move, Shift to run, Space to jump. Mouse to look, click to shoot, F t
 
 On a phone: stick on the left, drag to look, buttons on the right.
 
+## Benchmarks
+
+Headless, Playwright on swiftshader, 1280x720, Mac Mini M4. Real GPUs run far faster; these are the numbers the tests hold the line on. `node tests/bench.mjs` regenerates them.
+
+| Scene | Boot | Island build | Frames per 10 s |
+|---|---|---|---|
+| Downtown, OpenStreetMap extrusions only | 8.1 s | | 5 |
+| Downtown plus the Granville and Georgia island | 2.5 s | 10.9 s | 5 |
+
+The island is 10 buildings, 84 frontages and 69 tenant signs drawn at start-up from one spec, with no binary assets. The same spec exports an 8.7 MB glTF for Unreal in one headless Blender run.
+
 ## Two builds
 The browser build plays anywhere. The Unreal build is the real-looking one, Mac only for now, and you can scan your own face in with an iPhone.
 

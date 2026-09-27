@@ -30,10 +30,15 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
 import { SMAAPass } from "three/addons/postprocessing/SMAAPass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { buildHero } from "./js/hero.js";
 
 // ?area=victoria (Alexandre's turf) or kits; default downtown Vancouver
 const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley" }[AREA] || "Vancouver";
 const D = await fetch(`data/${AREA}.json`).then(r => r.ok ? r.json() : fetch("data/vancouver.json").then(r => r.json()));
+// detail islands: worlds-style blocks with real façades and storefronts, drawn over the OSM footprints (js/hero.js)
+const HERO_SPECS = new URLSearchParams(location.search).get("hero") === "0" ? [] : { vancouver: ["granville-georgia"] }[AREA] || [];
+const HEROES = await Promise.all(HERO_SPECS.map(n => fetch(`data/hero/${n}.json`).then(r => r.json())));
+const heroSkip = new Set();
 const R = new THREE.WebGLRenderer({ antialias: true }); R.setPixelRatio(Math.min(devicePixelRatio, 2)); R.setSize(innerWidth, innerHeight);
 R.toneMapping = THREE.ACESFilmicToneMapping; R.shadowMap.enabled = true; R.shadowMap.type = THREE.PCFSoftShadowMap; document.body.prepend(R.domElement);
 const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0xb8c8d8, 250, 1400);
@@ -65,6 +70,11 @@ const shopMat = new THREE.MeshStandardMaterial({ map: storefront(), roughness: .
 const facades = [["#b9b4aa", "#3b4a58"], ["#8f959b", "#27323d"], ["#d8d2c4", "#4a5a66"], ["#6d6358", "#2b3036"], ["#c4c9cf", "#1f3a52"]].map(([b, g]) => new THREE.MeshStandardMaterial({ map: facade(b, g), roughness: .35, metalness: .35 }));
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x55575a, roughness: .9 });
 
+// detail islands: skip their footprints in the plain extruder below (the grid still knows them, so collision and interiors work),
+// then build the real façades after the first frame so boot stays as quick as before
+HEROES.forEach(spec => spec.buildings.forEach(b => { if (D.buildings[b.id]) heroSkip.add(b.id); }));
+requestAnimationFrame(() => setTimeout(() => { window.HERO = HEROES.map(spec => { const h = buildHero(D, spec); requestAnimationFrame(() => scene.add(h.group)); return { name: spec.name, buildings: h.buildings, fronts: h.fronts, viewpoint: spec.viewpoint }; });
+  if (HERO.length) console.log("detail islands:", HERO.map(h => `${h.name} (${h.buildings} buildings, ${h.fronts} frontages)`).join(", ")); }, 50));
 // buildings: extrude every footprint, merge per material so it's a handful of draw calls
 const groups = facades.map(() => []), roofs = [], shopG = [], roofKit = [];
 const grid = new Map(), CELL = 25, key = (i, j) => i + "," + j;
@@ -72,8 +82,8 @@ D.buildings.forEach((b, n) => {
   if (b.p.length < 3) return;
   const shape = new THREE.Shape(b.p.map(([x, z]) => new THREE.Vector2(x, -z)));
   const band = Math.min(4.2, b.h);
-  const g0 = new THREE.ExtrudeGeometry(shape, { depth: band, bevelEnabled: false }); g0.rotateX(-Math.PI / 2); shopG.push(g0);
-  if (b.h > band) { const g = new THREE.ExtrudeGeometry(shape, { depth: b.h - band, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, band, 0); groups[n % facades.length].push(g); }
+  if (!heroSkip.has(n)) { const g0 = new THREE.ExtrudeGeometry(shape, { depth: band, bevelEnabled: false }); g0.rotateX(-Math.PI / 2); shopG.push(g0); }
+  if (b.h > band && !heroSkip.has(n)) { const g = new THREE.ExtrudeGeometry(shape, { depth: b.h - band, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, band, 0); groups[n % facades.length].push(g); }
   if (b.h > 12 && b.p.length >= 4) { const cx = b.p.reduce((s, p) => s + p[0], 0) / b.p.length, cz = b.p.reduce((s, p) => s + p[1], 0) / b.p.length; roofKit.push([cx, b.h, cz, n]); }
   let minx = 1e9, maxx = -1e9, minz = 1e9, maxz = -1e9; for (const [x, z] of b.p) { minx = Math.min(minx, x); maxx = Math.max(maxx, x); minz = Math.min(minz, z); maxz = Math.max(maxz, z); }
   for (let i = Math.floor(minx / CELL); i <= Math.floor(maxx / CELL); i++) for (let j = Math.floor(minz / CELL); j <= Math.floor(maxz / CELL); j++) { const k = key(i, j); if (!grid.has(k)) grid.set(k, []); grid.get(k).push(b); }

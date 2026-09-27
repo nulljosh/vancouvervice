@@ -1,0 +1,28 @@
+{
+  "name": "Granville and Georgia",
+  "area": "vancouver",
+  "about": "First worlds-style detail island. Buildings keyed by index into data/vancouver.json (OpenStreetMap footprints). Heights in metres. Confidence: high = photographed or published, med = counted storeys, est = estimate.",
+  "storey": 3.6,
+  "band": 4.8,
+  "buildings": [
+    { "id": 500,  "name": "Pacific Centre, 701 West Georgia", "style": "glass",      "h": 14,  "conf": "high", "src": "Cadillac Fairview; Apple Store opened 2023 in the former Sears/Nordstrom pavilion corner" },
+    { "id": 118,  "name": "Hudson's Bay, 674 Granville",       "style": "terracotta", "h": 30,  "conf": "high", "src": "1927 Burke Horwood and White; six storeys, cream terracotta, Corinthian columns" },
+    { "id": 2464, "name": "Vancouver Centre, 650 West Georgia", "style": "concrete",  "h": 13,  "conf": "med",  "src": "mall podium under the Scotia Tower; London Drugs at street" },
+    { "id": 2480, "name": "Vancouver Block, 736 Granville",     "style": "stone",     "h": 53,  "conf": "high", "src": "1912 Parr and Fee; white terracotta, clock tower on top", "clock": true },
+    { "id": 332,  "name": "TD Tower, 700 West Georgia",         "style": "dark",      "h": 126, "conf": "high", "src": "1972 Cesar Pelli; black glass and steel" },
+    { "id": 117,  "name": "Scotia Tower, 650 West Georgia",     "style": "concrete",  "h": 138, "conf": "high", "src": "1977; precast concrete grid" },
+    { "id": 514,  "name": "Rosewood Hotel Georgia, 801 West Georgia", "style": "brick", "h": 44, "conf": "med", "src": "1927 Georgian Revival, 12 storeys, brown brick; OSM height was 9 m" },
+    { "id": 3104, "name": "Private Residences at Hotel Georgia", "style": "glass",   "h": 156, "conf": "high", "src": "2011, 48 storeys; OSM stored storeys as height" },
+    { "id": 542,  "name": "Metropolitan Hotel, 645 Howe",       "style": "concrete",  "h": 56,  "conf": "med",  "src": "18 storeys" },
+    { "id": 501,  "name": "The Hudson, 610 Granville",          "style": "glass",     "h": 70,  "conf": "est",  "src": "2006 tower over the Bay parkade; OSM height was 9 m" }
+  ],
+  "styles": {
+    "glass":      { "base": "#8fa8b8", "glass": "#22323f", "frame": "#cfd6dc", "bay": 1.5 },
+    "dark":       { "base": "#1b1d20", "glass": "#0d1216", "frame": "#26292d", "bay": 1.5 },
+    "concrete":   { "base": "#b9b5ac", "glass": "#2c3a46", "frame": "#a19d94", "bay": 3.0 },
+    "terracotta": { "base": "#e7dcc6", "glass": "#33414c", "frame": "#d3c5a8", "bay": 4.0, "columns": true },
+    "stone":      { "base": "#f1ece2", "glass": "#3a4550", "frame": "#e2dbcc", "bay": 3.2 },
+    "brick":      { "base": "#7a4a36", "glass": "#2a3238", "frame": "#e8dcc8", "bay": 3.4 }
+  },
+  "viewpoint": { "x": -8, "z": 34, "look": [11, 160] }
+}
