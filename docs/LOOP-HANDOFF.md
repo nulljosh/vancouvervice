@@ -1,4 +1,4 @@
-# Vancouver Vice loop handoff (2026-09-23, evening)
+# Vancouver Vice loop handoff (2026-09-26, evening)
 
 ## What the loop is
 
@@ -6,7 +6,7 @@ Driving Unreal 5.8 headless to build Vancouver Vice Act Two as a vertical slice:
 
 ## Where things stand
 
-Editor 8-10 GB (near-player tile loading fixed the 54 GB hog). Skin fixed (textures synthesized, tone 0.10 from 0.85). Male body built and repointed to saved Joshua assets; Body/Face/glasses applied. Camera bugs fixed but run stalled: player is SpectatorPawn_0 instead of character, photo booth fails. doctor.sh monitors health (footprint, lean mode). Leaner city via SSE 12. Mission two on car jack. Act two live in browser. 5 hours yesterday burned on usage lockout, cold boots, Ollama hog, camera stack. Next session starts with pawn fix. 2026-09-23: Character fix pass in progress (red skin tone, male body foundation committed, polo shoulder seams pending, city detail SSE 8 pass running headless). Subagent halted at 90% usage; restart at male body refit (next in queue).
+First detail island complete: Granville and Georgia with ten buildings, each sourced from real OSM heights. Façade generator (site/js/hero.js) produces storey-true glazing; every tenant rendered as a sign on its own storefront. Blender export (tools/hero_blender.py) builds headless into single 8.7 MB Unreal asset with 69 tenant signs. QA via Playwright, benchmarks: island builds in 10.9 s, swiftshader renders 5 fps headless. Bottleneck is 16 GB RAM vs Unreal, swiftshader speed, OSM data quality, storefront textures need atlas before island five. Editor 8-10 GB (near-player tile loading fixed the 54 GB hog). Skin fixed (textures synthesized, tone 0.10 from 0.85). Male body built and repointed to saved Joshua assets; Body/Face/glasses applied. Camera bugs fixed but run stalled: player is SpectatorPawn_0 instead of character, photo booth fails. doctor.sh monitors health (footprint, lean mode). Leaner city via SSE 12. Mission two on car jack. Act two live in browser. Next: Unreal import of island via MCP, then Gastown, Robson at Burrard, Waterfront.
 
 ## Next, in order
 
@@ -26,5 +26,5 @@ Editor 8-10 GB (near-player tile loading fixed the 54 GB hog). Skin fixed (textu
 ## Restart prompt
 
 ```
-/loop 1h Vancouver Vice, today's goal: Unreal memory leans at 8-10 GB, male body fitted, mission two on the car jack, nearest task in the queue next. One Haiku subagent per step, mechanical work only; Sonnet for architecture decisions. Start with male body refit (polo shoulder seams), then walls+collision, then map detail/daylight. Next roadmap milestone: vertical slice packaged and QA'd on real Mac. If blocked or decision point: stop the loop, post findings, wait for guidance.
+/loop 1h Vancouver Vice island import and polish. First goal: Unreal import of Granville-Georgia island via MCP (8.7 MB Blender asset with 69 tenant signs), test playability in Lvl_ThirdPerson. Then: Gastown island build, Robson at Burrard, Waterfront. Pawn and camera are next fixes if Unreal import blocked. One Haiku subagent per step, mechanical work only; Sonnet for architecture decisions. Next roadmap milestone: vertical slice packaged and QA'd on real Mac. If blocked or decision point: stop the loop, post findings, wait for guidance.
 ```
