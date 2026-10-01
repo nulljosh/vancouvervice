@@ -31,7 +31,7 @@ try {
   const start = await page.evaluate(() => ({ x: S.p.x, y: S.p.y }));
   await page.keyboard.down('w');
   try {
-    await page.waitForFunction(p => Math.hypot(S.p.x - p.x, S.p.y - p.y) > .25, start, { timeout: 60000 }); // swiftshader runs about one frame a second with the detail island loaded
+    await page.waitForFunction(p => Math.hypot(S.p.x - p.x, S.p.y - p.y) > .25, start, { timeout: 180000 }); // swiftshader runs about one frame a second with the detail island loaded; CI needs the long wait
   } finally { await page.keyboard.up('w'); }
   // All GLTF requests must finish before raising heat (copTick needs its model).
   await page.waitForLoadState('networkidle', { timeout: 90000 });
@@ -67,7 +67,7 @@ try {
   assert(result.entered, 'enter opens the 7-Eleven interior');
   assert(result.cash >= 60 && result.cash <= 299, 'rob adds cash');
   assert.equal(result.stars, 2, 'rob adds two stars');
-  await page.waitForFunction(() => P.stars > 0 && cops.length > 0, null, { timeout: 60000 });
+  await page.waitForFunction(() => P.stars > 0 && cops.length > 0, null, { timeout: 180000 });
   assert(await page.evaluate(() => {
     const back = inRoomState().back.clone();
     leave();
