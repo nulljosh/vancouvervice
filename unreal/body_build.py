@@ -3,9 +3,8 @@
 # Constraints are MetaHuman body measurements in cm. Set, commit and build in ONE scoped call (splitting them across calls
 # produced a no-op build on 2026-09-23, see UNREAL.md), then repoint Body and Face on the player, since every build
 # leaves them on /Engine/Transient copies.
-# PARKED 2026-10-01: build_meta_human with default MetaHumanCharacterEditorBuildParameters asserted
-# OutFaceMesh && OutBodyMesh and crashed the editor (12 GB, swap 93%). Needs the params the MetaHuman editor UI
-# passes (face and body output assets) and a quiet machine. Run on its own, nothing else open.
+# Empty build params assert OutFaceMesh && OutBodyMesh and crash the editor (2026-10-01): the build needs an output
+# path and pipeline settings, and commit_body_state before it. Run on its own, nothing else open, 12 GB peak.
 import unreal
 from metahuman_character_test_utils import ScopedMetaHumanCharacterEditor
 HEIGHT, CHEST, WAIST, HIP, MASC = 183.0, 92.0, 74.0, 88.0, -1.5   # 6 ft, 140 lb, lean and cut
@@ -22,8 +21,14 @@ with ScopedMetaHumanCharacterEditor(character=mh):
                 c.set_editor_property("target_measurement", v); c.set_editor_property("is_active", True)
         out.append(c)
     sub.set_body_constraints(mh, out)
+    sub.commit_body_state(mh)
     print("can build", sub.can_build_meta_human(mh))
-    sub.build_meta_human(mh, unreal.MetaHumanCharacterEditorBuildParameters())
+    params = unreal.MetaHumanCharacterEditorBuildParameters()
+    params.pipeline_type = unreal.MetaHumanDefaultPipelineType.OPTIMIZED
+    params.pipeline_quality = unreal.MetaHumanQualityLevel.MEDIUM
+    params.absolute_build_path = "/Game/Unpacked/Joshua"
+    params.common_folder_path = "/Game/Unpacked/Joshua/Common"
+    sub.build_meta_human(mh, params)
 unreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)
 # repoint the player at the saved meshes
 bp = unreal.load_asset("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter")
