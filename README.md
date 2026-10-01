@@ -9,11 +9,13 @@
 <img src="https://img.shields.io/badge/license-Apache_2.0-555?style=flat-square" alt="Apache 2.0">
 </p>
 
-<p align="center"><img src="docs/img/vv-english-bay.jpg" alt="English Bay and the West End, streamed live into Unreal Engine"></p>
+<p align="center"><img src="docs/img/key-art.png" alt="Vancouver Vice key art: Harbour Centre at sunset, a cop chase on the Burrard Bridge, a seagull stealing a hot dog at English Bay, the Gastown steam clock in the rain, SkyTrain surfing"></p>
 
 Rent is four grand and it rains nine months a year. Steal a car on Granville, rob the 7-Eleven, lose the cops on the Burrard Bridge. The more trouble you cause, the more stars you get.
 
 It's the real city: the Unreal build streams Google's 3D scan of Vancouver, so you start outside the actual Apple Store on Georgia. Play as Joshua downtown, Ben in Kits or Alexandre in Victoria, and switch any time.
+
+<p align="center"><img src="docs/img/vv-english-bay.jpg" alt="English Bay and the West End, streamed live into Unreal Engine"></p>
 
 ## Cast
 Your family gets pulled in. Brian, your dad, has the garage, the boat, and a thing he wants back: his hard drive. Christine calls at terrible moments. Sarah is smarter than all three of you and refuses to help. Then she's the best one on the job.

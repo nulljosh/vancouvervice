@@ -5,6 +5,7 @@ All the releases, newest first. Every version is tagged on GitHub with builds at
 ## 1.27 (unreleased)
 First detail island on the real streets: Granville and Georgia built the fable51-worlds way. Storey-true façades per building, glazed ground floors, every surveyed tenant as a sign on its own frontage, the Vancouver Block clock. One spec feeds the browser and a headless Blender export for Unreal. Benchmarks in the README.
 You're in the game. An iPhone face scan becomes a rigged MetaHuman on the player, in tortoise Armanis, walking the real Vancouver in Unreal. The story opens mid-heist: run out of the Apple Store on Georgia with a bag of Mac minis, jack the sports car at the curb (E), lose the cops, pawn the minis on Granville. Tab fast-travels between Vancouver, Victoria, Seattle, Toronto and New York. Sharper map, solid walls. Story script and family cast (Brian, Christine, Sarah) wired in. README and landing show the Unreal build.
+New key art on the README and landing: six panels of Vancouver. Harbour Centre at sunset, a cop chase on the Burrard Bridge, a seagull stealing your hot dog at English Bay, the Gastown steam clock in the rain, SkyTrain surfing. Drawn in code by tools/key_art.py.
 
 ## 1.26 (2026-09-22)
 The Stanley Park geese have chosen violence. New icon (skyline, the Harbour Centre lookout, the SeaBus). Online play test suite. play.html split into files. Everything renamed to vancouvervice. Whitepaper and architecture diagram.
