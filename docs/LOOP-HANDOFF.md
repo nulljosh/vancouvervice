@@ -10,18 +10,18 @@ First detail island shipped and live: Granville and Georgia with ten buildings, 
 
 ## Next, in order
 
-0. Body rebuild — 6 ft slim male MetaHuman, commit and build (previous build produced female mesh), verify via CaptureAssetImage
-1. Pawn spawn fix — check GameMode default pawn and PlayerStart in Lvl_ThirdPerson, run qa.py shot to get street photo, verify in packaged build
-2. Polo refit — weight painting, bone hierarchy, pants and jacket fit polish
-3. Apply mission one DSL — two chasing Apple employees, gun tutorial wired into BP_ThirdPersonCharacter
-4. Drive-by shooting — playtest car physics, hold Shift aim, mouse click fire, record demo
-5. Walls and camera collision — walk through interiors (inside-out camera fix), third-person clip check
-6. Map detail SSE 6 and daylight — day/night flashing, shader bump, Gastown perf test
-7. Splash preload screen — loading spinner while tiles stream
-8. BP_Heat stars and system — three stars, wanted meter, crime heat
-9. NPCs and dynamic crowd — NPCs, dialogue, mission feedback
-10. Headless QA mode — autoplay.dsl unattended, crash logs, fail fast
-11. Package the .app — build macOS binary, sign, notarize, ship
+0. Body rebuild, 6 ft slim male MetaHuman, commit and build (previous build produced female mesh), verify via CaptureAssetImage
+1. Pawn spawn fix, check GameMode default pawn and PlayerStart in Lvl_ThirdPerson, run qa.py shot to get street photo, verify in packaged build
+2. Polo refit, weight painting, bone hierarchy, pants and jacket fit polish
+3. Apply mission one DSL, two chasing Apple employees, gun tutorial wired into BP_ThirdPersonCharacter
+4. Drive-by shooting, playtest car physics, hold Shift aim, mouse click fire, record demo
+5. Walls and camera collision, walk through interiors (inside-out camera fix), third-person clip check
+6. Map detail SSE 6 and daylight, day/night flashing, shader bump, Gastown perf test
+7. Splash preload screen, loading spinner while tiles stream
+8. BP_Heat stars and system, three stars, wanted meter, crime heat
+9. NPCs and dynamic crowd, NPCs, dialogue, mission feedback
+10. Headless QA mode, autoplay.dsl unattended, crash logs, fail fast
+11. Package the .app, build macOS binary, sign, notarize, ship
 
 ## Restart prompt
 
