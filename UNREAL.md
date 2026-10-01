@@ -114,3 +114,12 @@ Boot to playable takes a minute or two while tiles stream. Expected.
 - `Cesium3DTileset.get_load_progress()` doesn't exist; it's the property `load_progress`.
 - `unreal.World` has no `spawn_actor_from_class`/`spawn_actor` exposed to Python at all (checked every class for a method named either — only `EditorActorSubsystem`/`EditorLevelLibrary` have it, and those target the editor world, not the Play world). Fixed with `unreal.GameplayStatics.begin_deferred_actor_spawn_from_class(world, class, transform)` + `finish_spawning_actor(actor, transform)`, which does spawn into the Play world.
 - Editor stability: a `StartPIE`/`StopPIE` cycle under high system-wide memory pressure (this Mac runs several concurrent Claude Code sessions) left the editor process unresponsive to `SIGTERM` for several minutes; needed `SIGKILL` + `open.sh`. Cold boot off the LaCie USB HDD took 15+ minutes under that load (normally ~5). Calling `StartPIE` while a session is already running (e.g. a prior attempt's `StopPIE` didn't actually land yet) returns "A play session is already running." without starting a new one — check `IsPIERunning` first.
+
+## Key art, spawn, and mission one (2026-10-01)
+- Key art: six-panel GTA cover grid drawn in code by `tools/key_art.py`, rasterized and deployed on README and landing. Panels are Harbour Centre at sunset, cop chase on Burrard Bridge, seagull at English Bay, Gastown steam clock in rain, SkyTrain surfing.
+- Spawn moved to the Pacific Centre Apple Store sidewalk on Georgia with an invisible catch pad at z -6852 and PlayerStart at (-487.5, 2936.1, -6740).
+- Cesium tileset capped at 256 MB cache, 12 simultaneous loads, culled SSE 64; prevented 54 GB memory hog seen on 2026-09-23.
+- Hair_S_Messy groom on the Mesh head socket with strawberry blonde via hairMelanin 0.22 and hairRedness 1.0 material instances. Plugin bindings crash HairStrands on the scanned face, so no binding used.
+- Pants carved from the body mesh in Blender (height band waist 100 to ankle -5, offset 3 cm), imported with Interchange FBX off onto the polo skeleton. Fits badly: needs refit in mission one.
+- Mission one DSL drafts: two chasing Apple employees, gun tutorial.
+- Known gap: city.mjs CI test times out on swiftshader. Body still needs the 6 ft slim rebuild. Polo fits badly. Player visible in Play but pawn spawn broken in packaged build (check GameMode default pawn and PlayerStart).
