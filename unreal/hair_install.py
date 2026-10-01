@@ -24,14 +24,16 @@ else:
 comp.set_editor_property("groom_asset", unreal.load_asset(GROOM))
 comp.set_editor_property("binding_asset", None)
 # same offset the glasses use: inverse of the face head bone ref pose, under the Mesh "head" socket
-# measured offset of the Mesh head socket in face-mesh space (same as glasses_install.py, stable across rebuilds)
-class R: translation=unreal.Vector(-154.66,-0.85,0.0); rotation=unreal.Rotator(roll=0,pitch=0,yaw=-90).quaternion()
+# zero offset: the groom is authored in head-bone space, so it sits right when snapped to the head socket (the glasses
+# need the face-space inverse offset, the hair does not; checked in the viewport 2026-10-01)
+class R: translation=unreal.Vector(0,0,0); rotation=unreal.Rotator(roll=0,pitch=0,yaw=0).quaternion()
 # the head socket itself is set by the construction script (Python can't set a socket on a Blueprint component); see hair.dsl
 comp.set_editor_property('relative_location', R.translation); comp.set_editor_property('relative_rotation', R.rotation.rotator())
 # ginger material instances, one per slot
 P="/Game/VancouverVice/Joshua/Hair/"; at=unreal.AssetToolsHelpers.get_asset_tools(); mel=unreal.MaterialEditingLibrary
 over=[]
 for i,m in enumerate(comp.get_materials()):
+    while m.get_name().startswith("MI_Ginger_"): m=m.get_editor_property("parent")   # back to the plugin's MI on reruns
     name=f"MI_Ginger_{m.get_name()}"
     if unreal.EditorAssetLibrary.does_asset_exist(P+name): mi=unreal.load_asset(P+name)
     else:
