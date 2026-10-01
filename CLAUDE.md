@@ -12,6 +12,7 @@ A GTA-style game in the real Vancouver. Live at vancouvervice.heyitsmejosh.com, 
 `npx wrangler deploy` (Worker `vancouvervice`: static site plus the online Durable Object in `worker.js`). A push deploys nothing. Tag `v*` to build every native app in GitHub Actions.
 
 ## Rules
+- MetaHuman plugin calls (build_meta_human, groom bindings) crash the editor on this 16 GB Mac. Run them alone, nothing else open, never mid-session. Hair goes on the head socket with no binding.
 - Never put text in the icon.
 - Funny Vancouver satire is fine; don't make vulnerable groups the punchline.
 - Native shells only, no Electron.
