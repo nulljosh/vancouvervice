@@ -84,6 +84,32 @@ def panel(x, y, w, h, body):
             f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="4"/>')
 
 
+def joshua(fill, glasses=True):
+    """Waist-up Joshua: curls, round glasses, polo, a bag of Mac minis. GTA covers live on the character."""
+    b = []
+    for a in range(190, 352, 18):
+        import math
+        r = math.radians(a)
+        b.append(circ(870 + 44 * math.cos(r), 258 + 44 * math.sin(r), 19 + (a % 3) * 2, fill))
+    b += [circ(870, 214, 22, fill), circ(846, 220, 18, fill), circ(894, 220, 18, fill),
+          f'<ellipse cx="870" cy="268" rx="42" ry="50" fill="{fill}"/>',
+          circ(828, 274, 10, fill), circ(912, 274, 10, fill), rect(850, 300, 40, 40, fill),
+          poly([(744, 560), (752, 410), (770, 372), (820, 346), (850, 336), (890, 336), (922, 346), (978, 370), (1004, 404), (1010, 560)], fill)]
+    if glasses:
+        g = f'fill="none" stroke="{LAMP}" stroke-width="4"'
+        b += [f'<circle cx="851" cy="266" r="15" {g}/>', f'<circle cx="889" cy="266" r="15" {g}/>',
+              line(866, 264, 874, 264, LAMP, 4), line(836, 264, 828, 268, LAMP, 3), line(904, 264, 912, 268, LAMP, 3)]
+        c = '#2a2e36'
+        b += [poly([(836, 336), (870, 352), (862, 380)], c), poly([(904, 336), (870, 352), (878, 380)], c),
+              line(870, 360, 870, 420, c, 3), line(944, 352, 812, 500, c, 12)]
+    # the bag, Mac minis poking out the top
+    b.append(rect(690, 486, 190, 80, fill if not glasses else '#1d2026', 'rx="14"'))
+    if glasses:
+        for i, (mx, my) in enumerate(((710, 466), (756, 458), (802, 470))):
+            b += [rect(mx, my, 60, 18, '#c9ccd1', 'rx="5"'), rect(mx + 6, my + 3, 48, 3, '#eef0f2', 'rx="1.5"')]
+    return b
+
+
 def harbour_centre():
     """Hero: the downtown skyline at sunset from the water, Harbour Centre, the Lions, the SeaBus, rain."""
     w, h = 1000, 560
@@ -128,6 +154,8 @@ def harbour_centre():
     for i in range(4):
         b.append(line(60 + i * 18, 524 + i * 7, 150, 518 + i * 3, '#ffffff', 2, 'opacity=".55"'))
     b += rain(w, h, 170, 0.2)
+    b += ['<g transform="translate(-6 -3)">'] + joshua('#fbcd84', glasses=False) + ['</g>']
+    b += joshua(INK)
     return b
 
 
@@ -149,15 +177,19 @@ def burrard_chase():
     b.append(line(156, 118, 410, 118, '#424a57', 7))
     b.append(rect(0, 166, w, 12, '#2a2f38'))
     # headlights from the cop onto the getaway car
-    b.append(poly([(318, 150), (552, 120), (552, 172)], LAMP, 'opacity=".14"'))
-    b += car(388, 166, RED, '#7d2119')
-    b += car(206, 166, '#f1f1ef', INK)
-    b.append(rect(246, 112, 10, 6, RED))
-    b.append(rect(256, 112, 10, 6, BLUE))
-    for cx, c in ((251, RED), (261, BLUE)):
-        b.append(circ(cx, 115, 44, c, 'opacity=".22"'))
-        b.append(circ(cx, 115, 14, c, 'opacity=".55"'))
-    for x, c in ((236, RED), (268, BLUE)):
+    def big(x, parts):  # close-up camera: cars 1.45x, scaled from where the wheels meet the deck
+        return [f'<g transform="translate({x} 168) scale(1.45) translate({-x} -168)">'] + parts + ['</g>']
+    b.append(poly([(312, 140), (552, 104), (552, 176)], LAMP, 'opacity=".14"'))
+    # drivers in the windows: Joshua's glasses catch the cop lights, the cop wears the cap
+    josh_in = [circ(418, 134, 7, INK), circ(415, 128, 4, INK), circ(421, 128, 4, INK),
+               f'<circle cx="420" cy="134" r="2.4" fill="none" stroke="{LAMP}" stroke-width="1.2"/>']
+    cop_in = [circ(206, 134, 7, INK), rect(198, 125, 16, 4, INK), rect(200, 121, 12, 5, '#1d2b4a')]
+    b += big(360, car(360, 168, RED, '#7d2119') + josh_in + [rect(358, 140, 5, 7, '#ff6b5b')])
+    b += big(150, car(150, 168, '#f1f1ef', INK) + cop_in + [rect(152, 142, 108, 5, BLUE), rect(194, 116, 10, 6, RED), rect(204, 116, 10, 6, BLUE)])
+    for cx, c in ((222, RED), (236, BLUE)):
+        b.append(circ(cx, 92, 44, c, 'opacity=".16"'))
+        b.append(circ(cx, 92, 9, c, 'opacity=".7"'))
+    for x, c in ((214, RED), (244, BLUE)):
         for i in range(6):
             b.append(rect(x + R.uniform(-8, 8), 204 + i * 11, R.uniform(14, 34), 3, c, 'opacity=".45"'))
     return b
@@ -178,8 +210,10 @@ def gull_heist():
     b += [rect(420, 168, 14, 38, s), rect(450, 168, 14, 38, s), rect(414, 156, 56, 14, s),
           rect(396, 142, 92, 14, s), rect(426, 120, 32, 24, s), rect(430, 104, 24, 16, s)]
     # the victim, fist up
-    b += [circ(96, 196, 9, INK), rect(88, 205, 16, 34, INK), rect(90, 239, 5, 24, INK), rect(98, 239, 5, 24, INK),
-          poly([(102, 208), (122, 184), (127, 188), (106, 214)], INK), circ(125, 184, 5, INK)]
+    b += [circ(96, 188, 12, INK), poly([(84, 184), (96, 172), (108, 184), (110, 200), (82, 200)], INK),
+          poly([(78, 200), (114, 200), (118, 244), (74, 244)], INK), rect(80, 242, 12, 24, INK), rect(100, 242, 12, 24, INK),
+          poly([(108, 204), (130, 176), (138, 182), (114, 212)], INK), circ(135, 176, 7, INK),
+          poly([(80, 206), (64, 230), (70, 234), (86, 214)], INK), rect(60, 230, 14, 8, '#d9964b', 'rx="4"')]
     # the gull
     g = []
     g.append(poly([(176, 100), (120, 104), (66, 52), (40, 20), (96, 46)], '#b9bec6'))
@@ -235,6 +269,14 @@ def steam_clock():
     b += [circ(244, 109, 14, LAMP), line(244, 109, 244, 99, INK, 2), line(244, 109, 252, 112, INK, 2)]
     for i, (sx, sy, r) in enumerate(((252, 44, 10), (266, 34, 14), (286, 26, 18), (312, 22, 22), (342, 24, 18))):
         b.append(circ(sx, sy, r, '#ffffff', f'opacity="{0.42 - i * 0.06:.2f}"'))
+    # a walker under a red umbrella, rim-lit by the gas lamp
+    def walker(f, um):
+        return [poly([(120, 206), (160, 206), (166, 270), (114, 270)], f), rect(122, 268, 10, 20, f), rect(146, 268, 10, 20, f),
+                circ(140, 194, 13, f), line(140, 150, 140, 196, f, 3),
+                f'<path d="M86 156 A54 40 0 0 1 194 156 Z" fill="{um}"/>']
+    b += ['<g transform="translate(-4 -2)">'] + walker(LAMP, LAMP) + ['</g>'] + walker(INK, RED)
+    for i in range(5):
+        b.append(rect(118 + R.uniform(-6, 6), 290 - i * 0, 40, 2, RED, 'opacity=".4"'))
     b += rain(w, h, 110, 0.24)
     return b
 
@@ -258,11 +300,13 @@ def skytrain_surf():
         b.append(rect(x0, 160, 142, 6, BLUE))
         b.append(rect(x0, 166, 142, 3, '#e0b23a'))
     b.append(poly([(494, 136), (506, 176), (494, 176)], '#eeeeea'))
-    # the surfer
+    # the surfer, 1.6x so he reads at README size
+    b += ['<g transform="translate(300 132) scale(1.6) translate(-300 -132)">']
     b += [circ(300, 82, 9, INK), poly([(294, 92), (306, 92), (310, 116), (290, 116)], INK),
           line(296, 96, 268, 88, INK, 5, 'stroke-linecap="round"'), line(304, 96, 334, 86, INK, 5, 'stroke-linecap="round"'),
           line(294, 114, 280, 132, INK, 6, 'stroke-linecap="round"'), line(306, 114, 320, 132, INK, 6, 'stroke-linecap="round"'),
           poly([(292, 80), (310, 78), (312, 72), (296, 72)], RED)]
+    b.append('</g>')
     return b
 
 
