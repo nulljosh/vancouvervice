@@ -9,6 +9,7 @@ pawn = unreal.GameplayStatics.get_player_pawn(world, 0)
 pc = unreal.GameplayStatics.get_player_controller(world, 0)
 tiles = unreal.GameplayStatics.get_actor_of_class(world, unreal.Cesium3DTileset)
 NAME = globals().get("SHOT_NAME", "joshua")
+DIST, UP, EYE = globals().get("SHOT_DIST", 320), globals().get("SHOT_UP", 140), globals().get("SHOT_EYE", 60)  # close-up: 90, 75, 70
 QA = {"t": 0.0, "phase": "load", "cam": None}
 QA_RESULT = "RUNNING"
 
@@ -27,9 +28,9 @@ def _clear(a, b):
 def _place():
     loc = pawn.get_actor_location(); rot = pawn.get_actor_rotation()
     f = rot.get_forward_vector(); r = rot.get_right_vector()
-    eye = loc + unreal.Vector(0, 0, 60)
+    eye = loc + unreal.Vector(0, 0, EYE)
     for fx, rx in [(1, 0.6), (1, -0.6), (1, 0), (-1, 0.6), (0, 1), (0, -1)]:  # front three-quarter first, then anything clear
-        cam_loc = loc + f * (320 * fx) + r * (320 * rx) + unreal.Vector(0, 0, 140)
+        cam_loc = loc + f * (DIST * fx) + r * (DIST * rx) + unreal.Vector(0, 0, UP)
         if _clear(cam_loc, eye):
             tf = unreal.Transform(cam_loc, unreal.MathLibrary.find_look_at_rotation(cam_loc, eye), unreal.Vector(1, 1, 1))
             cam = unreal.GameplayStatics.begin_deferred_actor_spawn_from_class(world, unreal.CameraActor, tf)  # spawns in the Play world, not the editor one
