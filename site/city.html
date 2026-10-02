@@ -373,8 +373,9 @@ function netTick() { const now = performance.now(); for (const [id, o] of others
 const cops = []; let copModel = null;
 gl.load(MODELS + "ferrari.glb", g => { copModel = g.scene; });
 function spawnCop() {
-  if (!copModel) return; let x, z, tries = 0; do { const a = Math.random() * 6.28, d = 120 + Math.random() * 80; x = S.p.x + Math.cos(a) * d; z = S.p.y + Math.sin(a) * d; } while (solidOut(x, z) && ++tries < 30);
-  const c = copModel.clone(true); c.rotation.y = Math.PI / 2; const bd = c.getObjectByName("body"); if (bd) bd.material = new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3, clearcoat: 1 });
+  let x, z, tries = 0; do { const a = Math.random() * 6.28, d = 120 + Math.random() * 80; x = S.p.x + Math.cos(a) * d; z = S.p.y + Math.sin(a) * d; } while (solidOut(x, z) && ++tries < 30);
+  // stand-in box until ferrari.glb arrives, so heat always brings cops (slow loads left the street empty, and CI timed out)
+  const c = copModel ? copModel.clone(true) : new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.2, 1.9), new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3 })); c.rotation.y = Math.PI / 2; if (!copModel) c.position.y = .7; const bd = c.getObjectByName && c.getObjectByName("body"); if (bd) bd.material = new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3, clearcoat: 1 });
   const bar = new THREE.Mesh(new THREE.BoxGeometry(.4, .15, 1.4), new THREE.MeshBasicMaterial({ color: 0xff0000 })); bar.position.set(0, 1.35, 0); const grp = new THREE.Group(); grp.add(c, bar); scene.add(grp);
   cops.push({ g: grp, bar, p: new THREE.Vector2(x, z), a: 0, v: 0 });
 }
