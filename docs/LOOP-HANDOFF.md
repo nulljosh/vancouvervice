@@ -1,30 +1,24 @@
-# Vancouver Vice loop handoff (2026-09-26, evening)
+# Vancouver Vice loop handoff (2026-10-01, evening)
 
 ## What the loop is
 
-Driving Unreal 5.8 headless to build Vancouver Vice Act Two as a vertical slice: polish the first five minutes (Apple Store heist, car jack, escape) to shipping quality, package the macOS .app, and QA against real hardware before wide release. One subagent per step (Haiku for mechanical tasks, Sonnet for architecture), Opus for hard decisions only. Restart from the task queue if session ends.
+A `/loop` that builds out the real Vancouver GTA clone in Unreal, one visual component at a time: body shape, clothes, hair, geometry, and rendering. Each tick: edit code or Blender, screenshot with photo.sh, ship it. Photos go in the session to show progress.
 
 ## Where things stand
 
-First detail island shipped and live: Granville and Georgia with ten buildings, each sourced from real OSM heights. Façade generator (site/js/hero.js) produces storey-true glazing; every tenant rendered as a sign on its own storefront. Blender export (tools/hero_blender.py) builds headless into single 8.7 MB Unreal asset with 69 tenant signs. QA via Playwright, benchmarks: island builds in 10.9 s, swiftshader renders 5 fps headless; fix was deferring scene.add one extra frame. Deployed via wrangler, both tests pass (tests/city.mjs, tests/hero.mjs). Live at vancouvervice.heyitsmejosh.com/city.html. Editor 8-10 GB (near-player tile loading fixed the 54 GB hog; guard.sh monitors footprint and restarts if unsafe). Player visible in Play with strawberry blonde hair and carved pants on the polo skeleton. Spawn moved to Apple Store Georgia sidewalk. Cesium tileset lean: 256 MB cache, 12 loads, SSE 64. Key art live on README and landing (six panels drawn by key_art.py). Mission one DSL drafted with two chasing employees and gun tutorial. Known gaps: pawn broken in packaged builds (check GameMode default pawn), polo fits badly, city.mjs CI times out on swiftshader, body needs 6 ft slim rebuild.
+Male body via unreal/body_male.py (Blender-shaped chest, hips, shoulders). Hair via unreal/hair_shell.py (curly strawberry-blond shell, scalp-grown, face-rigged). Spawn and camera via unreal/scene_setup.py (Joshua at Pacific Centre Apple Store). Photos via unreal/photo.sh. Arms still render grey (needs skin material that actually applies). Polo neckline gapes. Google tiles melt at street level. Next is one-command pipeline: unreal/avatar.sh assembles all of it.
 
 ## Next, in order
 
-0. Body rebuild, 6 ft slim male MetaHuman, commit and build (previous build produced female mesh), verify via CaptureAssetImage
-1. Pawn spawn fix, check GameMode default pawn and PlayerStart in Lvl_ThirdPerson, run qa.py shot to get street photo, verify in packaged build
-2. Polo refit, weight painting, bone hierarchy, pants and jacket fit polish
-3. Apply mission one DSL, two chasing Apple employees, gun tutorial wired into BP_ThirdPersonCharacter
-4. Drive-by shooting, playtest car physics, hold Shift aim, mouse click fire, record demo
-5. Walls and camera collision, walk through interiors (inside-out camera fix), third-person clip check
-6. Map detail SSE 6 and daylight, day/night flashing, shader bump, Gastown perf test
-7. Splash preload screen, loading spinner while tiles stream
-8. BP_Heat stars and system, three stars, wanted meter, crime heat
-9. NPCs and dynamic crowd, NPCs, dialogue, mission feedback
-10. Headless QA mode, autoplay.dsl unattended, crash logs, fail fast
-11. Package the .app, build macOS binary, sign, notarize, ship
+1. Grey arms: write a skin material that actually follows the import, fix arms rendering.
+2. Polo collar and slim jeans: adjust body shape to fit clothes, finalize silhouette.
+3. Import Granville and Georgia detail island: copy the glTF from site/worlds/granville-georgia/hero.glb to Unreal at spawn location so the street is real (buildings, signs, textures).
+4. Splash screen until tiles load: show loading card while Cesium 3D Tiles stream in at distance.
+5. Mission one per docs/MISSION1.md: lobby and heist dialogue, laptop heist gameplay.
+6. Title screen, save/load, settings: ship the vertical slice.
 
 ## Restart prompt
 
 ```
-/loop 1h Vancouver Vice island import and polish. First goal: Unreal import of Granville-Georgia island via MCP (8.7 MB Blender asset with 69 tenant signs), test playability in Lvl_ThirdPerson. Then: Gastown island build, Robson at Burrard, Waterfront. Pawn and camera are next fixes if Unreal import blocked. One Haiku subagent per step, mechanical work only; Sonnet for architecture decisions. Next roadmap milestone: vertical slice packaged and QA'd on real Mac. If blocked or decision point: stop the loop, post findings, wait for guidance.
+/loop Vancouver Vice. Read docs/LOOP-HANDOFF.md and docs/METAHUMAN-API.md first. Work the Next list in order, one item per tick, photo with sh unreal/photo.sh after each change and send it. Never run a MetaHuman build mid-session; use the live preview. Keep RAM in check with unreal/guard.sh.
 ```
