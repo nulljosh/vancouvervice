@@ -127,3 +127,6 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Mission 1: Ben fixing springs, mechanic for it. Customer refuses to pay. Ben holds up the customer, then escapes in the truck. Chased, evade police.
 - [ ] Mission 2: Assassinate the McDonald's manager.
 - [ ] Mission 3: Meet with Josh, Alex and the boys. Deliver car and race.
+
+## Ingested 2026-10-02
+- [ ] Refresh the README with the recent progress. The player looks slightly better than the stale image.
