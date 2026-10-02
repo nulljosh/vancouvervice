@@ -110,6 +110,14 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Glasses on Joshua (attach a glasses mesh to the head socket)
 - [ ] In-game graphics setting: a Low/Medium/High key that sets the tileset MaximumScreenSpaceError (12/6/3) at runtime, so nearby streets are sharp and far tiles stay cheap on 16 GB
 
+## Queued 2026-10-01 (Joshua, in order)
+- [ ] Body reads as a lean 6 ft man (Masculine/Feminine +2, rebuild running). Photo for the brother.
+- [ ] City renders as you walk: splash screen holds until the tiles around the player are loaded, sharp tiles near the player, cheap far away. No sky spawn, no waiting on Cesium.
+- [ ] Title screen with New Game, Continue, Settings, Quit.
+- [ ] Save and load: position, mission index, cash, stars, to Saved/SaveGames; autosave on mission complete.
+- [ ] Settings: graphics (tile detail Low/Medium/High), audio, controls, invert look.
+- [ ] Live weather from Open-Meteo for the real Vancouver sky (the web game already does this).
+
 ## Ingested 2026-10-01
 - [ ] Add Harrison Hot Springs.
 - [ ] Add character stories. Cast: Ben + Maddie (Kitsilano), Alex, Sarah, Dad, Mom.
