@@ -6,7 +6,7 @@ A `/loop` that builds out the real Vancouver GTA clone in Unreal, one visual com
 
 ## Where things stand
 
-Male body via unreal/body_male.py (Blender-shaped chest, hips, shoulders). Hair via unreal/hair_shell.py (curly strawberry-blond shell, scalp-grown, face-rigged). Spawn and camera via unreal/scene_setup.py (Joshua at Pacific Centre Apple Store). Photos via unreal/photo.sh. Arms still render grey (needs skin material that actually applies). Polo neckline gapes. Google tiles melt at street level. Next is one-command pipeline: unreal/avatar.sh assembles all of it.
+Avatar is rough and incomplete. Male body from Blender (via unreal/body_male.py: chest, hips, shoulders shaped). Hair shell scalp-grown, face-rigged (via unreal/hair_shell.py). Spawn at Pacific Centre Apple Store (via unreal/scene_setup.py). Open: arms render grey (untextured, needs skin material that actually applies), polo neckline gapes, jeans bag out. City: Google tiles still melt at street level. Mission: not playable. Photos via unreal/photo.sh.
 
 ## Next, in order
 
