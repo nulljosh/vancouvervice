@@ -10,12 +10,13 @@ import numpy as np
 from mathutils import Vector, kdtree
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body.fbx")
+BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v2.fbx")
 PANTS_FBX = os.path.join(REPO, "unreal/assets/pants.fbx")
 OUT_FRONT = os.path.join(REPO, "unreal/assets/pants_front.png")
 OUT_SIDE = os.path.join(REPO, "unreal/assets/pants_side.png")
 
 # ---- tunables (cm, body local space) --------------------------------------------------
+HIP_HALF = 21.0              # cm either side of centre; wider than this is a hand
 WAIST_Z = 100.0               # hip line in body space (the body sits taller than the rig), tucked under the polo hem
 ANKLE_Z = -5.0                # cut at ankle, extends below Z=0
 THIGH_RADIUS = 18.5          # max dist from thigh bone axis kept as "leg"
@@ -80,7 +81,9 @@ def segment_test(co, head, tail, radius, z_min, z_max):
 def keep_test(co):
     """Keep every body vertex in the waist-to-ankle band. ponytail: a height band beats bone-radius tests here,
     the body mesh is wider than the rig's bone radii and a radius cut left garters, not jeans (2026-10-01)."""
-    return ANKLE_Z <= co.z <= WAIST_Z
+    # ponytail: hands hang at hip height in the bind pose, so a plain height band grabbed them as mitts (2026-10-01).
+    # Legs never leave the hip width; anything wider is an arm or a hand.
+    return ANKLE_Z <= co.z <= WAIST_Z and abs(co.x) <= HIP_HALF
     # thigh: full range
     if segment_test(co, thigh_l_head, thigh_l_tail, THIGH_RADIUS, ANKLE_Z, WAIST_Z):
         return True

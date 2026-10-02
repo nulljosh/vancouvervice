@@ -10,7 +10,7 @@ import numpy as np
 from mathutils import Vector, kdtree
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body.fbx")
+BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v2.fbx")
 POLO_FBX = os.path.join(REPO, "unreal/assets/polo.fbx")
 OUT_FRONT = os.path.join(REPO, "unreal/assets/polo_front.png")
 OUT_SIDE = os.path.join(REPO, "unreal/assets/polo_side.png")
@@ -20,12 +20,12 @@ OUT_POSED_R45 = os.path.join(REPO, "unreal/assets/polo_posed_r45.png")
 OUT_TWIST = os.path.join(REPO, "unreal/assets/polo_twist.png")
 
 # ---- tunables (cm, body local space) --------------------------------------------------
-HEM_Z = 79.0                 # hip-length hem
+HEM_Z = 94.0                 # tucks into the jeans waistband (100) on the 6 ft body
 NECK_CUT_Z = 137.5           # torso mesh stops here, collar geometry added above
 TORSO_RADIUS = 27.0          # max horizontal dist from spine axis kept as "torso"
 SLEEVE_T_MAX = 0.55          # fraction of shoulder->elbow kept as sleeve (short sleeve)
 SLEEVE_RADIUS = 13.0         # max dist from upperarm bone axis kept as "sleeve"
-CLOTH_OFFSET = 4.5           # cm, offset outward along normal for cloth ease/thickness
+CLOTH_OFFSET = 2.0           # cm; 4.5 ballooned the chest into a bust
 FRONT_SIGN = -1.0            # -Y is front (checked against renders below)
 
 # ---------------------------------------------------------------------------------------
