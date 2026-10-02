@@ -10,6 +10,7 @@ Avatar is rough and incomplete. Male body from Blender (via unreal/body_male.py:
 
 ## Next, in order
 
+0. CI first: `gh run list --limit 1`. The city test was red since 2026-09-26 (cops never spawned before the car model loaded); a stand-in cop car landed in 2a4169c, result unconfirmed. If still red, `gh run view --log-failed` and fix before anything else.
 1. Grey arms: write a skin material that actually follows the import, fix arms rendering.
 2. Polo collar and slim jeans: adjust body shape to fit clothes, finalize silhouette.
 3. Import Granville and Georgia detail island: copy the glTF from site/worlds/granville-georgia/hero.glb to Unreal at spawn location so the street is real (buildings, signs, textures).
