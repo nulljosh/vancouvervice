@@ -10,7 +10,7 @@ import numpy as np
 from mathutils import Vector, kdtree
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v3.fbx")
+BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v4.fbx")
 PANTS_FBX = os.path.join(REPO, "unreal/assets/pants.fbx")
 OUT_FRONT = os.path.join(REPO, "unreal/assets/pants_front.png")
 OUT_SIDE = os.path.join(REPO, "unreal/assets/pants_side.png")
