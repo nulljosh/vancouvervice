@@ -117,6 +117,9 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Save and load: position, mission index, cash, stars, to Saved/SaveGames; autosave on mission complete.
 - [ ] Settings: graphics (tile detail Low/Medium/High), audio, controls, invert look.
 - [ ] Live weather from Open-Meteo for the real Vancouver sky (the web game already does this).
+- [ ] Drivable car: mission one ends at the car, the drive test exists; make it hold up, then the chase and drive-by shooting.
+- [ ] Walk animation: the leader-pose walk cycle is wired but untested; Joshua slides today.
+- [ ] External NVMe SSD for the engine and project; every 30-minute wait today was the LaCie spinning disk (125 MB/s).
 
 ## Ingested 2026-10-01
 - [ ] Add Harrison Hot Springs.
