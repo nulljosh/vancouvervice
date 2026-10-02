@@ -29,6 +29,10 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.fbx(filepath=BODY_FBX)
 
 arm = bpy.data.objects["root"]
+# cuts follow the rig, so a rebuilt body keeps the fit
+_B = arm.data.bones
+WAIST_Z = _B["pelvis"].head_local.z + 10.0
+ANKLE_Z = _B["foot_l"].head_local.z - 13.0
 body = bpy.data.objects["SKM_Joshua_BodyMesh_LOD1"]
 
 # "SKM_Joshua_BodyMesh" is a wrapper empty carrying the cm to m (0.01) scale; "root" (the

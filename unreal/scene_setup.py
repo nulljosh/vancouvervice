@@ -8,7 +8,7 @@ eas = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
 SPAWN, YAW = unreal.Vector(-487.5, 2936.1, -6740.0), 134.7
 touched = []
 for a in eas.get_all_level_actors():
-    if a.get_actor_label() in ("SpawnCatchPad", "PhotoCam", "FacePreview"): eas.destroy_actor(a)
+    if a.get_actor_label() in ("SpawnCatchPad", "PhotoCam", "FacePreview", "MHPreview") or "MetaHumanDefaultEditorPipelineActor" in a.get_name(): eas.destroy_actor(a)
 ps = unreal.GameplayStatics.get_all_actors_of_class(w, unreal.PlayerStart)[0]
 ps.set_actor_location_and_rotation(SPAWN, unreal.Rotator(roll=0, pitch=0, yaw=YAW), False, False); touched.append(ps)
 pad = eas.spawn_actor_from_class(unreal.StaticMeshActor, unreal.Vector(SPAWN.x, SPAWN.y, -6852.0), unreal.Rotator(0, 0, 0))

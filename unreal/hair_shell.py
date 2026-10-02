@@ -13,10 +13,10 @@ FACE_FBX = os.path.join(REPO, "unreal/assets/joshua_face_v2.fbx")
 HAIR_FBX = os.path.join(REPO, "unreal/assets/hair.fbx")
 FRONT_SIGN = -1.0           # -Y is the face side, same as polo.py
 FRONT_DROP = 0.060          # m below the crown the hairline sits at the forehead
-BACK_DROP = 0.13            # m below the crown it reaches at the nape
-SIDE_DROP = 0.085           # m below the crown on the sides: above the ears
-LIFT = 0.012                # m the shell sits off the scalp
-CURL = 0.018                # m of curl noise on top of that
+BACK_DROP = 0.12            # m below the crown it reaches at the nape
+SIDE_DROP = 0.07            # m below the crown on the sides: above the ears
+LIFT = 0.007                # m the shell sits off the scalp
+CURL = 0.011                # m of curl noise on top of that
 CURL_SCALE = 55.0           # noise frequency per metre; higher is tighter curls
 COLOR = (0.62, 0.26, 0.09, 1.0)   # strawberry blond from the scan video
 
