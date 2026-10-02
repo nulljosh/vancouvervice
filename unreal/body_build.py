@@ -9,11 +9,18 @@ import unreal
 from metahuman_character_test_utils import ScopedMetaHumanCharacterEditor
 # exact constraint names; substring matching once set Shoulder Height to 183 and Neck to Waist to 74 (max 53) and the
 # solver returned a mush (2026-10-01). Anything not listed is switched off so it can't fight these.
-WANT = {"Height": 183.0, "Chest": 94.0, "Waist": 76.0, "Hip": 92.0,
-        "Masculine/Feminine": -1.5, "Muscularity": 1.6, "Fat": -1.6}   # 6 ft, 140 lb, lean and cut
+WANT = {"Height": 183.0, "Chest": 100.0, "Waist": 80.0, "Hip": 92.0, "Across Shoulder": 48.0,
+        "Masculine/Feminine": -2.0, "Muscularity": 1.8, "Fat": -1.6}   # 6 ft, 140 lb, broad shoulders, straight waist, narrow hips; -2 is fully masculine
 mh = unreal.load_asset("/Game/Joshua")
 sub = unreal.get_editor_subsystem(unreal.MetaHumanCharacterEditorSubsystem)
+DNA = "/Volumes/LaCie/UE_5.8/Engine/Plugins/MetaHuman/MetaHumanCharacter/Content/Optional/Body/FixedCompatibility/m_tal_unw.dna"
 with ScopedMetaHumanCharacterEditor(character=mh):
+    # start from the plugin's male, tall, underweight body: the parametric sliders alone never lost the female base
+    # shape (bust and hips survived Masculine/Feminine -2.0 on 2026-10-01). Conform to the DNA first, then shape it.
+    r, verts = sub.get_mesh_for_body_conforming_from_dna(mh, DNA, "")
+    r2, jt, jr = sub.get_joints_for_body_conforming_from_dna(DNA)
+    print("dna mesh", r, len(verts), "joints", r2, len(jr))
+    print("conform", sub.conform_body_to_target(mh, verts, jr, False, False))
     cons = sub.get_body_constraints(mh)
     out = []
     for c in cons:

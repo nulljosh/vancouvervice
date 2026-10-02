@@ -16,6 +16,11 @@ Three versions of one game, sharing the same rules and map data.
 | Key art | `tools/key_art.py` | Generates six-panel Unreal cover grid: Harbour Centre at sunset, cop chase, seagull, Gastown clock, SkyTrain, drawn in code and rasterized. |
 | Key art render | `tools/key_art.mjs` | Browser render of the key art panels for README and landing preview. |
 | RAM watchdog | `unreal/guard.sh` | Monitors editor memory, restarts if footprint exceeds safe limits or free RAM drops below 15 percent. |
+| MetaHuman API notes | `docs/METAHUMAN-API.md` | Everything learned driving the MetaHuman plugin from Python: build params, body DNA conform, groom crashes, what renders in Play. |
+| Avatar pipeline | `unreal/avatar.sh` | One command: fresh editor, body build, Blender clothes and hair, reimport, scene, photo. |
+| Hair shell | `unreal/hair_shell.py` | Curly strawberry-blond hair cut from the scalp in Blender, skinned to the face skeleton. |
+| Scene setup | `unreal/scene_setup.py` | Apple Store spawn, catch pad, PhotoCam, Cesium caps; saves each World Partition actor package. |
+| Photo | `unreal/photo.sh` | Play, view through PhotoCam, screenshot the editor window, stop. |
 | Hair install | `unreal/hair_install.py` | Applies Hair_S_Messy groom to the Mesh head socket with strawberry blonde settings (hairMelanin 0.22, hairRedness 1.0). |
 | Pants carve | `unreal/pants.py` | Carves pants from the body mesh in Blender: height band waist 100 to ankle -5, offset 3 cm. |
 | Pants import | `unreal/pants_install.py` | Imports carved pants with Interchange FBX onto the polo skeleton. |

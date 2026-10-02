@@ -13,7 +13,8 @@ FACE_FBX = os.path.join(REPO, "unreal/assets/joshua_face_v2.fbx")
 HAIR_FBX = os.path.join(REPO, "unreal/assets/hair.fbx")
 FRONT_SIGN = -1.0           # -Y is the face side, same as polo.py
 FRONT_DROP = 0.060          # m below the crown the hairline sits at the forehead
-BACK_DROP = 0.165           # m below the crown it reaches at the nape
+BACK_DROP = 0.13            # m below the crown it reaches at the nape
+SIDE_DROP = 0.085           # m below the crown on the sides: above the ears
 LIFT = 0.012                # m the shell sits off the scalp
 CURL = 0.018                # m of curl noise on top of that
 CURL_SCALE = 55.0           # noise frequency per metre; higher is tighter curls
@@ -33,10 +34,13 @@ from collections import Counter
 skin = {Counter(p.material_index for p in face.data.polygons).most_common(1)[0][0]}
 ws = [mw @ v.co for v in face.data.vertices]
 zmax = max(w.z for w in ws)
+HALF_W = max(abs(w.x) for w in ws)
 ys = [w.y for w in ws]
 ymin, ymax = min(ys), max(ys)
 
 def scalp(w):
+    side = abs(w.x) / HALF_W                                  # 0 at the centre line, 1 at the ears
+    if side > 0.72 and w.z < zmax - SIDE_DROP: return False  # short back and sides, ears stay out
     back = (w.y - ymin) / (ymax - ymin) if FRONT_SIGN < 0 else (ymax - w.y) / (ymax - ymin)   # 0 at the face, 1 at the nape
     drop = FRONT_DROP + (BACK_DROP - FRONT_DROP) * max(0.0, min(1.0, (back - 0.25) / 0.6))
     return w.z > zmax - drop
@@ -55,7 +59,8 @@ scale = (inv.to_3x3() @ Vector((0, 0, 1))).length          # world metres to mes
 for v in bm.verts:
     w = mw @ v.co
     n = noise.noise(w * CURL_SCALE)                          # -1..1
-    v.co = v.co + v.normal * (LIFT + CURL * (0.5 + 0.5 * n)) * scale
+    top = max(0.0, min(1.0, (w.z - (zmax - 0.09)) / 0.09))  # curls stack on top, sides stay tight
+    v.co = v.co + v.normal * (LIFT * (0.5 + top) + CURL * (0.5 + 0.5 * n) * (0.4 + top)) * scale
 bm.to_mesh(hair.data); bm.free()
 mat = bpy.data.materials.new("M_HairGinger"); mat.use_nodes = True
 bsdf = next(n for n in mat.node_tree.nodes if n.type == "BSDF_PRINCIPLED")

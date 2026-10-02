@@ -7,7 +7,7 @@ python3 -c "import sys; sys.path.insert(0,'$HERE'); import qa; qa.mcp('EditorToo
 sleep 40
 QA_TIMEOUT=60 python3 "$HERE/qa.py" 'w=unreal.UnrealEditorSubsystem().get_game_world()
 p=unreal.GameplayStatics.get_player_pawn(w,0); pc=unreal.GameplayStatics.get_player_controller(w,0)
-unreal.SystemLibrary.execute_console_command(w, "r.HairStrands.BoundsMode 2")
+[unreal.SystemLibrary.execute_console_command(w, c) for c in ("r.ScreenPercentage 100", "r.Streaming.PoolSize 2000")]
 cam=[a for a in unreal.GameplayStatics.get_all_actors_of_class(w, unreal.CameraActor) if a.get_actor_label()=="PhotoCam"][0]
 p.set_actor_rotation(unreal.Rotator(roll=0,pitch=0,yaw=134.7), False)
 g=p.get_components_by_class(unreal.GroomComponent)
