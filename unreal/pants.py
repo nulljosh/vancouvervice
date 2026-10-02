@@ -10,7 +10,7 @@ import numpy as np
 from mathutils import Vector, kdtree
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v2.fbx")
+BODY_FBX = os.path.join(REPO, "unreal/assets/joshua_body_v3.fbx")
 PANTS_FBX = os.path.join(REPO, "unreal/assets/pants.fbx")
 OUT_FRONT = os.path.join(REPO, "unreal/assets/pants_front.png")
 OUT_SIDE = os.path.join(REPO, "unreal/assets/pants_side.png")
@@ -33,7 +33,7 @@ arm = bpy.data.objects["root"]
 _B = arm.data.bones
 WAIST_Z = _B["pelvis"].head_local.z + 10.0
 ANKLE_Z = _B["foot_l"].head_local.z - 13.0
-body = bpy.data.objects["SKM_Joshua_BodyMesh_LOD1"]
+body = next(o for o in bpy.data.objects if o.type == "MESH" and o.name.endswith("_LOD1"))  # export names vary
 
 # "SKM_Joshua_BodyMesh" is a wrapper empty carrying the cm to m (0.01) scale; "root" (the
 # armature) is parented to it. Bake that scale onto the armature itself and drop the
