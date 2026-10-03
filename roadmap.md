@@ -130,3 +130,4 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 
 ## Ingested 2026-10-02
 - [ ] Refresh the README with the recent progress. The player looks slightly better than the stale image.
+- [ ] Add CI/CD. No GitHub tests are currently running. (Source note title was "Vancouver nice", filed here as Vancouver Vice. Right repo?)
