@@ -3,7 +3,7 @@ import WebKit
 
 // iOS + macOS shell: the full game is the web build, so every platform plays the same thing.
 // ponytail: loads the live site, needs a connection (the 3D tiles do anyway). Bundle site/ for offline if it matters.
-let gameURL = URL(string: "https://vancouvervice.heyitsmejosh.com/play.html")!
+let gameURL = URL(string: "https://vancouvervice.jaybulb.com/play.html")!
 
 #if os(macOS)
 // WKWebView on macOS has no Pointer Lock, so the app locks the mouse itself and feeds raw deltas to the page.
