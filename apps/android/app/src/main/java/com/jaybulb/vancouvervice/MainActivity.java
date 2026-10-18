@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
                 splash.setOnClickListener(v -> {
                     status.setText(R.string.loading);
                     splash.setOnClickListener(null);
-                    web.loadUrl("https://vancouvervice.heyitsmejosh.com/play.html");
+                    web.loadUrl("https://vancouvervice.jaybulb.com/play.html");
                 });
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
@@ -70,6 +70,6 @@ public class MainActivity extends Activity {
                 if (!failed) splash.setVisibility(View.GONE);
             }
         });
-        web.loadUrl("https://vancouvervice.heyitsmejosh.com/play.html");
+        web.loadUrl("https://vancouvervice.jaybulb.com/play.html");
     }
 }

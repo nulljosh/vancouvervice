@@ -19,6 +19,6 @@ public class App : Application
         win.Show();
         await web.EnsureCoreWebView2Async();
         web.CoreWebView2.Settings.UserAgent += " VancouverViceApp";
-        web.CoreWebView2.Navigate("https://vancouvervice.heyitsmejosh.com/play.html");
+        web.CoreWebView2.Navigate("https://vancouvervice.jaybulb.com/play.html");
     }
 }

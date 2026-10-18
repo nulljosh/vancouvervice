@@ -12,7 +12,7 @@ static void activate(GtkApplication *app, gpointer data) {
     webkit_settings_set_hardware_acceleration_policy(s, WEBKIT_HARDWARE_ACCELERATION_POLICY_ALWAYS);
     webkit_settings_set_user_agent_with_application_details(s, "VancouverViceApp", "1.24");
     gtk_container_add(GTK_CONTAINER(win), GTK_WIDGET(web));
-    webkit_web_view_load_uri(web, "https://vancouvervice.heyitsmejosh.com/play.html");
+    webkit_web_view_load_uri(web, "https://vancouvervice.jaybulb.com/play.html");
     gtk_window_fullscreen(GTK_WINDOW(win));
     gtk_widget_show_all(win);
 }

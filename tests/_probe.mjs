@@ -1,0 +1,13 @@
+import { createServer } from 'node:http'; import { readFile } from 'node:fs/promises'; import { fileURLToPath } from 'node:url'; import { chromium } from 'playwright';
+const types = { html: 'text/html', js: 'text/javascript', json: 'application/json' };
+const server = createServer(async (req, res) => { try { const p = new URL(req.url, 'http://x').pathname; res.writeHead(200, { 'content-type': types[p.split('.').pop()] || 'application/octet-stream' }); res.end(await readFile(fileURLToPath(new URL(`../site${p}`, import.meta.url)))); } catch { res.writeHead(404); res.end(); } });
+await new Promise(r => server.listen(0, '127.0.0.1', r));
+const b = await chromium.launch({ headless: true, args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const page = await b.newPage({ viewport: { width: 640, height: 360 } }); page.on('pageerror', e => console.log('PAGEERR', e.message)); page.on('console', m => { if (m.type() === 'error' || m.type() === 'warning') console.log('CONSOLE', m.text().slice(0, 200)); }); await page.routeWebSocket('**/ws', () => {});
+await page.goto(`http://127.0.0.1:${server.address().port}/city.html`); await page.waitForFunction(() => !!window.S, null, { timeout: 120000 });
+const t = Date.now(); await page.waitForFunction(() => !!window.HERO, null, { timeout: 180000 }); console.log('hero after', Date.now() - t, 'ms');
+await page.waitForLoadState('networkidle', { timeout: 90000 });
+await page.evaluate(() => { window.__f = 0; const o = requestAnimationFrame; window.requestAnimationFrame = f => o(t => { window.__f++; f(t); }); P.stars = 2; P.starT = 40; });
+await page.waitForTimeout(20000);
+console.log(await page.evaluate(() => ({ frames20s: window.__f, cops: cops.length, stars: P.stars, traffic: traffic.length })));
+await b.close(); server.close();
