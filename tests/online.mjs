@@ -1,7 +1,7 @@
 // Online play tests: hits the real game server (the Durable Object behind /ws) with plain WebSocket clients.
 // node tests/online.mjs            (live server)
 // ONLINE_URL=ws://localhost:8787/ws node tests/online.mjs   (local wrangler dev)
-const URL = process.env.ONLINE_URL || "wss://vancouvervice.heyitsmejosh.com/ws";
+const URL = process.env.ONLINE_URL || "wss://vancouvervice.jaybulb.com/ws";
 let fails = 0; const check = (ok, what) => { console.log(ok ? "PASS" : "FAIL", what); if (!ok) fails++; };
 const wait = ms => new Promise(r => setTimeout(r, ms));
 function client() {
