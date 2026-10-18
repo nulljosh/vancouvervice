@@ -123,6 +123,7 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Walk animation: the leader-pose walk cycle is wired but untested; Joshua slides today.
 - [ ] External NVMe SSD for the engine and project; every 30-minute wait today was the LaCie spinning disk (125 MB/s).
   - Plan (2026-10-17): buy a 1 TB Samsung T7 Shield (about $140 to $230 CAD, check Amazon.ca), move the engine, project and the 294 GB on the LaCie over, then sell the LaCie back to Dad for about $200. Until then: avatar and optimization work stays outside the editor.
+  - Unreal work is one day a week until the SSD lands. Optimization, README screenshots and the promo video run on the web version (site/city.html, real.html) meanwhile.
 
 ## Ingested 2026-10-01
 - [ ] Add Harrison Hot Springs.
