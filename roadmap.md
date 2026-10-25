@@ -136,3 +136,7 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Refresh the README with the recent progress. The player looks slightly better than the stale image.
 - [ ] Add CI/CD. No GitHub tests are currently running. (Source note title was "Vancouver nice", filed here as Vancouver Vice. Right repo?)
 - [ ] Try VibeUE (https://github.com/kevinpbuckley/VibeUE, branch 5-8, MIT) as a faster interface than our laggy, slow Unreal MCP. Needs Epic's native Unreal MCP + Editor Tools plugins on. Compare latency on one task. Wiki: vancouvervice.md.
+
+## Ingested 2026-10-25
+- [ ] Copy the Rockstar website for the landing.
+- [ ] Rename to one word. (Probe Apple/store names first, one name everywhere.)
