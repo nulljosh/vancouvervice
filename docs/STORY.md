@@ -5,6 +5,7 @@ Three people. One rainy city. Rent is four grand and nobody has it.
 **Joshua** is the downtown hustler. Fast talker, bad ideas, good at running.
 **Ben** cruises Kits. Chill, connected, knows every dealer and every dad with a boat.
 **Alexandre** works an office job in Victoria and does deliveries on the side. The only one with a plan.
+**Maddie** is Ben's partner in Kits. She knows exactly what Ben gets up to and has made it clear she does not want to hear about it at dinner.
 
 You switch between them any time. Their stories cross at the heist.
 
@@ -31,6 +32,11 @@ You switch between them any time. Their stories cross at the heist.
 **6. Kits Beach.** Switch to Ben. Joshua calls from a payphone, which Ben finds hilarious. They need a boat. Dad has one. Ben asks Dad, because Joshua can't face him. Dad says yes on one condition: Joshua brings back the hard drive.
 
 **7. The Lululemon sale.** A stampede on 4th Avenue. Ben uses the chaos to lift a delivery van full of sample stock. It's worth nothing. The van is the prize.
+
+**Ben's jobs.** Three side missions open once you can switch to Ben, from Joshua's notes:
+- **Springs.** Ben fixes a garage door spring in Kerrisdale. The customer looks at the bill and refuses to pay. Ben holds him up for it, then gets out in the work truck with the cops on his tail. Lose them.
+- **The manager.** A hit on the manager of the McDougal's on Granville, for Dmitri, as a favour that will not stay a favour.
+- **The boys.** Meet Joshua, Alex and the boys at the Kits lot. Deliver the car, then race it.
 
 **8. The ferry.** Switch to Alexandre in Victoria. He drives the van onto the Swartz Bay ferry, finds out the truck parked next to him belongs to Dmitri, and follows it home.
 
