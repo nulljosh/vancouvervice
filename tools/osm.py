@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -12,7 +12,40 @@ AREAS = {
     "kits": ((49.2690, -123.1575), (49.2620, -123.1750, 49.2760, -123.1400)),
     "victoria": ((48.4250, -123.3650), (48.4150, -123.3800, 48.4350, -123.3500)),
     "langley": ((49.1044, -122.6604), (49.0950, -122.6750, 49.1120, -122.6450)),
+    "harrison": ((49.2972, -121.7850), (49.2935, -121.7990, 49.3085, -121.7690)),
 }
+
+
+def rings(ways):
+    """Join a multipolygon's outer ways end to end into closed rings (OSM splits big lakes into many ways)."""
+    ways, out = [list(w) for w in ways if len(w) > 1], []
+    while ways:
+        ring = ways.pop()
+        while ring[0] != ring[-1]:
+            nxt = next((w for w in ways if w[0] == ring[-1] or w[-1] == ring[-1]), None)
+            if nxt is None: break  # ponytail: an open ring (member outside the download) is dropped below
+            ways.remove(nxt)
+            ring += (nxt if nxt[0] == ring[-1] else nxt[::-1])[1:]
+        if ring[0] == ring[-1] and len(ring) >= 4: out.append(ring[:-1])
+    return out
+
+
+def clip(poly, bounds):
+    """Sutherland-Hodgman: cut a polygon to the export rectangle, so a 60 km lake becomes the bit on screen."""
+    xmin, ymin, xmax, ymax = bounds
+    for inside, cut in ((lambda p: p[0] >= xmin, lambda a, b: [xmin, a[1] + (xmin - a[0]) * (b[1] - a[1]) / (b[0] - a[0])]),
+                        (lambda p: p[0] <= xmax, lambda a, b: [xmax, a[1] + (xmax - a[0]) * (b[1] - a[1]) / (b[0] - a[0])]),
+                        (lambda p: p[1] >= ymin, lambda a, b: [a[0] + (ymin - a[1]) * (b[0] - a[0]) / (b[1] - a[1]), ymin]),
+                        (lambda p: p[1] <= ymax, lambda a, b: [a[0] + (ymax - a[1]) * (b[0] - a[0]) / (b[1] - a[1]), ymax])):
+        pts, poly = poly, []
+        for i, b in enumerate(pts):
+            a = pts[i - 1]
+            if inside(b):
+                if not inside(a): poly.append(cut(a, b))
+                poly.append(b)
+            elif inside(a): poly.append(cut(a, b))
+        if not poly: return []
+    return [[round(x, 1), round(y, 1)] for x, y in poly]
 
 
 def coast_water(lines, bounds):
@@ -76,6 +109,7 @@ def main():
  way["leisure"~"^(park|garden|pitch)$"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["natural"="coastline"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["natural"="water"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
+ relation["natural"="water"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  node["shop"]["name"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  node["amenity"~"^(cafe|restaurant|bar|pub|fast_food|bank|pharmacy|cinema|nightclub|ice_cream|library)$"]["name"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  node["tourism"~"^(hotel|museum|gallery)$"]["name"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
@@ -96,6 +130,8 @@ out geom;"""
                 raise
 
     out = {"origin": [lat0, lon0], "buildings": [], "roads": [], "parks": [], "water": [], "pois": [], "rail": [], "stations": []}
+    northwest = xz({"lat": bbox[2], "lon": bbox[1]})
+    southeast = xz({"lat": bbox[0], "lon": bbox[3]})
     coasts = []
     for el in data["elements"]:
         t, g = el.get("tags", {}), el.get("geometry")
@@ -103,6 +139,12 @@ out geom;"""
             kind = t.get("amenity") or t.get("tourism") or ("grocery" if t.get("shop") in ("supermarket", "convenience", "grocery") else "shop")
             if t.get("railway") == "station": out["stations"].append([*xz(el), t["name"]]); continue
             out["pois"].append([*xz(el), kind, t["name"]]); continue
+        if el["type"] == "relation":
+            # big lakes are multipolygons: join the outer ways, keep what falls inside the export
+            outer = [[xz(p) for p in m["geometry"]] for m in el.get("members", []) if m.get("role") == "outer" and m.get("geometry")]
+            for ring in rings(outer):
+                if len(c := clip(ring, (*northwest, *southeast))) >= 3: out["water"].append(c)
+            continue
         if not g or len(g) < 2: continue
         pts = [xz(p) for p in g]
         if t.get("railway") in ("light_rail", "subway"):
@@ -120,8 +162,6 @@ out geom;"""
             if len(pts) >= 4 and pts[0] == pts[-1]:
                 out["water" if t.get("natural") == "water" else "parks"].append(pts[:-1])
 
-    northwest = xz({"lat": bbox[2], "lon": bbox[1]})
-    southeast = xz({"lat": bbox[0], "lon": bbox[3]})
     out["water"].extend(coast_water(coasts, (*northwest, *southeast)))
     path = pathlib.Path(__file__).resolve().parent.parent / "site/data" / f"{args.area}.json"
     path.parent.mkdir(parents=True, exist_ok=True)

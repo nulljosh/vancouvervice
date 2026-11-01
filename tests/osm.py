@@ -43,3 +43,8 @@ for name, offshore in [('downtown', (49.294, -123.12)), ('kits', (49.2755, -123.
     assert wet((offshore[1]-lon)*math.cos(math.radians(lat))*111320, -(offshore[0]-lat)*110540), name + ' harbour dry'
     assert all(len(p) >= 3 for p in data['water'])
     print('PASS', name, 'land and sea')
+
+# a lake split into two ways joins into one ring, and clipping keeps only the part inside the export
+assert osm.rings([[(0, 0), (10, 0), (10, 10)], [(0, 0), (0, 10), (10, 10)]]) and len(osm.rings([[(0, 0), (10, 0), (10, 10)], [(0, 0), (0, 10), (10, 10)]])[0]) == 4
+assert area([osm.clip([[-5, -5], [5, -5], [5, 5], [-5, 5]], (0, 0, 10, 10))]) == 25
+assert osm.clip([[20, 20], [30, 20], [30, 30]], (0, 0, 10, 10)) == []

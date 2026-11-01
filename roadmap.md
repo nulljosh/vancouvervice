@@ -126,7 +126,6 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
   - Unreal work is one day a week until the SSD lands. Optimization, README screenshots and the promo video run on the web version (site/city.html, real.html) meanwhile.
 
 ## Ingested 2026-10-01
-- [ ] Add Harrison Hot Springs.
 - [ ] Add character stories. Cast: Ben + Maddie (Kitsilano), Alex, Sarah, Dad, Mom.
 - [ ] Mission 1: Ben fixing springs, mechanic for it. Customer refuses to pay. Ben holds up the customer, then escapes in the truck. Chased, evade police.
 - [ ] Mission 2: Assassinate the McDonald's manager.

@@ -33,7 +33,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { buildHero } from "./js/hero.js";
 
 // ?area=victoria (Alexandre's turf) or kits; default downtown Vancouver
-const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley" }[AREA] || "Vancouver";
+const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley", harrison: "Harrison Hot Springs" }[AREA] || "Vancouver";
 const D = await fetch(`data/${AREA}.json`).then(r => r.ok ? r.json() : fetch("data/vancouver.json").then(r => r.json()));
 // detail islands: worlds-style blocks with real façades and storefronts, drawn over the OSM footprints (js/hero.js)
 const HERO_SPECS = new URLSearchParams(location.search).get("hero") === "0" ? [] : { vancouver: ["granville-georgia"] }[AREA] || [];

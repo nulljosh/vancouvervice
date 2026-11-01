@@ -6,7 +6,7 @@ Three versions of one game, sharing the same rules and map data.
 | Part | Where | What it does |
 |---|---|---|
 | Main game | `site/play.html` | Simplified Vancouver and Victoria with all the gameplay: missions, cops, heroes, weapons, weather, saves. three.js, runs anywhere. |
-| Real streets | `site/city.html` | Downtown, Kits, Victoria and Langley built from OpenStreetMap. Real buildings, signs, shops you walk into, traffic, cops, SkyTrain, online play. |
+| Real streets | `site/city.html` | Downtown, Kits, Victoria, Langley and Harrison Hot Springs (`?area=harrison`, with the lake) built from OpenStreetMap. Real buildings, signs, shops you walk into, traffic, cops, SkyTrain, online play. |
 | Real Vancouver beta | `site/real.html` | Google photorealistic 3D tiles streamed through Cesium. |
 | Unreal version | `unreal/`, `UNREAL.md` | The high-end build, set up through Unreal's MCP. In progress. |
 | Online world | `worker.js` | One Cloudflare Durable Object relays player positions. |
