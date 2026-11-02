@@ -65,7 +65,8 @@ const photo = (name, metres) => { const t = new THREE.TextureLoader().load(`mate
 // ground
 // the real horizon from Brookswood: Mount Baker to the south-east, Golden Ears to the north-east, photo panoramas on bands that ride with the camera
 // [file, bearing (radians from south toward east, three's cylinder angle), height in degrees of the image]
-if (SUBURB || HIGHWAY) for (const [f, th, deg] of [["mt-baker", 1.08, 9], ["mt-goldenears", 2.74, 6.5], ...(HIGHWAY ? [["northshore", 3.45, 7]] : [])] /* a little taller than life, the way they feel on a clear day */) {
+const DOWNTOWN = AREA === "vancouver" || AREA === "downtown";
+if (SUBURB || HIGHWAY || DOWNTOWN) for (const [f, th, deg] of DOWNTOWN ? [["northshore", Math.PI, 8], ["mt-baker", 1.2, 4]] : [["mt-baker", 1.08, 9], ["mt-goldenears", 2.74, 6.5], ...(HIGHWAY ? [["northshore", 3.45, 7]] : [])] /* a little taller than life, the way they feel on a clear day */) {
   const t = new THREE.TextureLoader().load(`materials/${f}.webp`, t => { const k = t.image.width / t.image.height, ang = deg * Math.PI / 180, Rr = 2800, h = Rr * Math.tan(ang), arc = ang * k;
     const m = new THREE.Mesh(new THREE.CylinderGeometry(Rr, Rr, h, 64, 1, true, th - arc / 2, arc), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.BackSide, fog: false, depthWrite: false }));
     m.material.onBeforeCompile = sh => { sh.vertexShader = "varying float vEdge;\n" + sh.vertexShader.replace("#include <uv_vertex>", "#include <uv_vertex>\nvEdge = uv.x;"); // the range fades out at both ends instead of stopping like a poster
@@ -212,7 +213,8 @@ if (shopG.length) { const m = new THREE.Mesh(mergeGeometries(shopG), shopMat); m
 { const tile = (f, w, h) => { const t = new THREE.TextureLoader().load(`materials/${f}.jpg`); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / w, 1 / h); t.anisotropy = R.capabilities.getMaxAnisotropy(); t.colorSpace = THREE.SRGBColorSpace; return t; };
   const M = { shop: [tile("shop", 16, 8), .5, 0], glass: [tile("glass", 14, 14), .12, .55], concrete: [tile("concrete", 14, 14), .85, 0], brick: [tile("brick", 13, 13), .9, 0], stone: [tile("stone", 14, 14), .8, 0] };
   for (const [k, [map, rough, metal]] of Object.entries(M)) if (DT[k].length) { const m = new THREE.Mesh(mergeGeometries(DT[k]), new THREE.MeshStandardMaterial({ map, roughness: rough, metalness: metal, side: THREE.DoubleSide })); m.castShadow = m.receiveShadow = true; scene.add(m); }
-  if (DT.cap.length) { const m = new THREE.Mesh(mergeGeometries(DT.cap), new THREE.MeshStandardMaterial({ color: 0x8d8a84, roughness: 1 })); m.receiveShadow = true; scene.add(m); } }
+  if (DT.cap.length) { DT.cap.forEach(g => { const p = g.attributes.position, uv = new Float32Array(p.count * 2); for (let i = 0; i < p.count; i++) { uv[i * 2] = p.getX(i); uv[i * 2 + 1] = p.getZ(i); } g.setAttribute("uv", new THREE.BufferAttribute(uv, 2)); }); // tar-and-gravel roofs
+    const m = new THREE.Mesh(mergeGeometries(DT.cap), new THREE.MeshStandardMaterial({ map: photo("asphalt", 5), color: 0xb4b0a8, roughness: 1 })); m.receiveShadow = true; scene.add(m); } }
 if (houseWalls.length) { // lap siding with a window every 6 m, shingles; vertex colours tint each house
   const tex = (w, h, rep, draw) => { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...rep); t.anisotropy = 8; t.colorSpace = THREE.SRGBColorSpace; return t; };
   const siding = tex(384, 180, [1, 1], (x, w, h) => { x.fillStyle = "#f4f4f2"; x.fillRect(0, 0, w, h); for (let y = 6; y < h; y += 9) { x.fillStyle = "rgba(0,0,0,.16)"; x.fillRect(0, y, w, 2); x.fillStyle = "rgba(255,255,255,.5)"; x.fillRect(0, y + 2, w, 1); }
