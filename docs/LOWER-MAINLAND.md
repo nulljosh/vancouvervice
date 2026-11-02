@@ -18,8 +18,8 @@ We take one area to A+ before starting the next: real street names, every landma
 | 7 | Surrey City Centre | 49.1890, -122.8490 | downtown | live: Overture footprints and roads (Overpass was down), photo facades |
 | 8 | Cloverdale | 49.1060, -122.7330 | town centre | live: Overture footprints and roads, heritage false fronts on 176 Street |
 | 9 | White Rock and South Surrey | 49.0200, -122.8020 | beach town | live: the pier, the White Rock, a sand beach, Overture footprints |
-| 10 | Burnaby, Metrotown | 49.2260, -123.0030 | downtown | next |
-| 11 | New Westminster | 49.2010, -122.9120 | town centre | |
+| 10 | Burnaby, Metrotown | 49.2260, -123.0030 | downtown | live: towers on photo facades, SkyTrain guideway, Overture footprints |
+| 11 | New Westminster | 49.2010, -122.9120 | town centre | next |
 | 12 | Richmond Centre and Steveston | 49.1700, -123.1370 | suburb and village | |
 | 13 | North Vancouver, Lonsdale | 49.3200, -123.0730 | town centre | |
 | 14 | West Vancouver, Ambleside | 49.3270, -123.1550 | beach town | |

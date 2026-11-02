@@ -15,11 +15,10 @@ Brookswood also has people on the sidewalks, a stucco church, and Joshua's own i
 The QA video exists: `TS=3 node tests/drive.mjs <dir> 800` steals a car and arrives downtown in about 19 game minutes (6.5 real minutes at 3x). Brookswood holds 60 fps everywhere since the sign atlas and instanced traffic. Downtown is on photo facades (glass, concrete, brick, sandstone, storefronts). A 30-second trailer is cut from the drive footage with ffmpeg and ImageMagick captions (this ffmpeg has no drawtext).
 
 ## Next, in order
-1. The corridor still feels empty between interchanges: sound walls, overpasses that rise over the freeway, exit signs with real names, more buildings near the road.
-2. Trailer v2 with music and a better first shot.
-3. Vancouver on the Brookswood kit: Overture footprints for downtown, photo trees, landmarks checked against `docs/img`.
-4. Fort Langley, then down the list in `docs/LOWER-MAINLAND.md`.
-5. Toward 2.0: one menu that reaches every area, and the save that now crosses maps carried into play.html too.
+1. Keep going down `docs/LOWER-MAINLAND.md`: New Westminster is next, then Richmond and Steveston, the North Shore, Coquitlam, Delta, Maple Ridge, Abbotsford, Mission, Chilliwack. Each area: add it to `AREAS` in `tools/osm.py`, export (`tools/osm.py`, or an empty skeleton plus `tools/overture.py --roads` when Overpass is down), `tools/overture.py` for footprints, add it to `AREA_NAME` (and `SUBURB` for houses-and-trees towns) in `site/city.html` and to fast travel in `site/play.html`, find its landmarks in the data or on Esri imagery, shoot, test, ship.
+2. Areas live now on the real-streets kit: Brookswood, Fort Langley, Walnut Grove, Cloverdale, White Rock, Surrey City Centre, Metrotown, downtown Vancouver, and the Highway 1 corridor between Brookswood and downtown.
+3. Polish still open: buildings inside the fort and the Big House are modern houses; the Port Mann deck has no overhead structure beyond the masts; overpasses on Highway 1 are flat; the trailer has no music.
+4. Toward 2.0: one menu that reaches every area, and the save that crosses maps carried into play.html too.
 
 ## Restart prompt
 ```
