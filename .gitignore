@@ -24,3 +24,4 @@ apps/desktop-native/src-tauri/gen
 node_modules
 package.json
 package-lock.json
+tools/overture-corridor.json
