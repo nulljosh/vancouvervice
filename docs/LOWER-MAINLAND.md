@@ -15,8 +15,8 @@ We take one area to A+ before starting the next: real street names, every landma
 | 4 | Langley City | 49.1044, -122.6604 | town centre | live |
 | 5 | Fort Langley | 49.1680, -122.5790 | village | live: real footprints, photo trees, the fort's palisade, heritage false fronts on Glover Road |
 | 6 | Walnut Grove | 49.1640, -122.6400 | suburb | live: real footprints, photo trees |
-| 7 | Surrey City Centre | 49.1890, -122.8490 | downtown | next |
-| 8 | Cloverdale | 49.1050, -122.7240 | town centre | |
+| 7 | Surrey City Centre | 49.1890, -122.8490 | downtown | live: Overture footprints and roads (Overpass was down), photo facades |
+| 8 | Cloverdale | 49.1050, -122.7240 | town centre | next |
 | 9 | White Rock and South Surrey | 49.0250, -122.8030 | beach town | |
 | 10 | Burnaby, Metrotown | 49.2260, -123.0030 | downtown | |
 | 11 | New Westminster | 49.2010, -122.9120 | town centre | |
