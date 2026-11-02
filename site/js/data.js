@@ -41,6 +41,16 @@ export const STORY = [
   { title: "Ben: The Lululemon Sale", kind: "deliver", text: "Rich people stampeding for Lululemon on 4th Avenue. Grab the delivery van in the chaos and get out", pay: 750 },
   { title: "Alexandre: The Ferry", kind: "taxi", text: "That's Dmitri's truck on the Swartz Bay ferry to Victoria. Follow him when you dock and find out where he really lives", pay: 850 },
   { title: "Alexandre: Government Street", kind: "evade", text: "Coal Harbour, Government Street. That presale centre is where Dmitri moves the money on Saturday. Get inside and scope it out", pay: 950 },
+  // Ben's jobs, from Joshua's notes (docs/STORY.md, act two)
+  { title: "Ben: Springs", kind: "evade", text: "Ben fixed a garage door spring in Kerrisdale and the guy won't pay the bill. Ben got his money the hard way. Now get out in the work truck and lose the cops", pay: 600 },
+  { title: "Ben: The Manager", kind: "hit", text: "Dmitri wants a favour: the manager of the McDougal's on Granville. It will not stay a favour. Find the marked man", pay: 900 },
+  { title: "Ben: The Boys", kind: "deliver", text: "Joshua, Alex and the boys are waiting at the Kits lot. Bring a car worth racing", pay: 700 },
+  // Act three: the heist
+  { title: "All three: The Plan", kind: "taxi", text: "Dad's garage, all three of you in one room for the first time. Mom brings sandwiches and pretends not to hear anything. Go pick up the crew", pay: 800 },
+  { title: "Joshua: Sarah's Interview", kind: "taxi", text: "Sarah is the best hacker in the city and she said no. Then she said: drive me to my job interview in Burnaby, on time, no cops. Pick her up", pay: 900 },
+  { title: "All three: The Score", kind: "deliver", text: "Saturday. The armoured truck leaves the Coal Harbour presale centre. Take it and bring it to the beacon. Mom is calling. Do not pick up", pay: 2500 },
+  { title: "Joshua: The Getaway", kind: "evade", text: "Every cop in the city is on you. Dad's boat is waiting under the bridge. Lose them and get to the water. He will ask about the hard drive", pay: 3000 },
+  { title: "Joshua: Waterfront", kind: "deliver", text: "Dmitri is waiting at the Waterfront for his forty grand. Bring him the car with the money, or drive straight past him to family dinner. Either way, Dad gets his hard drive back", pay: 5000 },
 ];
 export const SKIN = [0xf1c9a5, 0xd9a680, 0xb67b53, 0x8d5a3b, 0x5c3a24];
 export const HAIR = [0x1c140f, 0x3b2616, 0x6b4a2b, 0xb58a4c, 0x8f8f8f];

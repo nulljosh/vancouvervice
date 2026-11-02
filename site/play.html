@@ -247,6 +247,8 @@ function geeseTick(dt) {
   if (GEESE.length && GEESE.every(g => g.hp <= 0)) { GEESE.length = 0; geeseT = 40; G.score += 25; toast("You beat the geese. +$25 and your dignity"); gainXP(15); }
 }
 function startMission(n) {
+  // The story is done: the city opens up and random jobs keep coming.
+  if (n === STORY.length && !restoring) card("Vancouver is yours", "Dmitri is handled, the hard drive is home and Dad stopped asking. Jobs keep coming: follow the beacon, or go find trouble.");
   const story = STORY[n], kind = story ? story.kind : MISSIONS[n % MISSIONS.length]; mission = { n, kind, stage: 0 };
   if (kind === "deliver") { newTarget(); mission.text = "Deliver a car to the beacon"; }
   if (kind === "taxi") { G.target = roadPoint(); while (dist(G.target, G.player) < 500) G.target = roadPoint(); mission.text = "Taxi: pick up the fare at the beacon (in a car)"; }
