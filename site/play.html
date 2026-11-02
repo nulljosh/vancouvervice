@@ -525,12 +525,16 @@ const FACADE = {};
 function facade(kind, v) {
   const key = kind + v; if (FACADE[key]) return FACADE[key];
   const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"), rnd = (i => () => (i = (i * 16807) % 2147483647) / 2147483647)(v * 7919 + kind.length * 104729 + 1);
-  const pal = { glass: ["#4c7d86", "#5a8f96", "#3f6f7c"], brick: ["#7d3f2c", "#8a4a32", "#6f3a2a"], concrete: ["#cdc4b2", "#bdb6a6", "#d8d1c0"], shop: ["#2f3439", "#3a3f44", "#2a2e33"] }[kind];
+  const pal = { glass: ["#4c7d86", "#5a8f96", "#3f6f7c"], brick: ["#7d3f2c", "#8a4a32", "#6f3a2a"], concrete: ["#cdc4b2", "#bdb6a6", "#d8d1c0"], shop: ["#2f3439", "#3a3f44", "#2a2e33"], siding: ["#f4f1ea", "#efeae0", "#f7f4ee"], stone: ["#cbbf9f", "#bfb291", "#d4c9ad"] }[kind];
   x.fillStyle = pal[v % 3]; x.fillRect(0, 0, 256, 256);
   if (kind === "glass") { for (let f = 0; f < 4; f++) for (let w = 0; w < 8; w++) { x.fillStyle = rnd() < .08 ? "#f6d79a" : `rgba(${rnd() < .5 ? "20,40,48" : "180,215,220"},${.15 + rnd() * .25})`; x.fillRect(w * 32 + 1, f * 64 + 4, 30, 56); }
     x.fillStyle = "rgba(235,240,240,.75)"; for (let f = 0; f < 4; f++) x.fillRect(0, f * 64, 256, 4); }
   else if (kind === "brick") { for (let i = 0; i < 1800; i++) { x.fillStyle = `rgba(0,0,0,${rnd() * .12})`; x.fillRect(rnd() * 256, rnd() * 256, 6, 2); }
     for (let f = 0; f < 4; f++) for (let w = 0; w < 4; w++) { x.fillStyle = "#e8e0d0"; x.fillRect(w * 64 + 14, f * 64 + 50, 36, 4); x.fillStyle = rnd() < .12 ? "#f2cf8a" : "#23262b"; x.fillRect(w * 64 + 16, f * 64 + 12, 32, 38); } }
+  else if (kind === "siding") { x.fillStyle = "rgba(0,0,0,.10)"; for (let y = 0; y < 256; y += 8) x.fillRect(0, y, 256, 1.5); // lap siding, tinted per house by the material colour
+    for (let f = 0; f < 2; f++) for (let w = 0; w < 2; w++) { x.fillStyle = "#fbfaf6"; x.fillRect(w * 128 + 30, f * 128 + 26, 68, 80); x.fillStyle = rnd() < .2 ? "#f2cf8a" : "#2a3440"; x.fillRect(w * 128 + 36, f * 128 + 32, 56, 68); x.fillStyle = "#fbfaf6"; x.fillRect(w * 128 + 62, f * 128 + 32, 4, 68); } }
+  else if (kind === "stone") { x.strokeStyle = "rgba(60,50,30,.22)"; x.lineWidth = 1.5; for (let y = 0; y < 256; y += 16) { x.beginPath(); x.moveTo(0, y); x.lineTo(256, y); x.stroke(); for (let xx = (y / 16 % 2) * 24; xx < 256; xx += 48) { x.beginPath(); x.moveTo(xx, y); x.lineTo(xx, y + 16); x.stroke(); } }
+    for (let f = 0; f < 4; f++) for (let w = 0; w < 4; w++) { const wx = w * 64 + 18, wy = f * 64 + 14; x.fillStyle = "#e9e2cf"; x.beginPath(); x.arc(wx + 14, wy + 12, 17, Math.PI, 0); x.fillRect(wx - 3, wy + 12, 34, 34); x.fill(); x.fillStyle = rnd() < .14 ? "#f2cf8a" : "#24272c"; x.beginPath(); x.arc(wx + 14, wy + 12, 13, Math.PI, 0); x.fillRect(wx + 1, wy + 12, 26, 30); x.fill(); } }
   else if (kind === "concrete") { for (let f = 0; f < 4; f++) for (let w = 0; w < 4; w++) { x.fillStyle = rnd() < .1 ? "#f2d79a" : "#2c3a46"; x.fillRect(w * 64 + 8, f * 64 + 14, 48, 34); } }
   else { const aw = ["#c0392b", "#2e6fa8", "#e0a526", "#2e8b57", "#222"]; for (let w = 0; w < 4; w++) { x.fillStyle = "#e9dcc0"; x.fillRect(w * 64 + 6, 96, 52, 140); x.fillStyle = aw[(w + v) % 5]; x.fillRect(w * 64 + 2, 80, 60, 14); }
     for (let w = 0; w < 4; w++) { x.fillStyle = "#23262b"; x.fillRect(w * 64 + 10, 14, 44, 36); } }
@@ -552,6 +556,7 @@ function groundTex(base, speck, joints) {
 }
 const ASPHALT = new THREE.MeshStandardMaterial({ map: groundTex("#3a3b3e", "255,255,255", false), roughness: .92 }); ASPHALT.map.repeat.set(4, 4);
 const SIDEWALK = new THREE.MeshStandardMaterial({ map: groundTex("#a3a29c", "40,40,40", true), roughness: .9 }); SIDEWALK.map.repeat.set(5, 5);
+const GRASS = new THREE.MeshStandardMaterial({ map: groundTex("#3f6a33", "18,36,8", false), roughness: .95 }); GRASS.map.repeat.set(6, 6); // park and lawns: mottled, not one flat green
 function sandTex() {
   const c = document.createElement("canvas"); c.width = c.height = 512; const x = c.getContext("2d"); x.fillStyle = "#d9c79c"; x.fillRect(0, 0, 512, 512);
   for (let i = 0; i < 26000; i++) { const v = 170 + Math.random() * 60 | 0; x.fillStyle = `rgba(${v},${v - 18},${v - 50},${Math.random() * .5})`; x.fillRect(Math.random() * 512, Math.random() * 512, 1 + Math.random() * 2, 1 + Math.random() * 2); }
@@ -574,13 +579,40 @@ function beach(bx, by, cx, cz) {
   for (let i = 0; i < 6; i++) { const tw = new THREE.Mesh(new THREE.PlaneGeometry(10, 20), mat(towelC[i % 5])); tw.rotation.x = -Math.PI / 2; tw.rotation.z = rnd(i + 20) * .6; tw.position.set(cx - 90 + rnd(i + 30) * 180, .5, cz + 40 + rnd(i + 40) * 70); scene.add(tw);
     if (i % 2 === 0) { const um = new THREE.Group(), pole = new THREE.Mesh(new THREE.CylinderGeometry(.4, .4, 24, 8), mat(0xeeeeee)), top = new THREE.Mesh(new THREE.ConeGeometry(14, 5, 32, 1, true), new THREE.MeshStandardMaterial({ color: towelC[(i + 2) % 5], side: THREE.DoubleSide })); pole.position.y = 12; top.position.y = 24; top.castShadow = true; um.add(pole, top); um.position.set(tw.position.x + 6, 0, tw.position.z - 4); scene.add(um); } }
 }
+// Kitsilano: four lots a block, two-storey houses with hip roofs, painted siding, a front yard, a hedge, a tree
+const FIRS = [];
+const SIDING = [0xe9e2d0, 0x8fa7a0, 0x5d6f7e, 0xd9c7a3, 0xb85c47, 0xf2efe8, 0x6b7f5e, 0x3f4a56];
+function kitsBlock(bx, by, w) {
+  const g = new THREE.Group(), lot = w / 2;
+  for (let i = 0; i < 4; i++) {
+    const hsh = (bx * 13 + by * 7 + i * 5) % 8, lx = (i % 2 - .5) * lot, lz = (Math.floor(i / 2) - .5) * lot, hw = lot * .62, hh = 34 + (hsh % 3) * 8;
+    const house = boxM(hw, hh, hw * .9, faceMat("siding", hsh % 3, hw, hh)); house.material = house.material.clone(); house.material.color = new THREE.Color(SIDING[hsh]).lerp(new THREE.Color(0xffffff), .15);
+    house.position.set(lx, hh / 2, lz - 6); g.add(house);
+    const roof = new THREE.Mesh(new THREE.CylinderGeometry(0, hw * .8, 20, 4, 1), mat(hsh % 2 ? 0x3a3d42 : 0x5b3a2e)); roof.rotation.y = Math.PI / 4; roof.position.set(lx, hh + 10, lz - 6); roof.castShadow = true; g.add(roof);
+    const porch = boxM(hw * .5, 3, 10, mat(0xd8d2c4)); porch.position.set(lx, 1.5, lz - 6 + hw * .45 + 5); g.add(porch);
+    const lawn = new THREE.Mesh(new THREE.PlaneGeometry(lot - 6, lot - 6), GRASS); lawn.rotation.x = -Math.PI / 2; lawn.position.set(lx, 4.3, lz); lawn.receiveShadow = true; g.add(lawn);
+    const hedge = new THREE.Mesh(new THREE.CapsuleGeometry(4, lot - 18, 8, 16), mat(0x2f5b2a)); hedge.rotation.z = Math.PI / 2; hedge.position.set(lx, 8, lz + lot / 2 - 6); hedge.castShadow = true; g.add(hedge);
+  }
+  return g;
+}
+// Victoria: three to five storeys of 1890s masonry, stone and red brick, a cornice on every roofline, no glass towers
+function victoriaBlock(bx, by, w) {
+  const g = new THREE.Group(), n2 = 2;
+  for (let i = 0; i < n2; i++) {
+    const hsh = (bx * 11 + by * 17 + i * 3) % 5, bw = w / n2 - 4, bh = 46 + hsh * 9, stone = hsh % 2 === 0;
+    const b = boxM(bw, bh, w, faceMat(stone ? "stone" : "brick", hsh % 3, bw, bh)); b.position.set((i - (n2 - 1) / 2) * (w / n2), bh / 2, 0); g.add(b);
+    const cornice = boxM(bw + 6, 5, w + 6, mat(stone ? 0xcfc6b0 : 0x6a3a28)); cornice.position.set(b.position.x, bh + 2.5, 0); g.add(cornice);
+    const sill = boxM(bw + 2, 3, w + 2, mat(0xbdb39c)); sill.position.set(b.position.x, 16, 0); g.add(sill);
+  }
+  return g;
+}
 vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   if (k === "W") return;
   const cx = (bx + .5) * block, cz = (by + .5) * block;
-  plane(block, block, k === "P" ? 0x2e6b33 : ASPHALT, cx, cz, 0);
+  plane(block, block, k === "P" ? GRASS : ASPHALT, cx, cz, 0);
   if (k === "Y") { beach(bx, by, cx, cz); return; }
-  if (k === "P") { for (let t = 0; t < 6; t++) { const tr = new THREE.Group(), trunk = new THREE.Mesh(new THREE.CylinderGeometry(3, 4, 40, 16), mat(0x5a3d25)), top = new THREE.Mesh(new THREE.IcosahedronGeometry(26, 4), mat(0x1f5a2a)); trunk.position.y = 20; top.position.y = 55; top.scale.y = 1.3; top.castShadow = trunk.castShadow = true; tr.add(trunk, top); tr.position.set(cx - 100 + t * 41 % 200, 0, cz - 90 + t * 67 % 180); scene.add(tr); } return; }
-  plane(block, 2, 0xe6bf33, cx, cz - block / 2 + road / 2, .2); plane(2, block, 0xe6bf33, cx - block / 2 + road / 2, cz, .2);
+  if (k === "P") { for (let t = 0; t < 16; t++) { const r1 = ((bx * 73 + by * 151 + t * 977) % 1000) / 1000, r2 = ((bx * 37 + by * 89 + t * 613) % 1000) / 1000, x = cx - 118 + r1 * 236, z = cz - 118 + r2 * 236; if (Math.abs(z - cz) < 30 || Math.abs(x - cx) < 22 || Math.abs(x - bx * block - 40) < 34 || Math.abs(z - by * block - 40) < 34) continue; FIRS.push([x, z, .8 + ((t * 31) % 10) / 20]); } return; } // a trail runs east-west through each park block
+  if (by < 10) { plane(block, 2, 0xe6bf33, cx, cz - block / 2 + road / 2, .2); plane(2, block, 0xe6bf33, cx - block / 2 + road / 2, cz, .2); } // Kits and Victoria streets have no centre line
   if (k === "R") { if (by < 2) for (const s of [-60, 60]) { const t = boxM(10, 160, 10, 0x2d6e3e); t.position.set(cx + s, 80, cz); scene.add(t); } return; }
   const lx = cx + road / 2, lz = cz + road / 2, w = block - road - 20;
   { const curb = boxM(block - road, 4, block - road, SIDEWALK); curb.position.set(lx, 2, lz); scene.add(curb); }
@@ -629,6 +661,8 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
       for (let br = 0; br < 5; br++) { const b2 = new THREE.Mesh(new THREE.CylinderGeometry(.4, .7, 18, 6), mat(0x6b5a4a)); b2.position.set(tx + Math.cos(br * 1.3) * 5, 40, gd / 2 + 40 + Math.sin(br * 1.3) * 5); b2.rotation.set(Math.sin(br * 1.3) * .6, 0, -Math.cos(br * 1.3) * .6); n.add(b2); } }
     const lobbyLight = new THREE.PointLight(0xfff0d8, 600, 220, 2); lobbyLight.position.set(0, 80, 0); n.add(lobbyLight); }
   else if (k === "L") { n = boxM(w, 50, w * .6, 0xccbf99); n.position.y = 25; const d = new THREE.Mesh(new THREE.SphereGeometry(30, 64, 32), mat(0x669980)); d.position.y = 35; n.add(d); }
+  else if (by >= 10 && by < 14) n = kitsBlock(bx, by, w);
+  else if (by >= 14) n = victoriaBlock(bx, by, w);
   else {
     const hash = (bx * 37 + by * 91) % 7, core = by >= 3 && by <= 7 && bx >= 6 && bx <= 12, h = 80 + hash * 60 + (core ? 200 : 0), v = (bx * 7 + by) % 3;
     const brick = (by <= 4 && bx >= 11) || (by >= 7 && by <= 8 && bx >= 9 && bx <= 12), office = !brick && (bx + by) % 3 === 0;
@@ -641,8 +675,13 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   }
   n.position.x = lx; n.position.z = lz; scene.add(n);
 }));
-{ // zebra crosswalks on every side of every city intersection, one instanced mesh
-  const zs = []; vanMap.forEach((row, by) => [...row].forEach((k, bx) => { if (k !== "B") return; const x0 = bx * block, z0 = by * block;
+{ // Stanley Park firs: trunk and three tiers of needles, instanced, smooth cones
+  const n = FIRS.length, trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.6, 2.6, 30, 12), mat(0x4a3424), n), tiers = [[22, 46, 34], [17, 40, 58], [11, 32, 80]].map(([r, h]) => new THREE.InstancedMesh(new THREE.ConeGeometry(r, h, 48), new THREE.MeshStandardMaterial({ color: 0x1d4a2a, roughness: .9 }), n)), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
+  FIRS.forEach(([x, z, k], i) => { m4.compose(new THREE.Vector3(x, 15 * k, z), q, sc.set(k, k, k)); trunk.setMatrixAt(i, m4); [[30, 46, 34], [23, 40, 58], [15, 32, 80]].forEach(([, , y], j) => { m4.compose(new THREE.Vector3(x, y * k, z), q, sc.set(k, k, k)); tiers[j].setMatrixAt(i, m4); }); });
+  for (const m of [trunk, ...tiers]) { m.castShadow = true; m.receiveShadow = true; scene.add(m); }
+}
+{ // zebra crosswalks downtown only (residential corners in Kits and Victoria don't have them)
+  const zs = []; vanMap.forEach((row, by) => [...row].forEach((k, bx) => { if (k !== "B" || by >= 10) return; const x0 = bx * block, z0 = by * block;
     for (let i = 0; i < 8; i++) { const o = 8 + i * 9; zs.push([x0 + o, z0 - 8, 0], [x0 + o, z0 + road + 8, 0], [x0 - 8, z0 + o, 1], [x0 + road + 8, z0 + o, 1]); } }));
   const zebra = new THREE.InstancedMesh(new THREE.PlaneGeometry(5, 14), new THREE.MeshStandardMaterial({ color: 0xeeeeea, roughness: .7 }), zs.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler();
   zs.forEach(([x, z, rot], i) => { q.setFromEuler(e.set(-Math.PI / 2, 0, rot ? Math.PI / 2 : 0)); m4.compose(new THREE.Vector3(x, .25, z), q, new THREE.Vector3(1, 1, 1)); zebra.setMatrixAt(i, m4); });
