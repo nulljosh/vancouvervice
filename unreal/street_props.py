@@ -16,9 +16,21 @@ def ism(label, mesh, items, yaw_off=0.0, zoff=Z, scale=lambda it: 1.0):
         s = scale(it); ts.append(unreal.Transform(unreal.Vector(it[0] * 100, it[1] * 100, zoff), unreal.Rotator(roll=0, pitch=0, yaw=it[2] + yaw_off), unreal.Vector(s, s, s)))
     c.add_instances(ts, False, True); return len(ts)
 base = "/Game/VancouverVice/Props/"
-sed = [c for c in P["car"] if not c[3]]; fer = [c for c in P["car"] if c[3]]
-n = ism("Street_Sedans", M(base + "sedan/sedan/StaticMeshes/sedan"), sed)
-n += ism("Street_Cars", M(base + "ferrari/ferrari/StaticMeshes/ferrari"), fer, yaw_off=90)
+PAINT = {"white": (2.3, 2.3, 2.2), "black": (.12, .12, .13), "silver": (1.4, 1.45, 1.5), "navy": (.2, .35, .95), "red": (1.7, .12, .12), "green": (.25, .65, .35), "beige": (1.9, 1.6, 1.1)}  # multipliers on the grey paint texture
+MEL = unreal.MaterialEditingLibrary
+def paint(src, name, rgb):  # a copy of the car's paint material in this colour, made once
+    path = base + "Paint/" + name
+    mi = unreal.load_asset(path) if unreal.EditorAssetLibrary.does_asset_exist(path) else unreal.EditorAssetLibrary.duplicate_asset(src.get_path_name().split(".")[0], path)
+    MEL.set_material_instance_vector_parameter_value(mi, "BaseColorFactor", unreal.LinearColor(*rgb, 1)); unreal.EditorAssetLibrary.save_loaded_asset(mi); return mi
+sedan, fer = M(base + "sedan/sedan/StaticMeshes/sedan"), M(base + "ferrari/ferrari/StaticMeshes/ferrari")
+n = 0
+for i, (k, rgb) in enumerate(PAINT.items()):  # cars take colours in turn, one instanced actor per colour
+    for mesh, slot, sel, off, tag in [(sedan, 0, lambda c: not c[3], 0, "Sedans"), (fer, 1, lambda c: c[3], 90, "Cars")]:
+        cars = [c for j, c in enumerate(P["car"]) if sel(c) and j % len(PAINT) == i]
+        if not cars: continue
+        n += ism("Street_%s_%s" % (tag, k), mesh, cars, yaw_off=off)
+        a = [x for x in EAS.get_all_level_actors() if x.get_actor_label() == "Street_%s_%s" % (tag, k)][0]
+        a.get_component_by_class(unreal.InstancedStaticMeshComponent).set_material(slot, paint(mesh.static_materials[slot].material_interface, "%s_%s" % (tag, k), rgb))
 for part in ["pole", "arm", "head"]: n += ism("Street_Lamp_" + part, M(base + "lamp/lamp/StaticMeshes/" + part), P["lamp"])
 n += ism("Street_Trees", M(base + "tree/tree/StaticMeshes/tree"), P["tree"], scale=lambda it: it[3])
 print("instances", n)
