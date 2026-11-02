@@ -505,7 +505,7 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
 { // street trees along the sidewalks, two instanced meshes for the whole city
   const spots = []; vanMap.forEach((row, by) => [...row].forEach((k, bx) => { if (!/[B]/.test(k)) return; const x0 = bx * block + road, z0 = by * block + road, L = block - road;
     for (let t = 20; t < L - 10; t += 55) spots.push([x0 + t, z0 + 6], [x0 + 6, z0 + t]); }));
-  const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2, 1.6, 22, 8), mat(0x5a3d25), spots.length), crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(11, 4), new THREE.MeshStandardMaterial({ color: 0x2f6b35, roughness: .85 }), spots.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
+  const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2, 1.6, 22, 8), mat(0x5a3d25), spots.length), crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(11, 2), new THREE.MeshStandardMaterial({ color: 0x2f6b35, roughness: .85, flatShading: false }), spots.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
   spots.forEach(([x, z], i) => { const k = .8 + ((x * 13 + z * 7) % 10) / 25; m4.compose(new THREE.Vector3(x, 11 + 4, z), q, sc.set(1, k, 1)); trunk.setMatrixAt(i, m4); m4.compose(new THREE.Vector3(x, 30 * k + 4, z), q, sc.set(k, k * 1.15, k)); crown.setMatrixAt(i, m4); });
   trunk.castShadow = crown.castShadow = true; crown.receiveShadow = true; scene.add(trunk, crown);
 }
@@ -579,8 +579,8 @@ let hero = person(0xe8b21a); { const hood = new THREE.Mesh(new THREE.SphereGeome
   const trig = new THREE.Mesh(new THREE.BoxGeometry(.06, .28, .08), metal); trig.position.set(.05, -.2, 0);
   const sight = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, .1), metal); sight.position.set(1.4, .77, 0);
   g.add(slide, frame, barrel, grip, guard, trig, sight); g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g; })(); gun.position.set(7, 14, 4); hero.add(gun);
-function carMesh(c) {
-  if (FERRARI && c.kind === 3) {
+function carMesh(c, i = 0) {
+  if (FERRARI && (c.kind === 3 || (c.kind === 0 && !TOUCH && i % 3 === 0))) { // ponytail: every third everyday car gets the real model, the rest stay light boxes to hold 60 fps; phones keep boxes
     const n = new THREE.Group(), car = FERRARI.clone(true); car.scale.setScalar(9.2); car.rotation.y = Math.PI / 2; car.position.y = -8;
     const col = c.cop ? 0x1a2a6c : c.kind === 1 ? 0xf2c21b : c.color; car.traverse(o => { if (o.isMesh) { o.castShadow = true; if (o.name === "body" || o.material?.name === "body") o.material = paint(col); } });
     const body = car.getObjectByName("body"); if (body) body.material = paint(col);
