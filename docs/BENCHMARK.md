@@ -16,3 +16,6 @@ Graphics numbers for every visual change, so a better-looking city never quietly
 | Date | Build | Village | 40 Ave | Duplex | Church | Chevron | School | Back field | Baker view | Air |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 2026-11-02 08:55 | real footprints, photo trees, landmarks | 54 / 33.4 / 2327 / 16373 | 60 / 16.7 / 215 / 1680 | 60 / 16.7 / 153 / 1322 | 43 / 33.4 / 3202 / 21588 | 34 / 33.4 / 4361 / 28770 | 60 / 16.8 / 141 / 1668 | 60 / 16.8 / 2155 / 13525 | 37 / 33.4 / 3744 / 25005 | 60 / 16.7 / 2013 / 12567 |
+| 2026-11-02 10:20 | sign atlas, instanced traffic, walkers | 60 / 16.7 / 168 / 3653 | 60 / 16.7 / 247 / 4012 | 60 / 16.7 / 170 / 3653 | 60 / 16.7 / 170 / 3824 | 60 / 16.7 / 250 / 3826 | 60 / 16.7 / 200 / 2979 | 60 / 16.7 / 199 / 2729 | 60 / 16.8 / 256 / 4012 | 60 / 16.7 / 253 / 4012 |
+
+Every street-name blade now shares one texture atlas and one mesh, posts are instanced, and the traffic sedans are instanced per part with a colour per car. Draw calls fell from up to 4,361 to about 250, and every spot holds 60.

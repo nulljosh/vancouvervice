@@ -279,21 +279,26 @@ function nameTex(n) {
 const poleMat = new THREE.MeshStandardMaterial({ color: 0x5a5e62, metalness: .6, roughness: .4 }), poleGeo = new THREE.CylinderGeometry(.06, .07, 3.4, 12);
 const bladeGeo = new THREE.PlaneGeometry(1.5, .28);
 const lampPoles = [], signals = [];
-let signs = 0;
+let signs = 0; const postPts = [], blades = [];
 for (const nd of nodes.values()) {
   if (nd.roads.size < 2) continue;
   const rs = [...nd.roads.values()].slice(0, 2), wmax = Math.max(...rs.map(r => r.w));
   const px = nd.x + wmax * .6 + 1, pz = nd.z + wmax * .6 + 1; if (solid(px, pz)) continue;
-  const post = new THREE.Mesh(poleGeo, poleMat); post.position.set(px, 1.7, pz); scene.add(post);
+  postPts.push([px, pz]);
   rs.forEach((r, i) => {
     const j = r.p.findIndex(([x, z]) => Math.abs(x - nd.x) < 1 && Math.abs(z - nd.z) < 1), a2 = r.p[Math.min(j + 1, r.p.length - 1)], a1 = r.p[Math.max(j - 1, 0)];
-    const ang = Math.atan2(a2[1] - a1[1], a2[0] - a1[0]);
-    const blade = new THREE.Mesh(bladeGeo, new THREE.MeshStandardMaterial({ map: nameTex(r.n), side: THREE.DoubleSide, roughness: .5 }));
-    blade.position.set(px, 3.25 + i * .3, pz); blade.rotation.y = -ang; scene.add(blade);
+    blades.push([r.n, px, 3.25 + i * .3, pz, Math.atan2(a2[1] - a1[1], a2[0] - a1[0])]);
   });
   signs++;
   if (rs.every(r => r.w >= 10)) signals.push([nd.x - wmax * .6 - 1, nd.z - wmax * .6 - 1]);
 }
+if (blades.length) { const names = [...new Set(blades.map(b => b[0]))], cols = 8, rows = Math.ceil(names.length / cols), c = document.createElement("canvas"); c.width = 512 * cols; c.height = 96 * rows; const x = c.getContext("2d");
+  names.forEach((n, k) => x.drawImage(nameTex(n).image, (k % cols) * 512, Math.floor(k / cols) * 96)); signTex.forEach(t => t.dispose());
+  const t = new THREE.CanvasTexture(c); t.anisotropy = 8; t.colorSpace = THREE.SRGBColorSpace; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), Y = new THREE.Vector3(0, 1, 0), one = new THREE.Vector3(1, 1, 1);
+  const gs = blades.map(([n, bx, by, bz, ang]) => { const g = bladeGeo.clone(), k = names.indexOf(n), u0 = (k % cols) / cols, v1 = 1 - Math.floor(k / cols) / rows, uv = g.attributes.uv;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) / cols, v1 - (1 - uv.getY(i)) / rows); return g.applyMatrix4(m4.compose(new THREE.Vector3(bx, by, bz), q.setFromAxisAngle(Y, -ang), one)); });
+  scene.add(new THREE.Mesh(mergeGeometries(gs), new THREE.MeshStandardMaterial({ map: t, side: THREE.DoubleSide, roughness: .5 })));
+  const posts = new THREE.InstancedMesh(poleGeo, poleMat, postPts.length); postPts.forEach(([px, pz], i) => posts.setMatrixAt(i, m4.makeTranslation(px, 1.7, pz))); scene.add(posts); }
 // traffic signals: pole, arm, three lights; instanced so hundreds cost nothing
 if (signals.length) {
   const arm = new THREE.InstancedMesh(new THREE.BoxGeometry(4, .12, .12), poleMat, signals.length), sp = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .12, 5, 12), poleMat, signals.length);
@@ -522,11 +527,16 @@ function recycle(c) { const pool = busy(); if (!pool.length) return; const l = p
 const busy = () => { const near = lanes.filter(l => l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 900)); return near.flatMap(l => FAST.test(l.r.k) ? [l, l, l, l, l, l] : l.r.w >= 12 ? [l, l, l, l] : [l]); };
 gl.load("models/vehicles/sedan.glb", g => {
   const src = g.scene; src.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(src), sz = bb.getSize(new THREE.Vector3()), k = 4.8 / Math.max(sz.x, sz.z), long = sz.x >= sz.z; // nose along +x, 4.8 m long, wheels on the road
-  if (S.carKind.kind === "sedan") { const c = src.clone(true), col = new THREE.Color(S.carKind.color ?? 0xa8adb3); c.scale.setScalar(k); c.rotation.y = long ? Math.PI : -Math.PI / 2; c.position.y = -bb.min.y * k; c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.material = o.material.clone(); if (o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(col, .75); } }); carG.clear(); carG.add(c); }
-  const pool = busy(); for (let i = 0; i < Math.min(HIGHWAY ? 140 : 90, pool.length * 2); i++) { const l = pool[Math.floor(Math.random() * pool.length)], c = src.clone(true), col = new THREE.Color(CAR_COLORS[i % CAR_COLORS.length]);
-    c.scale.setScalar(k); c.rotation.y = long ? Math.PI : -Math.PI / 2; c.position.y = -bb.min.y * k; c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.material = o.material.clone(); if (o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(col, .75); } });
-    const grp = new THREE.Group(); grp.add(c); scene.add(grp); const car = { g: grp, color: CAR_COLORS[i % CAR_COLORS.length] }; placeCar(car, l, Math.random() * l.L); traffic.push(car); }
+  sedan = hex => { const c = src.clone(true), col = new THREE.Color(hex ?? 0xa8adb3); c.scale.setScalar(k); c.rotation.y = long ? Math.PI : -Math.PI / 2; c.position.y = -bb.min.y * k; c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.material = o.material.clone(); if (o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(col, .75); } }); return c; };
+  if (S.carKind.kind === "sedan") { carG.clear(); carG.add(sedan(S.carKind.color)); }
+  const N = Math.min(HIGHWAY ? 140 : 90, busy().length * 2), proto = sedan(0xffffff); proto.updateMatrixWorld(true);
+  proto.traverse(o => { if (!o.isMesh) return; const im = new THREE.InstancedMesh(o.geometry, o.material, N); im.castShadow = true; im.frustumCulled = false; im.local = o.matrixWorld.clone(); scene.add(im); CARPARTS.push(im); });
+  const pool = busy(); for (let i = 0; i < N; i++) { const l = pool[Math.floor(Math.random() * pool.length)], hex = CAR_COLORS[i % CAR_COLORS.length], tintC = new THREE.Color(0xffffff).lerp(new THREE.Color(hex), .75);
+    CARPARTS.forEach(im => im.setColorAt(i, tintC)); const car = { g: new THREE.Object3D(), color: hex, idx: i }; placeCar(car, l, Math.random() * l.L); traffic.push(car); }
+  CARPARTS.forEach(im => { im.material.color?.set(0xffffff); im.instanceColor.needsUpdate = true; });
 });
+const CARPARTS = [], M4 = new THREE.Matrix4(), HIDE = new THREE.Matrix4().makeScale(0, 0, 0); let sedan = null;
+function drawCar(c) { c.g.updateMatrix(); for (const im of CARPARTS) im.setMatrixAt(c.idx, c.gone ? HIDE : M4.multiplyMatrices(c.g.matrix, im.local)); }
 // people on the sidewalks: scanned Rocketbox bodies walking the real streets, each on its own side, turning back at the ends
 const walkers = [], PEOPLE = ["male_adult_01", "female_adult_01", "male_adult_03", "female_adult_03", "male_adult_05", "female_adult_05", "male_adult_07", "female_adult_07"].slice(0, navigator.webdriver ? 2 : 8);
 function placeWalker(w) { const near = lanes.filter(l => !/^(motorway|trunk)/.test(l.r.k) && !HIGHWAY && l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 220)), l = near[Math.floor(Math.random() * near.length)]; if (!l) return; w.l = l; w.d = Math.random() * l.L; w.dir = Math.random() < .5 ? 1 : -1; w.side = (l.r.w / 2 + (SUBURB && l.r.k === "residential" ? .8 : 1.6)) * (Math.random() < .5 ? 1 : -1); }
@@ -613,10 +623,10 @@ function frame(now) {
   if (window.SIG) { const ph = Math.floor(now / 1000) % 12, on = ph < 5 ? 2 : ph < 7 ? 1 : 0; SIG.forEach((l, k) => l.material.color.setHex(k === on ? [0xff3b30, 0xffc400, 0x34c759][k] : 0x222222)); }
   netTick(); copTick(dt, now); trainTick(dt); jobTick(); walkTick(dt); portal();
   for (const c of traffic) { c.d += c.v * dt * c.dir; if (c.l.r.ow && (c.d > c.l.L || c.d < 0)) { recycle(c); continue; } if (c.d > c.l.L) { c.d = c.l.L; c.dir = -1; } if (c.d < 0) { c.d = 0; c.dir = 1; } const q = laneAt(c.l, c.d, c.dir, c.side);
-    if (Math.hypot(q.x - S.p.x, q.z - S.p.y) > 1200) { recycle(c); continue; } c.g.position.set(q.x, inRoom ? -100 : 0, q.z); c.g.rotation.y = -q.a;
+    if (Math.hypot(q.x - S.p.x, q.z - S.p.y) > 1200) { recycle(c); continue; } c.g.position.set(q.x, inRoom ? -100 : 0, q.z); c.g.rotation.y = -q.a; drawCar(c);
     if (S.driving && Math.abs(S.car.v) > 12 && Math.hypot(q.x - S.p.x, q.z - S.p.y) < 3) { S.car.v *= -.3; c.v = 0; setTimeout(() => placeCar(c, c.l, c.d), 4000); P.stars = Math.max(P.stars, 1); P.starT = 20; toast("Crash! One star"); }
     if (!S.driving && !inRoom && Math.hypot(q.x - S.p.x, q.z - S.p.y) < 1.6) { P.hp -= 25; S.p.x -= Math.sin(q.a) * 2; S.p.y += Math.cos(q.a) * 2; toast("Hit by a car. Look both ways"); if (P.hp <= 0) { P.hp = 100; toast("Wasted"); } } }
-  mixer?.update(dt);
+  for (const im of CARPARTS) im.instanceMatrix.needsUpdate = true; mixer?.update(dt);
   hero.visible = !S.driving; hero.position.set(S.p.x, 0, S.p.y); hero.rotation.y = -S.a; hero.scale.setScalar(1);
   carG.position.set(S.car.p.x, 0, S.car.p.y); carG.rotation.y = -S.car.a;
   const back = inRoom ? 3.2 : S.driving ? 9 : 4.5, up = inRoom ? 2 : S.driving ? 3.2 : 2.1;
@@ -632,7 +642,7 @@ function frame(now) {
 }
 requestAnimationFrame(frame);
 if (HO?.auto) setTimeout(() => window.AUTO(), 300);
-function steal(c) { traffic.splice(traffic.indexOf(c), 1); scene.remove(c.g); carG.clear(); carG.add(c.g.children[0]); S.car.p.set(c.g.position.x, c.g.position.z); S.car.a = -c.g.rotation.y; S.car.v = 0; S.carKind = { kind: "sedan", color: c.color };
+function steal(c) { traffic.splice(traffic.indexOf(c), 1); c.gone = true; drawCar(c); carG.clear(); if (sedan) carG.add(sedan(c.color)); S.car.p.set(c.g.position.x, c.g.position.z); S.car.a = -c.g.rotation.y; S.car.v = 0; S.carKind = { kind: "sedan", color: c.color };
   S.driving = true; P.stars = Math.max(P.stars, 1); P.starT = 25; toast("Grand theft auto. The driver runs for it. One star"); }
 const toggle = () => {
   if (inRoom) { if (S.p.y > inRoom.Dp / 2 - 3) leave(); return; }

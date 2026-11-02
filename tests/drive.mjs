@@ -10,8 +10,8 @@ const t0 = Date.now(), log = (...a) => console.log(((Date.now() - t0) / 1000).to
 const ready = () => p.waitForFunction(() => window.S && !document.getElementById('load'), null, { timeout: 120000 });
 await p.goto('http://localhost:8766/city.html?area=brookswood&at=-44,160'); await p.evaluate(() => localStorage.removeItem('vv-handoff')); await ready(); await p.waitForFunction(() => traffic.length > 20, null, { timeout: 60000 });
 // a car pulls up at the corner: stop one on 200 St just ahead of him
-const where = await p.evaluate(() => { const mine = traffic.find(c => c.l.r.n === '200 Street') || traffic[0]; let bd = 1e9, best = 0;
-  for (let d = 0; d < mine.l.L; d += 2) { const q = laneAt(mine.l, d, mine.dir, mine.side); const k = Math.hypot(q.x - S.p.x, q.z - S.p.y); if (k < bd) { bd = k; best = d; } }
+const where = await p.evaluate(() => { let mine = null, bd = 1e9, best = 0; // the car whose street passes closest to him
+  for (const c of traffic) for (let d = 0; d < c.l.L; d += 2) { const q = laneAt(c.l, d, c.dir, c.side); const k = Math.hypot(q.x - S.p.x, q.z - S.p.y); if (k < bd) { bd = k; best = d; mine = c; } }
   mine.d = Math.max(0, best - 14 * mine.dir); mine.v = 0; window.MINE = mine; return [mine.l.r.n, Math.round(bd)]; });
 log('car stopped on', where); await p.waitForTimeout(2500);
 for (let i = 0; i < 60; i++) { const d = await p.evaluate(() => { const g = MINE.g.position; S.a = Math.atan2(g.z - S.p.y, g.x - S.p.x); return Math.hypot(g.x - S.p.x, g.z - S.p.y); });
