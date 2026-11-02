@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -15,6 +15,7 @@ AREAS = {
     "harrison": ((49.2972, -121.7850), (49.2935, -121.7990, 49.3085, -121.7690)),
     "brookswood": ((49.0757, -122.6688), (49.0680, -122.6840, 49.0840, -122.6420)),  # 200 St and 40 Ave, south Langley
     "fortlangley": ((49.1680, -122.5790), (49.1600, -122.5960, 49.1760, -122.5640)),  # Glover Road at Mavis Avenue, the village and the fort
+    "walnutgrove": ((49.1640, -122.6400), (49.1560, -122.6560, 49.1720, -122.6240)),  # 88 Avenue at 208 Street, Walnut Grove
 }
 
 

@@ -34,8 +34,8 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { buildHero } from "./js/hero.js";
 
 // ?area=victoria (Alexandre's turf) or kits; default downtown Vancouver
-const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley", harrison: "Harrison Hot Springs", brookswood: "Brookswood", fortlangley: "Fort Langley", corridor: "Highway 1" }[AREA] || "Vancouver";
-const SUBURB = AREA === "brookswood" || AREA === "fortlangley"; // houses on lots, pitched roofs, ditches and tall firs instead of downtown towers
+const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley", harrison: "Harrison Hot Springs", brookswood: "Brookswood", fortlangley: "Fort Langley", walnutgrove: "Walnut Grove", corridor: "Highway 1" }[AREA] || "Vancouver";
+const SUBURB = ["brookswood", "fortlangley", "walnutgrove"].includes(AREA); // houses on lots, pitched roofs, ditches and tall firs instead of downtown towers
 const D = await fetch(`data/${AREA}.json`).then(r => r.ok ? r.json() : fetch("data/vancouver.json").then(r => r.json()));
 const HIGHWAY = AREA === "corridor"; // the drive between the real-scale towns: Highway 1 and the big roads at half scale (tools/corridor.py)
 // every map shares one compass: +x east, +z south. Its origin and scale turn a spot into latitude and longitude, so a car can drive off one map and onto the next
@@ -234,7 +234,7 @@ if (houseWalls.length) { // lap siding with a window every 6 m, shingles; vertex
   mk(garageG, new THREE.MeshStandardMaterial({ map: garage, roughness: .5 })); mk(doorG, new THREE.MeshStandardMaterial({ map: door, roughness: .45 }));
   console.log("houses:", garageG.length, "garages,", doorG.length, "doors,", drivewayG.length, "driveways"); mk(drivewayG, new THREE.MeshStandardMaterial({ map: photo("sidewalk", 3), color: 0xd8d8d4, roughness: .9, side: THREE.DoubleSide })); }
 if (stripG.length) { const mk = (gs, mat) => { const m = new THREE.Mesh(mergeGeometries(gs), mat); m.castShadow = m.receiveShadow = true; scene.add(m); };
-  const strip = photo("stripmall", 1); strip.repeat.set(1 / 17.3, 1 / 5.5); const condo = photo("siding", 1); condo.repeat.set(1 / 6, 1 / 5.6);
+  const strip = photo(AREA === "fortlangley" ? "heritage" : "stripmall", 1); strip.repeat.set(AREA === "fortlangley" ? 1 / 12.1 : 1 / 17.3, 1 / 5.5); /* Fort Langley's Glover Road is 1920s wooden false fronts */ const condo = photo("siding", 1); condo.repeat.set(1 / 6, 1 / 5.6);
   mk(stripG, new THREE.MeshStandardMaterial({ map: strip, roughness: .6, side: THREE.DoubleSide })); if (condoG.length) mk(condoG, new THREE.MeshStandardMaterial({ map: condo, color: 0xe6dccb, roughness: .8, side: THREE.DoubleSide }));
   const wallTex = (f, h) => new THREE.TextureLoader().load(`materials/${f}.jpg`, t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.repeat.set(1 / (h * t.image.width / t.image.height), 1 / h); t.needsUpdate = true; });
   if (churchG.length) mk(churchG, new THREE.MeshStandardMaterial({ map: wallTex("churchwall", 4.2), roughness: .9, side: THREE.DoubleSide })); // cream stucco, tall bronze windows, wood fascia
