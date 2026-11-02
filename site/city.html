@@ -273,7 +273,8 @@ if ((D.lots || []).length) { const lotG = [], stallG = []; for (const p of D.lot
       stallG.push(ribbon([pt(v0), pt(v1)], .12, .06)); } } }
   const asph = photo("asphalt", 6); addMerged(lotG, new THREE.MeshStandardMaterial({ map: asph, color: 0x8a8a8a, roughness: .9 })); addMerged(stallG, new THREE.MeshBasicMaterial({ color: 0xe8e8e2 })); }
 const waterG = D.water.filter(p => p.length >= 3).map(p => { const s = new THREE.ShapeGeometry(new THREE.Shape(p.map(([x, z]) => new THREE.Vector2(x, -z)))); s.rotateX(-Math.PI / 2); s.translate(0, .03, 0); return s; });
-addMerged(waterG, new THREE.MeshStandardMaterial({ color: 0x1d4a6b, roughness: .1, metalness: .5 }));
+const WN = new THREE.TextureLoader().load("https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/textures/waternormals.jpg", t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / 24, 1 / 24); }); // the Fraser and the inlet ripple and catch the sky
+addMerged(waterG, new THREE.MeshStandardMaterial({ color: 0x2a5068, roughness: .08, metalness: .35, normalMap: WN, normalScale: new THREE.Vector2(.6, .6) }));
 
 // street furniture: name signs at real intersections, signals where big roads cross, lamps along arterials
 const nodes = new Map(); D.roads.forEach(r => { if (!r.n || r.k === "footway") return; for (const [x, z] of r.p) { const k = Math.round(x) + "," + Math.round(z); if (!nodes.has(k)) nodes.set(k, { x, z, roads: new Map() }); nodes.get(k).roads.set(r.n, r); } });
@@ -641,7 +642,7 @@ function frame(now) {
     if (!solidAny(nx, nz)) S.p.set(nx, nz); play(sp > 0 ? "run" : sp < 0 ? "walk" : "idle", sp);
   }
   if (window.SIG) { const ph = Math.floor(now / 1000) % 12, on = ph < 5 ? 2 : ph < 7 ? 1 : 0; SIG.forEach((l, k) => l.material.color.setHex(k === on ? [0xff3b30, 0xffc400, 0x34c759][k] : 0x222222)); }
-  netTick(); copTick(dt, now); trainTick(dt); jobTick(); walkTick(dt); portal();
+  WN.offset.set(now * 1.1e-5, now * .7e-5); netTick(); copTick(dt, now); trainTick(dt); jobTick(); walkTick(dt); portal();
   for (const c of traffic) { c.d += c.v * dt * c.dir; if (c.l.r.ow && (c.d > c.l.L || c.d < 0)) { recycle(c); continue; } if (c.d > c.l.L) { c.d = c.l.L; c.dir = -1; } if (c.d < 0) { c.d = 0; c.dir = 1; } const q = laneAt(c.l, c.d, c.dir, c.side);
     if (Math.hypot(q.x - S.p.x, q.z - S.p.y) > 1200) { recycle(c); continue; } c.g.position.set(q.x, inRoom ? -100 : 0, q.z); c.g.rotation.y = -q.a; drawCar(c);
     if (S.driving && Math.abs(S.car.v) > 12 && Math.hypot(q.x - S.p.x, q.z - S.p.y) < 3) { S.car.v *= -.3; c.v = 0; setTimeout(() => placeCar(c, c.l, c.d), 4000); P.stars = Math.max(P.stars, 1); P.starT = 20; toast("Crash! One star"); }
