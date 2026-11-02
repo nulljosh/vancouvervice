@@ -365,8 +365,8 @@ const scene = new THREE.Scene(), sky = new THREE.Color(0x9ebddb); scene.backgrou
 const cam = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 1, 6000);
 scene.environment = new THREE.PMREMGenerator(R).fromScene(new RoomEnvironment(), .04).texture;
 R.shadowMap.type = THREE.PCFSoftShadowMap;
-const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0005;
-Object.assign(sun.shadow.camera, { left: -400, right: 400, top: 400, bottom: -400, near: 10, far: 3000 }); scene.add(sun, sun.target); const amb = new THREE.AmbientLight(0xffffff, .6); scene.add(amb);
+const sun = new THREE.DirectionalLight(0xfff0d8, 1.6); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0005;
+Object.assign(sun.shadow.camera, { left: -400, right: 400, top: 400, bottom: -400, near: 10, far: 3000 }); scene.add(sun, sun.target); const amb = new THREE.HemisphereLight(0xd6e6ff, 0x6b5a48, .9); scene.add(amb);
 const mat = c => new THREE.MeshStandardMaterial({ color: c, roughness: .75 });
 const paint = c => new THREE.MeshPhysicalMaterial({ color: c, roughness: .25, metalness: .4, clearcoat: 1, clearcoatRoughness: .08 });
 const glass = new THREE.MeshPhysicalMaterial({ color: 0x0c1418, roughness: .05, metalness: .9 });
@@ -380,6 +380,23 @@ const skyDome = new Sky(); skyDome.scale.setScalar(15000); scene.add(skyDome);
 skyDome.material.uniforms.turbidity.value = 7; skyDome.material.uniforms.rayleigh.value = 1.6; skyDome.material.uniforms.mieCoefficient.value = .005; skyDome.material.uniforms.mieDirectionalG.value = .85;
 const sunDir = new THREE.Vector3();
 for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(500 + i % 3 * 150, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x405c4d)); m.scale.y = (600 + i % 4 * 180) / (500 + i % 3 * 150); m.position.set(i * 520 - 400, 0, -1500 - i % 2 * 300); scene.add(m); }
+// facades, cached per style: storey grid, a few lit windows. glass = Vancouver's teal condo towers, brick = Gastown and Yaletown, concrete = offices, shop = podium storefronts
+const FACADE = {};
+function facade(kind, v) {
+  const key = kind + v; if (FACADE[key]) return FACADE[key];
+  const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d"), rnd = (i => () => (i = (i * 16807) % 2147483647) / 2147483647)(v * 7919 + kind.length * 104729 + 1);
+  const pal = { glass: ["#4c7d86", "#5a8f96", "#3f6f7c"], brick: ["#7d3f2c", "#8a4a32", "#6f3a2a"], concrete: ["#cdc4b2", "#bdb6a6", "#d8d1c0"], shop: ["#2f3439", "#3a3f44", "#2a2e33"] }[kind];
+  x.fillStyle = pal[v % 3]; x.fillRect(0, 0, 256, 256);
+  if (kind === "glass") { for (let f = 0; f < 4; f++) for (let w = 0; w < 8; w++) { x.fillStyle = rnd() < .08 ? "#f6d79a" : `rgba(${rnd() < .5 ? "20,40,48" : "180,215,220"},${.15 + rnd() * .25})`; x.fillRect(w * 32 + 1, f * 64 + 4, 30, 56); }
+    x.fillStyle = "rgba(235,240,240,.75)"; for (let f = 0; f < 4; f++) x.fillRect(0, f * 64, 256, 4); }
+  else if (kind === "brick") { for (let i = 0; i < 1800; i++) { x.fillStyle = `rgba(0,0,0,${rnd() * .12})`; x.fillRect(rnd() * 256, rnd() * 256, 6, 2); }
+    for (let f = 0; f < 4; f++) for (let w = 0; w < 4; w++) { x.fillStyle = "#e8e0d0"; x.fillRect(w * 64 + 14, f * 64 + 50, 36, 4); x.fillStyle = rnd() < .12 ? "#f2cf8a" : "#23262b"; x.fillRect(w * 64 + 16, f * 64 + 12, 32, 38); } }
+  else if (kind === "concrete") { for (let f = 0; f < 4; f++) for (let w = 0; w < 4; w++) { x.fillStyle = rnd() < .1 ? "#f2d79a" : "#2c3a46"; x.fillRect(w * 64 + 8, f * 64 + 14, 48, 34); } }
+  else { const aw = ["#c0392b", "#2e6fa8", "#e0a526", "#2e8b57", "#222"]; for (let w = 0; w < 4; w++) { x.fillStyle = "#e9dcc0"; x.fillRect(w * 64 + 6, 96, 52, 140); x.fillStyle = aw[(w + v) % 5]; x.fillRect(w * 64 + 2, 80, 60, 14); }
+    for (let w = 0; w < 4; w++) { x.fillStyle = "#23262b"; x.fillRect(w * 64 + 10, 14, 44, 36); } }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = R.capabilities.getMaxAnisotropy(); t.colorSpace = THREE.SRGBColorSpace; return FACADE[key] = t;
+}
+const faceMat = (kind, v, wx, hy) => { const t = facade(kind, v).clone(); t.needsUpdate = true; t.repeat.set(Math.max(1, Math.round(wx / 160)), Math.max(1, hy / 160)); return new THREE.MeshStandardMaterial({ map: t, roughness: kind === "glass" ? .25 : .85, metalness: kind === "glass" ? .35 : 0 }); };
 function windows(tone) {
   const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d");
   x.fillStyle = tone; x.fillRect(0, 0, 256, 256); x.fillStyle = "#33495f";
@@ -430,12 +447,24 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   else if (k === "I") { n = new THREE.Group(); [0xc0392b, 0x2e6fa8, 0xe0a526, 0x3d8c55].forEach((c, i) => { const b = boxM(w / 2 - 8, 26, w / 2 - 8, c); b.position.set((i % 2 - .5) * w / 2, 13, (Math.floor(i / 2) - .5) * w / 2); n.add(b); }); }
   else if (k === "L") { n = boxM(w, 50, w * .6, 0xccbf99); n.position.y = 25; const d = new THREE.Mesh(new THREE.SphereGeometry(30, 64, 32), mat(0x669980)); d.position.y = 35; n.add(d); }
   else {
-    const h = 80 + (bx * 37 + by * 91) % 7 * 60 + (by >= 3 && by <= 7 && bx >= 6 && bx <= 12 ? 200 : 0), tone = .45 + (bx * 7 + by) % 5 * .09;
-    const t = windows(`rgb(${tone * 230},${tone * 255},${Math.min(255, tone * 280)})`); t.repeat.set(1, h / 40);
-    n = boxM(w, h, w, new THREE.MeshStandardMaterial({ map: t, roughness: .45, metalness: .25 })); n.position.y = h / 2; const roof = boxM(w * .5, 14, w * .5, 0x6b6b6b); roof.position.y = h / 2 + 7; n.add(roof);
+    const hash = (bx * 37 + by * 91) % 7, core = by >= 3 && by <= 7 && bx >= 6 && bx <= 12, h = 80 + hash * 60 + (core ? 200 : 0), v = (bx * 7 + by) % 3;
+    const brick = (by <= 4 && bx >= 11) || (by >= 7 && by <= 8 && bx >= 9 && bx <= 12), office = !brick && (bx + by) % 3 === 0;
+    if (brick) { const bh = 90 + hash * 14; n = boxM(w, bh, w, faceMat("brick", v, w, bh)); n.position.y = bh / 2; const cap = boxM(w + 4, 5, w + 4, 0x5a3426); cap.position.y = bh / 2 + 2; n.add(cap); }
+    else if (office) { n = boxM(w, h, w, faceMat("concrete", v, w, h)); n.position.y = h / 2; const roof = boxM(w * .5, 14, w * .5, 0x6b6b6b); roof.position.y = h / 2 + 7; n.add(roof); }
+    else { // Vancouverism: a shop podium with a slim glass tower set back on top
+      const ph = 48, tw = w * (.5 + hash % 3 * .08), th = h + 60; n = boxM(w, ph, w, faceMat("shop", v, w, 160)); n.position.y = ph / 2;
+      const tower = boxM(tw, th, tw, faceMat("glass", v, tw, th)); tower.position.set((v - 1) * 12, ph / 2 + th / 2, (1 - v) * 10); n.add(tower);
+      const crown = boxM(tw * .7, 10, tw * .7, 0x9aa7ab); crown.position.y = th / 2 + 5; tower.add(crown); }
   }
   n.position.x = lx; n.position.z = lz; scene.add(n);
 }));
+{ // street trees along the sidewalks, two instanced meshes for the whole city
+  const spots = []; vanMap.forEach((row, by) => [...row].forEach((k, bx) => { if (!/[B]/.test(k)) return; const x0 = bx * block + road, z0 = by * block + road, L = block - road;
+    for (let t = 20; t < L - 10; t += 55) spots.push([x0 + t, z0 + 6], [x0 + 6, z0 + t]); }));
+  const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2, 1.6, 22, 8), mat(0x5a3d25), spots.length), crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(11, 2), mat(0x2f6b35), spots.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
+  spots.forEach(([x, z], i) => { const k = .8 + ((x * 13 + z * 7) % 10) / 25; m4.compose(new THREE.Vector3(x, 11 + 4, z), q, sc.set(1, k, 1)); trunk.setMatrixAt(i, m4); m4.compose(new THREE.Vector3(x, 30 * k + 4, z), q, sc.set(k, k * 1.15, k)); crown.setMatrixAt(i, m4); });
+  trunk.castShadow = crown.castShadow = true; crown.receiveShadow = true; scene.add(trunk, crown);
+}
 const rainGeo = new THREE.BufferGeometry(), rainN = 2500, rp = new Float32Array(rainN * 3); for (let i = 0; i < rainN * 3; i++) rp[i] = (Math.random() - .5) * 800; rainGeo.setAttribute("position", new THREE.BufferAttribute(rp, 3));
 const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xaabbcc, size: 1.6, transparent: true, opacity: .6 })); rain.visible = false; scene.add(rain);
 const gooseMeshes = [];
@@ -575,7 +604,7 @@ function sync(now) {
   const day = (Math.sin(now / 1000 * 2 * Math.PI / 240) + 1) / 2;
   if (!RAIN.live && (RAIN.t -= 1 / 60) <= 0) { RAIN.on = !RAIN.on; RAIN.t = RAIN.on ? 45 + Math.random() * 45 : 60 + Math.random() * 90; if (RAIN.on) toast("It's raining. Of course it is."); }
   rain.visible = RAIN.on; rain.material.color.setHex(RAIN.snow ? 0xffffff : 0xaabbcc); rain.material.size = RAIN.snow ? 3 : 1.6; if (RAIN.on) { rain.position.set(G.player.x, 0, G.player.y); const a = rainGeo.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= RAIN.snow ? 2 : 9; if (a[i] < 0) a[i] += 400; } rainGeo.attributes.position.needsUpdate = true; }
-  ambient(1 / 60, day); sky.setRGB((.08 + .54 * day) * (RAIN.on ? .75 : 1), (.1 + .64 * day) * (RAIN.on ? .78 : 1), (.2 + .66 * day) * (RAIN.on ? .8 : 1)); scene.fog.far = RAIN.fog ? 700 : RAIN.on ? 1600 : 3200; scene.fog.color = sky; sun.intensity = .4 + day;
+  ambient(1 / 60, day); sky.setRGB((.08 + .54 * day) * (RAIN.on ? .75 : 1), (.1 + .64 * day) * (RAIN.on ? .78 : 1), (.2 + .66 * day) * (RAIN.on ? .8 : 1)); scene.fog.far = RAIN.fog ? 700 : RAIN.on ? 1600 : 3200; scene.fog.color = sky; sun.intensity = .5 + day * 1.4;
   sunDir.setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - (4 + day * 40)), THREE.MathUtils.degToRad(200)); skyDome.material.uniforms.sunPosition.value.copy(sunDir); ocean.material.uniforms.sunDirection.value.copy(sunDir); skyDome.position.set(G.player.x, 0, G.player.y);
   skyDome.material.uniforms.rayleigh.value = RAIN.on ? 4 : 1.6; skyDome.material.uniforms.turbidity.value = RAIN.on ? 18 : 7; scene.background = null;
   FOAM.forEach((f, i) => { f.material.opacity = .3 + Math.sin(performance.now() / 700 + i) * .25; });
