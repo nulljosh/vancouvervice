@@ -117,7 +117,7 @@ const paved = (x, z) => PAVED.some(([a, b, c, d]) => x > a && x < c && z > b && 
 const DUPLEX = [["garage", 7.6, 3.4], ["garage", 7.6, 3.4], ["entry", 5.3, 2.5]]; // west to east: two garage gables, then a lower entry gable
 const BUILT = { brookswood: [ // [centre x, z, ridge angle, width, depth, wall height, front gables [kind, width, rise] west to east]
   [1316.3, 142.2, 0, 20.5, 16, 5.6, DUPLEX], [1337.2, 142.2, 0, 20.5, 16, 5.6, DUPLEX]] }[AREA] || [];
-if (SUBURB) {
+if (SUBURB || HIGHWAY) { // the corridor's towns get the same houses and strip malls as Brookswood
   const area = p => { let a = 0; for (let i = 0, j = p.length - 1; i < p.length; j = i++) a += (p[j][0] + p[i][0]) * (p[j][1] - p[i][1]); return Math.abs(a / 2); };
   const SHOPS = /^(commercial|retail|industrial|warehouse|church|religious|school|civic|public|office|supermarket)$/;
   for (const b of D.buildings) if (b.p.length >= 3 && b.h <= 9 && area(b.p) < (D.footprints ? 650 : 320) && !SHOPS.test(b.k || "") && !(D.pois || []).some(([x, z]) => inside(b, x, z))) b.house = obb(b.p);
@@ -184,7 +184,7 @@ function houseGeo(b, n) {
 D.buildings.forEach((b, n) => {
   if (b.unit) { houseGeo(b, n); return; }
   if (b.canopy || b.p.length < 3) return;
-  if (b.hall) stripWalls(b, n, churchG); else if (b.school) stripWalls(b, n, schoolG); else if (b.house) houseGeo(b, n); else if (SUBURB) stripWalls(b, n); else {
+  if (b.hall) stripWalls(b, n, churchG); else if (b.school) stripWalls(b, n, schoolG); else if (b.house) houseGeo(b, n); else if (SUBURB || HIGHWAY) stripWalls(b, n); else {
   const shape = new THREE.Shape(b.p.map(([x, z]) => new THREE.Vector2(x, -z)));
   const band = Math.min(4.2, b.h);
   if (!heroSkip.has(n)) { const g0 = new THREE.ExtrudeGeometry(shape, { depth: band, bevelEnabled: false }); g0.rotateX(-Math.PI / 2); shopG.push(g0); }
@@ -342,6 +342,20 @@ if (HIGHWAY) { const wcell = new Map(); D.water.forEach(w => { let x0 = 1e9, x1 
 { const pts = treePts.filter(([x, z]) => !solid(x, z)); const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(.18, .26, 4, 12), new THREE.MeshStandardMaterial({ color: 0x5a4432, roughness: .9 }), pts.length);
   const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.4, 3), new THREE.MeshStandardMaterial({ color: 0x3f6f35, roughness: .85 }), pts.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
   pts.forEach(([x, z], i) => { trunk.setMatrixAt(i, m4.makeTranslation(x, 2, z)); const k = .8 + ((x * 13.7 + z * 7.1) % 1 + 1) % 1 * .6; sc.set(k, k * 1.15, k); crown.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 4.8 * k, z), q, sc)); }); trunk.castShadow = crown.castShadow = true; scene.add(trunk, crown); window.TREES = pts.length; }
+if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ map: photo("concrete", 4), color: 0xe8e6e0, roughness: .7 }), deckL = [], cab = [];
+  const pm = D.roads.filter(r => /Port Mann/.test(r.n)); if (pm.length) { const a = pm[0].p[0], b = pm[0].p.at(-1), ax = b[0] - a[0], az = b[1] - a[1], L = Math.hypot(ax, az), ux = ax / L, uz = az / L, all = pm.flatMap(r => r.p), cx = all.reduce((q, v) => q + v[0], 0) / all.length, cz = all.reduce((q, v) => q + v[1], 0) / all.length;
+    for (const t of [-.24, .24]) { const tx = cx + ux * L * t, tz = cz + uz * L * t, H = 110; // a single concrete mast in the median, tapering as it climbs
+      const g = new THREE.CylinderGeometry(1.6, 3.2, H, 4, 1); g.rotateY(Math.PI / 4); const m = new THREE.Mesh(g, conc); m.position.set(tx, H / 2, tz); m.rotation.y = -Math.atan2(uz, ux); m.castShadow = true; scene.add(m);
+      for (let s2 = -110; s2 <= 110; s2 += 11) { if (Math.abs(s2) < 8) continue; for (const sd of [1, -1]) { const k = Math.abs(s2) / 110; cab.push(tx, H * (.62 + .35 * (1 - k)), tz, tx + ux * s2 - uz * 14 * sd, 1.2, tz + uz * s2 + ux * 14 * sd); } } }
+    scene.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(cab, 3)), new THREE.LineBasicMaterial({ color: 0xf2f2ee })));
+    for (const r of pm) for (const sd of [1, -1]) deckL.push(ribbon(offsetLine(r.p, sd * (r.w / 2 + .3)), .5, 1.0)); addMerged(deckL, conc); }
+  const signs = []; let acc = 0; for (const r of D.roads) { if (!(r.ow && /Trans-Canada/.test(r.n))) continue;
+    for (let i = 1; i < r.p.length; i++) { const [ax, az] = r.p[i - 1], [bx, bz] = r.p[i], L = Math.hypot(bx - ax, bz - az); if (bx - ax > -L * .5) { acc += L; continue; } // westbound only
+      for (acc += L; acc > 1500; acc -= 1500) { const t = 1 - (acc - 1500) / L, x = ax + (bx - ax) * t, z = az + (bz - az) * t, nx = -(bz - az) / L, nz = (bx - ax) / L, [lat, lon] = toLL(x, z);
+        const km = Math.round(Math.hypot((lon + 123.1187) * 72800, (lat - 49.2833) * 110540) / 1000); if (km < 3) continue; const sg = signMesh(`1 West   Vancouver  ${km} km`, "#1f6b3a", 2.2);
+        sg.position.set(x + nx * (r.w / 2 + 3), 6, z + nz * (r.w / 2 + 3)); sg.rotation.y = Math.atan2(ax - bx, az - bz); /* faces the drivers coming at it */ scene.add(sg); signs.push([x, z]);
+        for (const o of [-1.6, 1.6]) { const post = new THREE.Mesh(poleGeo, poleMat); post.scale.y = 1.4; post.position.set(x + nx * (r.w / 2 + 3) + (bx - ax) / L * o, 2.4, z + nz * (r.w / 2 + 3) + (bz - az) / L * o); scene.add(post); } } } }
+  console.log("highway:", signs.length, "distance signs"); }
 console.log("street furniture:", signs, "signs,", signals.length, "signals,", lampPts.length, "lamps");
 
 // interiors: every named place from OSM belongs to the building it sits in; E at a wall walks you inside a room built for that kind of place
@@ -505,7 +519,7 @@ function placeCar(c, l, d) { c.l = l; c.d = d; c.dir = l.r.ow ? 1 : Math.random(
 function recycle(c) { const pool = busy(); if (!pool.length) return; const l = pool[Math.floor(Math.random() * pool.length)]; let best = 0, bd = 1e9, acc = 0; // drop it in where its street passes closest to you, a little up or down the road
   for (let i = 0; i < l.seg.length; i++) { const d = Math.hypot(l.r.p[i][0] - S.p.x, l.r.p[i][1] - S.p.y); if (d < bd) { bd = d; best = acc; } acc += l.seg[i]; } placeCar(c, l, Math.max(0, Math.min(l.L, best + (Math.random() - .5) * 600))); }
 // arterials (200 St, 40 Ave) get four times the cars of a side street
-const busy = () => { const near = lanes.filter(l => l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 900)); return near.flatMap(l => l.r.w >= 12 ? [l, l, l, l] : [l]); };
+const busy = () => { const near = lanes.filter(l => l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 900)); return near.flatMap(l => FAST.test(l.r.k) ? [l, l, l, l, l, l] : l.r.w >= 12 ? [l, l, l, l] : [l]); };
 gl.load("models/vehicles/sedan.glb", g => {
   const src = g.scene; src.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(src), sz = bb.getSize(new THREE.Vector3()), k = 4.8 / Math.max(sz.x, sz.z), long = sz.x >= sz.z; // nose along +x, 4.8 m long, wheels on the road
   if (S.carKind.kind === "sedan") { const c = src.clone(true), col = new THREE.Color(S.carKind.color ?? 0xa8adb3); c.scale.setScalar(k); c.rotation.y = long ? Math.PI : -Math.PI / 2; c.position.y = -bb.min.y * k; c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.material = o.material.clone(); if (o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(col, .75); } }); carG.clear(); carG.add(c); }
@@ -529,7 +543,7 @@ function dropArms(w) { w.g.updateMatrixWorld(true); const [f, a, b, out] = AV, [
     q.setFromUnitVectors(b, out); up.getWorldQuaternion(qb); up.parent.getWorldQuaternion(qp); up.quaternion.copy(qp.invert().multiply(q.multiply(qb))); } }
 function walkTick(dt) { for (const w of walkers) { if (!w.l) continue; w.d += w.v * dt * w.dir; if (w.d > w.l.L || w.d < 0) w.dir *= -1; w.d = Math.max(0, Math.min(w.l.L, w.d)); const q = laneAt(w.l, w.d, 1, w.side);
   if (Math.hypot(q.x - S.p.x, q.z - S.p.y) > 260) { placeWalker(w); continue; } w.g.position.set(q.x, inRoom ? -100 : 0, q.z); w.g.rotation.y = -(q.a + (w.dir < 0 ? Math.PI : 0)); w.m.update(dt * w.v / w.stride); if (Math.hypot(q.x - cam.position.x, q.z - cam.position.z) < 90) dropArms(w); } }
-gl.load(MODELS + "ferrari.glb", g => { if (S.carKind.kind === "sedan") return; const c = g.scene; c.rotation.y = Math.PI / 2; c.traverse(o => { if (o.isMesh) o.castShadow = true; }); const b = c.getObjectByName("body"); if (b) b.material = new THREE.MeshPhysicalMaterial({ color: 0xc0392b, metalness: .5, roughness: .25, clearcoat: 1 }); carG.add(c); });
+gl.load(MODELS + "ferrari.glb", g => { if (S.carKind.kind === "sedan") return; const c = g.scene; c.rotation.y = -Math.PI / 2; c.traverse(o => { if (o.isMesh) o.castShadow = true; }); const b = c.getObjectByName("body"); if (b) b.material = new THREE.MeshPhysicalMaterial({ color: 0xc0392b, metalness: .5, roughness: .25, clearcoat: 1 }); carG.add(c); });
 window.PERSON = (tintHex) => { const g = new THREE.Group(); const src = hero.children[0]; if (src) { const c = src.clone(true); if (tintHex) c.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color = new THREE.Color(0xffffff).lerp(new THREE.Color(tintHex), .7); } }); g.add(c); } return g; };
 // his own clips at the speed his feet cover: the jog (Run_02) covers 3.8 m/s at 1x, the casual walk 0.72 m/s; standing is his idle, with a weight shift now and then
 function play(n, speed = 0) { if (!mixer || !acts.idle) return; if (n === "idle" && performance.now() % 24000 > 17000) n = "idle2"; if (n !== cur) { acts[cur]?.fadeOut(.25); acts[n].reset().fadeIn(.25).play(); cur = n; }
@@ -663,7 +677,7 @@ gl.load(MODELS + "ferrari.glb", g => { copModel = g.scene; });
 function spawnCop() {
   let x, z, tries = 0; do { const a = Math.random() * 6.28, d = 120 + Math.random() * 80; x = S.p.x + Math.cos(a) * d; z = S.p.y + Math.sin(a) * d; } while (solidOut(x, z) && ++tries < 30);
   // stand-in box until ferrari.glb arrives, so heat always brings cops (slow loads left the street empty, and CI timed out)
-  const c = copModel ? copModel.clone(true) : new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.2, 1.9), new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3 })); c.rotation.y = Math.PI / 2; if (!copModel) c.position.y = .7; const bd = c.getObjectByName && c.getObjectByName("body"); if (bd) bd.material = new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3, clearcoat: 1 });
+  const c = copModel ? copModel.clone(true) : new THREE.Mesh(new THREE.BoxGeometry(4.4, 1.2, 1.9), new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3 })); c.rotation.y = -Math.PI / 2; if (!copModel) c.position.y = .7; const bd = c.getObjectByName && c.getObjectByName("body"); if (bd) bd.material = new THREE.MeshPhysicalMaterial({ color: 0x14203f, metalness: .5, roughness: .3, clearcoat: 1 });
   const bar = new THREE.Mesh(new THREE.BoxGeometry(.4, .15, 1.4), new THREE.MeshBasicMaterial({ color: 0xff0000 })); bar.position.set(0, 1.35, 0); const grp = new THREE.Group(); grp.add(c, bar); scene.add(grp);
   cops.push({ g: grp, bar, p: new THREE.Vector2(x, z), a: 0, v: 0 });
 }
