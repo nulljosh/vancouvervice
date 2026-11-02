@@ -64,7 +64,10 @@ if (SUBURB || HIGHWAY) for (const [f, th, deg] of [["mt-baker", 1.08, 9], ["mt-g
     const m = new THREE.Mesh(new THREE.CylinderGeometry(Rr, Rr, h, 64, 1, true, th - arc / 2, arc), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.BackSide, fog: false, depthWrite: false }));
     m.position.y = h / 2 - Rr * .012; m.onBeforeRender = () => { m.position.x = cam.position.x; m.position.z = cam.position.z; }; m.renderOrder = -1; m.frustumCulled = false; scene.add(m); });
   t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.repeat.x = -1; t.anisotropy = 8; }
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), SUBURB || HIGHWAY ? new THREE.MeshStandardMaterial({ map: photo("grass", 3), color: 0xd8e0c8, roughness: 1 }) : new THREE.MeshStandardMaterial({ color: 0x5d6166, roughness: .95 })); ground.geometry.attributes.uv.array.forEach((v, i, a) => a[i] = v * 8000); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground); if (HIGHWAY) ground.frustumCulled = false; if (HIGHWAY) ground.onBeforeRender = () => ground.position.set(Math.round(cam.position.x / 30) * 30, 0, Math.round(cam.position.z / 30) * 30);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), SUBURB || HIGHWAY ? new THREE.MeshStandardMaterial({ map: photo("grass", 3), color: 0xd8e0c8, roughness: 1 }) : new THREE.MeshStandardMaterial({ color: 0x5d6166, roughness: .95 })); ground.geometry.attributes.uv.array.forEach((v, i, a) => a[i] = v * 8000); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground); if (SUBURB || HIGHWAY) ground.material.onBeforeCompile = sh => { // real fields aren't one green: patches of dry grass, clover and dirt, in world space so they stay put
+  sh.vertexShader = "varying vec3 vW;\n" + sh.vertexShader.replace("#include <worldpos_vertex>", "#include <worldpos_vertex>\nvW = (modelMatrix * vec4(transformed, 1.)).xyz;");
+  sh.fragmentShader = "varying vec3 vW;\nfloat hn(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }\nfloat vn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f); return mix(mix(hn(i), hn(i + vec2(1, 0)), f.x), mix(hn(i + vec2(0, 1)), hn(i + vec2(1, 1)), f.x), f.y); }\n" +
+    sh.fragmentShader.replace("#include <map_fragment>", "#include <map_fragment>\nfloat n1 = vn(vW.xz / 90.) * .6 + vn(vW.xz / 23.) * .3 + vn(vW.xz / 6.) * .1; diffuseColor.rgb *= mix(vec3(.62, .72, .52), vec3(1.25, 1.12, .78), smoothstep(.2, .85, n1));"); }; if (HIGHWAY) ground.frustumCulled = false; if (HIGHWAY) ground.onBeforeRender = () => ground.position.set(Math.round(cam.position.x / 30) * 30, 0, Math.round(cam.position.z / 30) * 30);
 
 // facade texture: concrete, glass bands, lit windows at random
 function facade(base, glass) {
@@ -258,8 +261,8 @@ addMerged(roadG, new THREE.MeshStandardMaterial({ map: photo("asphalt", 6), colo
 addMerged(walkG, new THREE.MeshStandardMaterial({ map: photo("sidewalk", 3), roughness: .9, side: THREE.DoubleSide }));
 addMerged(paintG, new THREE.MeshBasicMaterial({ color: 0xe8c64a, side: THREE.DoubleSide })); addMerged(whiteG, new THREE.MeshBasicMaterial({ color: 0xeeeeea, side: THREE.DoubleSide }));
 addMerged(curbG, new THREE.MeshStandardMaterial({ map: photo("sidewalk", 3), roughness: .85, side: THREE.DoubleSide }));
-addMerged(gravelG, new THREE.MeshStandardMaterial({ color: 0x8c8474, roughness: 1, side: THREE.DoubleSide }));
-addMerged(ditchG, new THREE.MeshStandardMaterial({ color: 0x3f5a2e, roughness: 1, side: THREE.DoubleSide }));
+addMerged(gravelG, new THREE.MeshStandardMaterial({ map: photo("asphalt", 3), color: 0xc8bba2, roughness: 1, side: THREE.DoubleSide }));
+addMerged(ditchG, new THREE.MeshStandardMaterial({ map: photo("grass", 3), color: 0x8fa070, roughness: 1, side: THREE.DoubleSide }));
 // parks
 const parkG = D.parks.filter(p => p.length >= 3).map(p => { const s = new THREE.ShapeGeometry(new THREE.Shape(p.map(([x, z]) => new THREE.Vector2(x, -z)))); s.rotateX(-Math.PI / 2); s.translate(0, .04, 0); return s; });
 addMerged(parkG, new THREE.MeshStandardMaterial({ color: 0x3f7a3c, roughness: 1 }));
