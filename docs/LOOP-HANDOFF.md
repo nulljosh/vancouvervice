@@ -10,7 +10,7 @@ The project already has: Google 3D tiles of downtown through Cesium, the Apple S
 
 The Unreal MCP tools do not load into a session that started before the editor was up. Drive the editor with `unreal/qa.py` (file bridge) and `unreal/mcp.py` (raw HTTP on port 18000).
 
-The web game is still live at vancouvervice.jaybulb.com. Tested and deployed as 4c1ba8b. Uncommitted on top, not yet tested by web.mjs: bake() merges static models per material, a local decimated Ferrari (site/models/vehicles/ferrari.glb, 359k to 44k triangles, needs an ASSETS.md row, CC-BY vicent091036), car paint fix (Body_Color), objective card only touches the DOM on change, dead HVGirl code gone. Profiling found the skinned crowd is the real story-mode hog (hiding peds: 60 to 97 fps). Commit it after web.mjs passes on a day the editor is closed. Tag v2.0.0 once CI on 4c1ba8b is green.
+The web game is still live at vancouvervice.jaybulb.com. Tested and deployed as 4c1ba8b. Uncommitted on top, not yet tested by web.mjs: bake() merges static models per material, a local decimated Ferrari (site/models/vehicles/ferrari.glb, 359k to 44k triangles, needs an ASSETS.md row, CC-BY vicent091036), car paint fix (Body_Color), objective card only touches the DOM on change, dead HVGirl code gone. Profiling found the skinned crowd is the real story-mode hog (hiding peds: 60 to 97 fps). Commit it after web.mjs passes on a day the editor is closed. v2.0.0 is tagged on 4c1ba8b.
 
 Rules for this Mac (16 GB): one heavy thing at a time. No Playwright or WebKit runs while the editor is up. No MetaHuman builds (they crash the editor). `sh unreal/doctor.sh lean` after boot; restart the editor past about 15 GB footprint.
 
