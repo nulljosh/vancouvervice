@@ -35,6 +35,7 @@ const cell = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? null : vanMap[Math
 const ROOMS = [
   { name: "Granville Pawn", door: PAWN, out: { x: PAWN.x, y: PAWN.y - 70 }, x: -1400, y: 300, w: 170, h: 130, hello: "Granville Pawn. The counter's at the back" },
   { name: "the store on Georgia", door: { x: 7 * block + 170, y: 5 * block + 40 }, out: { x: 7 * block + 230, y: 5 * block + 40 }, x: -1400, y: 700, w: 220, h: 150, hello: "Georgia St. Every laptop on display, every employee watching" },
+  { name: "Dad's garage", door: { x: 1 * block + 170, y: 11 * block + 40 }, out: { x: 1 * block + 230, y: 11 * block + 40 }, x: -1400, y: 1100, w: 200, h: 140, hello: "Dad's garage. Smells like WD-40 and torsion springs" },
 ];
 const ROOM = ROOMS[0], inRoom = p => ROOMS.find(r => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h);
 const roomWall = (r, x, y) => x < r.x + 10 || x > r.x + r.w - 10 || y < r.y + 34 || (y > r.y + r.h - 6 && Math.abs(x - r.x - r.w / 2) > 18);
@@ -563,6 +564,34 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
     for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
   for (const lx of [-60, 0, 60]) { const l = new THREE.PointLight(0xffffff, 700, 180, 2); l.position.set(cx + lx, 60, R1.y + R1.h / 2); scene.add(l); }
   setTimeout(() => { for (const [dx, dz] of [[-80, 40], [70, 90]]) { const st = person(0x1e6fd9); st.position.set(cx + dx, 0, R1.y + dz); st.rotation.y = -Math.PI / 2; scene.add(st); } });
+}
+{ // Dad's garage: concrete floor, block walls, a sectional door on its opener rail, workbench and pegboard, spare door panels, his work truck
+  const R2 = ROOMS[2], cx = R2.x + R2.w / 2, block_ = mat(0xa9a59c), add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R2.w, R2.h), mat(0x8d8b86)); floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R2.y + R2.h / 2);
+  add(boxM(R2.w, 80, 6, block_), cx, 40, R2.y + 3); add(boxM(6, 80, R2.h, block_), R2.x + 3, 40, R2.y + R2.h / 2); add(boxM(6, 80, R2.h, block_), R2.x + R2.w - 3, 40, R2.y + R2.h / 2);
+  for (const sx of [-1, 1]) add(boxM(R2.w / 2 - 18, 80, 6, block_), cx + sx * (R2.w / 4 + 9), 40, R2.y + R2.h - 3);
+  // the back wall is one big white sectional door: four panels, raised squares, windows in the top row
+  const panel = mat(0xf1f0ec), groove = mat(0xd4d2cc);
+  for (let i = 0; i < 4; i++) { add(boxM(110, 13, 2, panel), cx, 8 + i * 14, R2.y + 7); add(boxM(110, 1, 2.4, groove), cx, 15 + i * 14, R2.y + 7);
+    for (let j = 0; j < 4; j++) add(i === 3 ? boxM(22, 7, .6, new THREE.MeshPhysicalMaterial({ color: 0x9fb8c4, roughness: .05, metalness: .2 })) : boxM(22, 8, .6, groove), cx - 39 + j * 26, 8 + i * 14, R2.y + 8.4); }
+  for (const sx of [-58, 58]) add(boxM(3, 60, 3, mat(0x6f7378)), cx + sx, 30, R2.y + 8); // tracks
+  add(boxM(4, 2, 90, mat(0x6f7378)), cx, 66, R2.y + 52); add(boxM(14, 7, 18, mat(0x3a3d42)), cx, 64, R2.y + 98); // opener rail and motor
+  add(boxM(40, 1, 1, mat(0x5a5e63)), cx, 62, R2.y + 9); // torsion spring bar
+  // workbench and pegboard on the left wall
+  add(boxM(14, 2, 70, mat(0x8a6a48)), R2.x + 14, 18, R2.y + 70); for (const dz of [-32, 32]) add(boxM(12, 18, 2, mat(0x5a4632)), R2.x + 14, 9, R2.y + 70 + dz);
+  add(boxM(1, 30, 66, mat(0xc49a6c)), R2.x + 7, 36, R2.y + 70);
+  const tools = [0xc0392b, 0x2a6fdb, 0x222428, 0xe0a526, 0x6f7378];
+  for (let k = 0; k < 10; k++) add(boxM(1.5, 6 + (k % 3) * 3, 3, mat(tools[k % 5])), R2.x + 8.5, 38 - (k % 2) * 8, R2.y + 44 + k * 6);
+  add(boxM(10, 6, 14, mat(0xc0392b)), R2.x + 14, 22, R2.y + 56); // toolbox
+  // spare panels leaning on the right wall, still in the wrap
+  for (let k = 0; k < 4; k++) { const p = add(boxM(2, 13, 90, mat(k % 2 ? 0xf1f0ec : 0xe6e4de)), R2.x + R2.w - 12 - k * 3, 7, R2.y + 60); p.rotation.z = -.12; }
+  // his work truck, nose to the door
+  const truck = new THREE.Group(), body = mat(0xeeeeec), dark = mat(0x1d1f23);
+  for (const [w, h, d, x, y, z, m] of [[34, 14, 70, 0, 12, 0, body], [32, 13, 22, 0, 25.5, -8, body], [30, 9, 1, 0, 27, -19.5, dark], [30, 1, 30, 0, 19.5, 20, mat(0x3a3d42)], [2, 8, 32, -16, 23, 20, body], [2, 8, 32, 16, 23, 20, body], [34, 8, 2, 0, 23, 35, body], [34, 3, 1, 0, 14, -35.5, dark]]) { const b = boxM(w, h, d, m); b.position.set(x, y, z); b.castShadow = true; truck.add(b); }
+  for (const [x, z] of [[-17, -22], [17, -22], [-17, 22], [17, 22]]) { const wh = new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 4, 16), dark); wh.rotation.z = Math.PI / 2; wh.position.set(x, 6, z); truck.add(wh); }
+  truck.position.set(cx + 18, 0, R2.y + 62); scene.add(truck);
+  for (const lx of [-50, 50]) { add(boxM(30, 1, 3, new THREE.MeshBasicMaterial({ color: 0xf4f8ff })), cx + lx, 74, R2.y + R2.h / 2); const l = new THREE.PointLight(0xe8f0ff, 800, 170, 2); l.position.set(cx + lx, 70, R2.y + R2.h / 2); scene.add(l); }
+  setTimeout(() => { const dad = person(0x2f4a6b); dad.position.set(R2.x + 30, 0, R2.y + 96); dad.rotation.y = Math.PI; scene.add(dad); });
 }
 const rainGeo = new THREE.BufferGeometry(), rainN = 2500, rp = new Float32Array(rainN * 3); for (let i = 0; i < rainN * 3; i++) rp[i] = (Math.random() - .5) * 800; rainGeo.setAttribute("position", new THREE.BufferAttribute(rp, 3));
 const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xaabbcc, size: 1.6, transparent: true, opacity: .6 })); rain.visible = false; scene.add(rain);
