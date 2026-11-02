@@ -15,52 +15,55 @@ You switch between them any time. Their stories cross at the heist.
 **Christine**, Joshua's mom, calls at the worst possible moments. Mid-chase, mid-heist, mid-shootout. You can pick up or let it ring, and she remembers which.
 **Sarah**, Joshua's sister, is smarter than all three heroes combined and knows it. She won't help. Then she does, and she's the best one on the job.
 
-## Act one: Joshua gets in over his head
+## Act one: forty grand by Friday (Joshua)
 
-**1. The Georgia Store.** The game starts inside the Apple Store on Georgia. Six Mac minis on the table ends and nobody's looking. Grab them; the two employees in blue shirts turn on you at the first one. Walk out with stock and they chase you onto the sidewalk while one calls the cops. *Get out of here.*
+**1. The Georgia Store.** Dmitri wants something worth a grand by tonight. The game starts inside the Apple Store on Georgia: grab the six Mac minis on the table ends, the staff in blue shirts turn on you at the first one, and walking out with stock brings a star. Jack a car and lose them.
 
-**2. Jack a car.** One star, a siren getting closer. Grab the first car at the curb.
+**2. Pawn the Mac minis.** Granville Pawn pays half what you hoped and asks how your dad's doing.
 
-**3. Lose the cops.** Stars climb when you hit things and drain when you break line of sight. Lose them past the Art Gallery.
+**3. Dmitri.** A co-working space in Gastown that has never had a co-worker. Dmitri, Patagonia vest, kombucha on tap, counts the pawn money twice. *This is interest. You owe me forty grand by Friday.* First payment: Colin at the McDonald's on Granville runs Dmitri's cash through the night deposit. Bring him the bag.
 
-**4. Pawn the Mac minis.** There's no inventory screen. A line in the corner says *Mac minis: 6*. Sell them on Granville. The pawn guy pays half what you hoped and asks where you got them.
+**4. Colin's Night Deposit.** Colin laughs until you pull a gun. Take the bag, two stars, lose them.
 
-**4a. Colin's night deposit.** Colin manages the McDonald's on Granville and brags about the night deposit to anyone who'll listen. He laughs at you until you pull a gun. Take the bag, two stars, lose them.
+**5. Club Velvet.** Your girl is at the bar with Colin, who is wearing a watch he couldn't afford last week. She's done with you. They leave in his gold car; you tail him home to Yaletown without letting him see you.
 
-**4b. Club Velvet.** Your girl is at Club Velvet on Granville, laughing at something Colin said, wearing nothing he could afford before last night. She's done with you. They leave together in his gold car and you tail him home to an underground lot in Yaletown. Now you know where Colin lives.
+**6. Heat on Hastings.** Colin gave the cops your name. Dmitri would rather they chase you than his money: pull three stars down Hastings, then shake them.
 
-Between jobs the city is free roam. The next job waits at its marker: Joshua's at the Steam Clock, Ben's at Dad's garage, Alexandre's in Victoria.
+**7. Night Shift.** Lie low driving a buddy's cab. The first fare won't stop talking about her son who never calls. It's Mom. Don't turn around.
 
-**5. The debt.** The minis were never Joshua's idea. They were a payment. He owes Dmitri, a crypto guy in a Patagonia vest who runs a fake co-working space in Gastown. Dmitri wants forty grand by Friday.
+## Act two: the crew
 
-## Act two: Ben and Alexandre
+**8. Kits Beach (Ben).** Joshua can't face his dad, so Ben asks for the boat. Brian says yes on one condition: Joshua brings back the hard drive he borrowed two years ago.
 
-**6. Kits Beach.** Switch to Ben. Joshua calls from a payphone, which Ben finds hilarious. They need a boat. Dad has one. Ben asks Dad, because Joshua can't face him. Dad says yes on one condition: Joshua brings back the hard drive.
+**9. Springs (Ben).** A garage door customer in Kerrisdale won't pay the bill. Ben collects, then loses the cops in the work truck.
 
-**7. The Lululemon sale.** A stampede on 4th Avenue. Ben uses the chaos to lift a delivery van full of sample stock. It's worth nothing. The van is the prize.
+**10. The Lululemon Sale (Ben).** A stampede on 4th Avenue. The stock is worthless; the delivery van is the prize.
 
-**Ben's jobs.** Three side missions open once you can switch to Ben, from Joshua's notes:
-- **Springs.** Ben fixes a garage door spring in Kerrisdale. The customer looks at the bill and refuses to pay. Ben holds him up for it, then gets out in the work truck with the cops on his tail. Lose them.
-- **The manager.** A hit on the manager of the McDougal's on Granville, for Dmitri, as a favour that will not stay a favour.
-- **The boys.** Meet Joshua, Alex and the boys at the Kits lot. Deliver the car, then race it.
+**11. The Boys (Ben).** Race the boys at the Kits lot. Maddie said be home for dinner.
 
-**8. The ferry.** Switch to Alexandre in Victoria. He drives the van onto the Swartz Bay ferry, finds out the truck parked next to him belongs to Dmitri, and follows it home.
+**12. Island Business (Alexandre).** Dmitri's courier in Victoria is selling Joshua's name on the docks. Alexandre has a desk job, a plan, and now a problem.
 
-**9. Government Street.** Alexandre learns what Dmitri actually does: he launders money through condo presales. The money moves on Saturday from a sales centre in Coal Harbour.
+**13. The Ferry (Alexandre).** Dmitri's truck is two lanes over on the Swartz Bay ferry. Follow it off the boat.
 
-## Act three: the heist
+**14. Government Street (Alexandre).** Dmitri launders through condo presales. Saturday the cash leaves a sales centre in Coal Harbour in an armoured truck.
 
-**10. The plan.** All three in one room for the first time: Dad's garage. Mom brings sandwiches and pretends not to hear anything. Pick the approach:
-- **Loud:** hit the armoured truck on the Lions Gate Bridge.
-- **Quiet:** crash the presale party dressed as realtors and walk the cash out the front.
+**15. Colin's Place (Joshua).** You go to Yaletown for your girl. She left Colin at brunch. On his desk is a silver hard drive with BRIAN on masking tape: Colin bought it at Granville Pawn for twenty bucks. Joshua pawned his dad's hard drive two years ago. You take it. Colin calls Dmitri.
 
-**11. Crew and gear.** Pick a driver and a hacker from people you've met. Sarah is the best hacker in the city. She says no. Do a favour for her first (drive her to a job interview in Burnaby, on time, no cops) and she's in.
+## Act three: the score
 
-**12. The score.** Pull the job. Each hero handles one part and you switch between them mid-heist.
+**16. The Plan.** All three in Dad's garage for the first time. Mom brings sandwiches and pretends not to hear. Take the armoured truck at the light on Georgia, swap to Dad's boat under the Burrard Bridge, come out in North Van. You need a hacker: your sister Sarah, who said no.
 
-**13. The getaway.** Every cop in the city. Mom calls. Dad's boat is the way out, under the bridge and across to North Van, where Dad is waiting on the dock asking about his hard drive.
+**17. Sarah's Interview.** Drive her to a job interview in Burnaby, on time, no cops, and she's in.
 
-**14. Waterfront.** Pay Dmitri, or don't. Two endings. Either way it ends at a family dinner, and Joshua finally gives Dad his hard drive back. Vancouver is yours and the game opens up.
+**18. The Score.** Saturday. Sarah has the lights on Georgia. Take the truck. Mom is calling. Do not pick up.
+
+**19. The Getaway.** Every cop in the city. Dad's boat under the bridge. He asks about the hard drive.
+
+**20. Waterfront.** Dmitri waits for his forty grand. Pay him, or drive straight past him to dinner.
+
+**Family dinner.** Mom made lasagna. Sarah got the job. Joshua slides the hard drive across the table. *Where'd you find it?* *Long story.* Vancouver is yours.
+
+Between jobs the city is free roam: the next job waits at its yellow marker (Joshua at the Steam Clock, Ben at Dad's garage, Alexandre in Victoria, all three at the garage).
 
 ## After the story
 

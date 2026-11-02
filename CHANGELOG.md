@@ -3,6 +3,11 @@
 All the releases, newest first. Every version is tagged on GitHub with builds attached.
 
 ## 1.27 (unreleased)
+The whole story, start to finish: twenty jobs in three acts. Dmitri's forty grand ties it together, Colin launders Dmitri's cash through the McDonald's night deposit, and the running joke pays off: Joshua pawned his dad's hard drive years ago and gets it back from Colin. New scene jobs play when you reach the place (Dmitri's co-working space, Colin's place, the plan in Dad's garage), and the all-three jobs start at the garage with any hero.
+Getting in and out of cars takes a beat: walk to the driver's door, thunk, slide in. Jack a car with someone in it and the driver ends up on the sidewalk yelling. You step clear of the door on the way out.
+No more walking through tables, counters, bars or Dad's truck, and you slide along walls instead of stopping dead.
+Club Velvet goes dark inside: a lit bottle wall behind the bar, light beams sweeping over a saturated dance floor, a bartender, and a crowd that dances.
+Story key art in docs/img: the heist, Dmitri, the night deposit, Club Velvet, the tail, Kits Beach, the ferry, the plan, the getaway, the skyline.
 The heist is playable from the first second. A new game starts inside the store on Georgia: six Mac minis on the table ends, two staff in blue shirts who turn on you at the first grab, an alarm, and a star the moment you walk out with stock. Jack a car and lose them. The store restocks while you're away, so it's a score you can come back to.
 Free roam between jobs. When a mission passes, the city is yours until you walk into the next job's yellow marker: Joshua's at the Steam Clock, Ben's at Dad's garage, Alexandre's in Victoria.
 Colin. He manages the McDonald's on Granville and won't hand over the night deposit until you pull a gun. Then he turns up at Club Velvet with your girl, and you tail his gold car home to Yaletown without letting him spot you. New rooms: the McDonald's (counter, kitchen, menu boards, booths) and Club Velvet (bar, DJ booth, lit dance floor, mirror ball), with lit signs on Granville.

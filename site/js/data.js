@@ -31,28 +31,32 @@ export const LINES = ["Sorry!", "Canucks are gonna choke again, eh", "Rent's thi
 export const BUMPS = ["Watch it, bud", "Hey! Eyes up", "Seriously?"];
 export const FIGHTS = ["You got a problem?", "Wanna go?", "Say that again"];
 export const STORY = [
-  { title: "Joshua: The Georgia Store", kind: "heist", text: "Six Mac minis on the tables at the store on Georgia, and nobody's looking yet. Grab them and run for the door. Two guys in blue shirts won't let it go and one will call the cops: jack a car and lose them", pay: 300 },
-  { title: "Joshua: Pawn the Mac minis", kind: "deliver", at: "pawn", chain: true, text: "Six Mac minis, no receipts, no questions you want asked. Drive them to Granville Pawn (green on the map) before Dmitri finds out they were never yours to sell, then walk in and take the cash", pay: 400 },
-  { title: "Joshua: Colin's Night Deposit", kind: "rob", text: "Colin manages the McDonald's on Granville and brags about the night deposit to anyone who'll listen. Walk in with a gun out, take the bag, and lose the cops", pay: 500 },
-  { title: "Joshua: Club Velvet", kind: "club", text: "Your girl's at Club Velvet on Granville tonight. So, it turns out, is Colin. Go find her", pay: 600 },
-  { title: "Joshua: Night Shift", kind: "taxi", text: "Cover a buddy's cab. Pick up the fare", pay: 350 },
-  { title: "Alexandre: Island Business", kind: "hit", text: "Someone's been talking. Find the marked man and deal with him", pay: 500 },
-  { title: "Joshua: Heat on Hastings", kind: "evade", text: "Get the cops' attention, three stars, then lose them", pay: 600 },
-  { title: "Joshua: The Granville Job", kind: "deliver", text: "Last one. Bring a fast car to the beacon. Don't scratch it", pay: 1000 },
-  { title: "Ben: Kits Beach", kind: "taxi", text: "Dad's got a boat and the heist needs it. Go to Kits Beach and ask him. Joshua won't face him right now", pay: 700 },
-  { title: "Ben: The Lululemon Sale", kind: "deliver", text: "Rich people stampeding for Lululemon on 4th Avenue. Grab the delivery van in the chaos and get out", pay: 750 },
-  { title: "Alexandre: The Ferry", kind: "taxi", text: "That's Dmitri's truck on the Swartz Bay ferry to Victoria. Follow him when you dock and find out where he really lives", pay: 850 },
-  { title: "Alexandre: Government Street", kind: "evade", text: "Coal Harbour, Government Street. That presale centre is where Dmitri moves the money on Saturday. Get inside and scope it out", pay: 950 },
-  // Ben's jobs, from Joshua's notes (docs/STORY.md, act two)
+  // Act one: forty grand by Friday (Joshua, downtown)
+  { title: "Joshua: The Georgia Store", kind: "heist", text: "Dmitri wants something worth a grand by tonight. Six Mac minis on the tables at the store on Georgia, and nobody's looking yet. Grab them and run for the door. Two guys in blue shirts won't let it go and one will call the cops: jack a car and lose them", pay: 300 },
+  { title: "Joshua: Pawn the Mac minis", kind: "deliver", at: "pawn", chain: true, text: "Six Mac minis, no receipts, no questions you want asked. Drive them to Granville Pawn (green on the map), then walk in and take the cash. The guy behind the counter pays half what you hoped and asks how your dad's doing", pay: 400 },
+  { title: "Joshua: Dmitri", kind: "meet", at: { x: 12 * block + 40, y: 3 * block + 170 }, text: "Dmitri runs a co-working space in Gastown that has never had a single co-worker. Go see him", pay: 0,
+    scene: "Dmitri is in a Patagonia vest, standing desk, kombucha on tap. He counts the pawn money twice.\n\nDMITRI  This is interest, Joshua. You owe me forty grand by Friday.\nJOSHUA  For what?\nDMITRI  For the thing you did. Here's how you start paying: Colin at the McDonald's on Granville runs my cash through his night deposit. Bring me the bag.\n\nHe goes back to his laptop. The meeting is over." },
+  { title: "Joshua: Colin's Night Deposit", kind: "rob", text: "Colin manages the McDonald's on Granville and brags about the night deposit to anyone who'll listen. It isn't burger money, it's Dmitri's. Walk in with a gun out, take the bag, and lose the cops", pay: 500 },
+  { title: "Joshua: Club Velvet", kind: "club", text: "Your girl's at Club Velvet on Granville tonight. So, it turns out, is Colin, wearing a watch he could not afford last week. Go find her", pay: 600 },
+  { title: "Joshua: Heat on Hastings", kind: "evade", text: "Colin gave the cops your name. Dmitri says he'd rather they chase you than his money: pull three stars down Hastings, then shake them", pay: 600 },
+  { title: "Joshua: Night Shift", kind: "taxi", text: "Lie low. Cover your buddy's cab for the night. First fare is a woman who won't stop talking about her son who never calls. It's Mom. Don't turn around", pay: 350 },
+  // Act two: the crew (Ben in Kits, Alexandre in Victoria)
+  { title: "Ben: Kits Beach", kind: "taxi", text: "Joshua needs a boat and can't face his dad, so Ben asks. Drive Brian down to Kits Beach to look at the boat. He'll say yes on one condition: Joshua brings back the hard drive he borrowed two years ago", pay: 700 },
   { title: "Ben: Springs", kind: "evade", text: "Ben fixed a garage door spring in Kerrisdale and the guy won't pay the bill. Ben got his money the hard way. Now get out in the work truck and lose the cops", pay: 600 },
-  { title: "Ben: The Manager", kind: "hit", text: "Dmitri wants a favour: the manager of the McDougal's on Granville. It will not stay a favour. Find the marked man", pay: 900 },
-  { title: "Ben: The Boys", kind: "deliver", text: "Joshua, Alex and the boys are waiting at the Kits lot. Bring a car worth racing", pay: 700 },
-  // Act three: the heist
-  { title: "All three: The Plan", kind: "taxi", text: "Dad's garage, all three of you in one room for the first time. Mom brings sandwiches and pretends not to hear anything. Go pick up the crew", pay: 800 },
-  { title: "Joshua: Sarah's Interview", kind: "taxi", text: "Sarah is the best hacker in the city and she said no. Then she said: drive me to my job interview in Burnaby, on time, no cops. Pick her up", pay: 900 },
-  { title: "All three: The Score", kind: "deliver", text: "Saturday. The armoured truck leaves the Coal Harbour presale centre. Take it and bring it to the beacon. Mom is calling. Do not pick up", pay: 2500 },
-  { title: "Joshua: The Getaway", kind: "evade", text: "Every cop in the city is on you. Dad's boat is waiting under the bridge. Lose them and get to the water. He will ask about the hard drive", pay: 3000 },
-  { title: "Joshua: Waterfront", kind: "deliver", text: "Dmitri is waiting at the Waterfront for his forty grand. Bring him the car with the money, or drive straight past him to family dinner. Either way, Dad gets his hard drive back", pay: 5000 },
+  { title: "Ben: The Lululemon Sale", kind: "deliver", text: "Rich people stampeding for Lululemon on 4th Avenue. The stock is worthless. The delivery van is the prize: grab it in the chaos and bring it to the beacon", pay: 750 },
+  { title: "Ben: The Boys", kind: "deliver", text: "Joshua, Alex and the boys are waiting at the Kits lot. Bring a car worth racing. Maddie said be home for dinner", pay: 700 },
+  { title: "Alexandre: Island Business", kind: "hit", text: "Dmitri's courier in Victoria knows Joshua's name and is selling it on the docks. Alexandre has a desk job, a plan, and now a problem. Find the marked man", pay: 500 },
+  { title: "Alexandre: The Ferry", kind: "taxi", text: "That's Dmitri's truck on the Swartz Bay ferry. Follow him off the boat and find out where he really goes", pay: 850 },
+  { title: "Alexandre: Government Street", kind: "evade", text: "Dmitri launders through condo presales. Saturday the cash leaves a sales centre in Coal Harbour in an armoured truck. Get close enough to scope it, then lose whoever notices", pay: 950 },
+  { title: "Joshua: Colin's Place", kind: "meet", at: { x: 10 * block + 40, y: 8 * block + 170 }, text: "You followed Colin home to Yaletown. Go get your girl back", pay: 0,
+    scene: "Colin answers the door in a bathrobe. She isn't there; she left him at brunch. But on his desk is a silver hard drive with a strip of masking tape on it that says BRIAN.\n\nCOLIN  That? Bought it at Granville Pawn for twenty bucks. Four thousand photos of a boat.\nJOSHUA  You know whose that is?\nCOLIN  Some guy named Brian, I guess.\n\nYou take it. Colin calls Dmitri before you reach the elevator." },
+  // Act three: the score
+  { title: "All three: The Plan", kind: "meet", at: { x: 1 * block + 230, y: 11 * block + 40 }, text: "Dad's garage. All three of you in one room for the first time", pay: 0,
+    scene: "Joshua, Ben and Alexandre around Brian's workbench. Mom brings sandwiches and pretends not to hear anything.\n\nALEXANDRE  Saturday the armoured truck leaves the presale centre. We take it at the light on Georgia, swap to the boat under the Burrard Bridge, and come out in North Van.\nBEN  Brian's boat.\nBRIAN  My boat. Where's my hard drive?\nJOSHUA  After.\n\nYou need one more person. The best hacker in the city is your sister, and she said no." },
+  { title: "Joshua: Sarah's Interview", kind: "taxi", text: "Sarah will do the job on one condition: drive her to her job interview in Burnaby, on time, no cops. Pick her up", pay: 600 },
+  { title: "All three: The Score", kind: "deliver", text: "Saturday. Sarah has the lights on Georgia. The armoured truck rolls out of the presale centre. Take it and bring it to the beacon. Mom is calling. Do not pick up", pay: 2500 },
+  { title: "Joshua: The Getaway", kind: "evade", text: "Every cop in the city is on you. Dad's boat is waiting under the Burrard Bridge. Lose them and get to the water. He will ask about the hard drive", pay: 3000 },
+  { title: "Joshua: Waterfront", kind: "deliver", text: "Dmitri is waiting at the Waterfront for his forty grand. Bring him the car with the money, or drive straight past him to family dinner", pay: 5000 },
 ];
 // Granville Pawn on Granville St between W Georgia and Robson; prices per item
 export const PAWN = { x: 8 * block + 40, y: 6 * block + 170, name: "Granville Pawn" };
