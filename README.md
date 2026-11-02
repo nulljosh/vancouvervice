@@ -2,7 +2,7 @@
 <h1 align="center">Vancouver Vice</h1>
 <p align="center"><b>Welcome to Vancouver. Don't get caught.</b></p>
 <p align="center">
-<a href="https://vancouvervice.jaybulb.com"><img src="https://img.shields.io/badge/play-now-c0392b?style=flat-square" alt="Play now"></a>
+<a href="https://github.com/nulljosh/vancouvervice/releases/latest"><img src="https://img.shields.io/badge/download-free-c0392b?style=flat-square" alt="Download"></a>
 <a href="https://github.com/nulljosh/vancouvervice/releases/latest"><img src="https://img.shields.io/github/v/release/nulljosh/vancouvervice?style=flat-square&color=222" alt="Release"></a>
 <a href="https://github.com/nulljosh/vancouvervice/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/nulljosh/vancouvervice/ci.yml?style=flat-square&label=build" alt="Build"></a>
 <img src="https://img.shields.io/badge/phone%20%7C%20Mac%20%7C%20PC-555?style=flat-square" alt="Phone, Mac, PC">
@@ -24,7 +24,7 @@ Your family gets pulled in. Brian, your dad, has the garage, the boat, and a thi
 |---|---|
 | <img src="docs/img/vv-downtown.jpg" alt="Downtown Vancouver towers streamed into Unreal"> | <img src="docs/img/unreal-joshua.jpg" alt="Joshua's face scan as the player in Unreal"> |
 
-## In the browser
+## The game
 A title screen, settings for graphics, sound and mouse, and a save that picks up where you left off. Pawn the Apple Store loot at Granville Pawn. Press T to fast travel between Gastown, Kits and Victoria. Joshua looks like Joshua: ginger, tortoiseshell glasses, black crewneck.
 
 | | |
@@ -33,12 +33,12 @@ A title screen, settings for graphics, sound and mouse, and a save that picks up
 | <img src="docs/img/web-pawn.jpg" alt="Granville Pawn buys six Mac minis and two phones for $980"> | <img src="docs/img/web-travel.jpg" alt="Fast travel menu"> |
 
 ## Play
-**[Play in your browser](https://vancouvervice.jaybulb.com)**, on your phone or your computer. Or grab the app for Mac, Windows, Linux, iPhone or Android from [releases](https://github.com/nulljosh/vancouvervice/releases/latest).
+Free. Download it for Mac, Windows, Linux or Android from [releases](https://github.com/nulljosh/vancouvervice/releases/latest). There's no browser version: the game runs in the app.
 
 ## Controls
 W A S D to move, Shift to run, Space to jump. Mouse to look, click to shoot, F to punch. E to jack a car, R for the radio. T to fast travel. Tab to switch characters. Esc for the menu.
 
-On a phone: stick on the left, drag to look, buttons on the right.
+On Android: stick on the left, drag to look, buttons on the right.
 
 ## Benchmarks
 

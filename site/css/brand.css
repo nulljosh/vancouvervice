@@ -1,0 +1,15 @@
+/* Vancouver Vice design system. Source of truth: brand/BRAND.md */
+@font-face{font-family:"Vice Display";src:url("../fonts/anton.woff2") format("woff2");font-weight:400;font-display:swap}
+:root{
+  /* colour: rain-dark city, one hot red, neighbourhood accents for the crew */
+  --vv-night:#0c0d10; --vv-asphalt:#15171c; --vv-curb:#25272d; --vv-fog:#a3a6ad; --vv-paper:#f3f1ec;
+  --vv-red:#e0362c; --vv-gastown:#e8b21a; --vv-kits:#5b8cff; --vv-victoria:#c9ccd3; --vv-seawall:#2e9e8f;
+  /* type */
+  --vv-display:"Vice Display",Impact,"Arial Narrow Bold",sans-serif;
+  --vv-text:-apple-system,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --vv-slant:skewX(-7deg);
+  /* 8 point grid, one radius set, 48 point capsule controls */
+  --vv-1:8px; --vv-2:16px; --vv-3:24px; --vv-4:32px; --vv-6:48px; --vv-9:72px; --vv-12:96px;
+  --vv-r-sm:8px; --vv-r:16px; --vv-r-pill:24px; --vv-control:48px;
+}
+.vv-display{font-family:var(--vv-display);font-weight:400;text-transform:uppercase;letter-spacing:.005em;line-height:.86;transform:var(--vv-slant);transform-origin:left bottom}

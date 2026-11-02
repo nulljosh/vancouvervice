@@ -15,11 +15,11 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;font:600 15px/1.4
 #pause{position:fixed;inset:0;background:#000a;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
 #pause h1{font-size:44px;margin:0}#pause button{font:600 17px Helvetica,sans-serif;padding:10px 26px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer}
 #title{position:fixed;inset:0;z-index:6;display:none;flex-direction:column;justify-content:center;padding:0 8vw;background:#000b}
-#title .logo{font:900 italic clamp(56px,13vw,180px)/.86 -apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.04em;text-shadow:0 6px 30px #000}
-#title .logo b{color:#e0362c}
+#title .logo{font:clamp(72px,15vw,220px)/.82 var(--vv-display);letter-spacing:.005em;transform:var(--vv-slant);transform-origin:left bottom;text-shadow:0 6px 30px #000}
+#title .logo b{color:var(--vv-red)}
 #title .sub{font-size:clamp(15px,1.6vw,20px);opacity:.8;margin:18px 0 28px}
 #title nav{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
-#title nav button{font:800 clamp(22px,2.4vw,30px) -apple-system,Helvetica,sans-serif;text-transform:uppercase;letter-spacing:.02em;background:none;border:0;color:#fff;opacity:.75;cursor:pointer;padding:4px 0}
+#title nav button{font:clamp(26px,2.8vw,36px)/1.1 var(--vv-display);text-transform:uppercase;letter-spacing:.02em;background:none;border:0;color:#fff;opacity:.75;cursor:pointer;padding:4px 0}
 #title nav button:hover,#title nav button:focus{opacity:1;color:#e0362c;outline:none}
 .panel{position:fixed;inset:0;z-index:7;background:#000c;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
 .panel h2{font-size:36px;margin:0 0 6px}

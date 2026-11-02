@@ -18,7 +18,7 @@ const W = ms => new Promise(r => setTimeout(r, ms));
 const within = (ms, what, fn) => Promise.race([fn(), new Promise((_, rej) => setTimeout(() => rej(new Error("timed out")), ms))]).catch(e => { check(false, `${what} (${e.message})`); });
 
 // landing page
-{ const p = await b.newPage(); await p.goto("http://localhost:8765/"); check(await p.locator("text=Play in your browser").count() === 1, "landing links to the game"); check(await p.locator("img.shot").count() === 3, "landing shows the key art and the Unreal shots"); check(await p.evaluate(() => [...document.images].every(i => i.complete && i.naturalWidth)), "landing images load"); await p.close(); }
+{ const p = await b.newPage(); await p.goto("http://localhost:8765/"); check(await p.locator("text=Download the game").count() === 1, "landing leads with the download"); check(await p.locator("img.shot").count() === 3, "landing shows the key art and the Unreal shots"); check(await p.evaluate(() => [...document.images].filter(i => i.loading !== "lazy").every(i => i.complete && i.naturalWidth)), "landing images load"); await p.close(); }
 
 // title screen: New Game, Continue only with a save, Settings, Quit
 { const t = await b.newPage({ viewport: { width: 1200, height: 750 } }); await t.addInitScript(() => localStorage.clear()); await t.goto("http://localhost:8765/play.html"); await t.waitForFunction(() => window.G && window.GS, null, { timeout: 30000 });

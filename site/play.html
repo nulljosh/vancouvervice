@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><script src="js/app-only.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Vancouver Vice: Play</title><link rel="icon" href="icon.png"><link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#111111"><link rel="apple-touch-icon" href="icon.png">
-<link rel="stylesheet" href="css/play.css"></head><body>
+<link rel="stylesheet" href="css/brand.css"><link rel="stylesheet" href="css/play.css"></head><body>
 <div id="hud"></div><div id="bubbles"></div><div id="tip"></div><div id="toast"></div><div id="card" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000b;z-index:5"><div style="max-width:520px;padding:28px 30px;background:#15171c;border-radius:14px;border:1px solid #333"><h2 id="cardT" style="margin:0 0 10px;font-size:28px"></h2><div id="cardB" style="font-weight:500;line-height:1.6;white-space:pre-line;opacity:.9"></div><button id="cardGo" style="margin-top:18px;font:600 17px Helvetica,sans-serif;padding:10px 24px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer">Let's go</button></div></div><div id="hp"><i></i></div>
 <div id="touch"><div id="stick"><div id="knob"></div></div><div id="btns"><button data-k="KeyF">Punch</button><button data-k="Tab">Swap</button><button data-k="KeyQ">Gun</button><button data-k="Escape">II</button><button data-k="KeyE">Car</button><button data-k="KeyT">Travel</button><button data-k="Brake">Back</button><button data-k="Space">Jump</button><button data-k="ShiftLeft">Run</button><button class="fire" data-k="Fire">Fire</button></div></div><canvas id="map"></canvas><div id="cross">+</div>
 <div id="title"><div class="logo">VANCOUVER<br><b>VICE</b></div><p class="sub">Gastown to Victoria. Three crooks, one rainy city.</p><nav><button id="tCont">Continue</button><button id="tNew">New Game</button><button id="tSet">Settings</button><button id="tQuit">Quit</button></nav></div>
@@ -524,60 +524,11 @@ function dressHero(name) {
   const key = HERO_BODY[name], src = key === "hero" ? JOSH : BODY[key]; if (!src) return;
   if (hero.gl) hero.remove(hero.gl); hero.children.forEach(ch => { if (ch !== gun) ch.visible = false; }); hero.body = null; hero.mix = null;
   rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: src.animations[0]?.name, run: src.animations[0]?.name, idle: src.animations[0]?.name } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
-  hero.mix.acts.run = hero.mix.acts.walk; heroReady = true; if (key === "hero") lookLikeJoshua(hero.gl);
+  hero.mix.acts.run = hero.mix.acts.walk; heroReady = true;
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
   if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
 }
 let JOSH = null;
-// Joshua's look, from his portrait: ginger curls, fair skin, black top, dark jeans, tortoiseshell glasses
-const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.42, z: 1.2, tilt: -.26, r: .28, wide: 1.12, rim: .026, sep: .39, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74, fringeH: .74, fringeF: .3, nape: .42 };
-// tortoiseshell: dark brown with amber flecks, like his frames
-function tortoise() { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.fillStyle = "#2a160c"; x.fillRect(0, 0, 64, 64);
-  for (let i = 0; i < 70; i++) { x.fillStyle = ["#5b3315", "#7a4a1e", "#3b200f", "#9a6a2c"][i % 4]; x.beginPath(); x.ellipse(Math.random() * 64, Math.random() * 64, 1 + Math.random() * 5, 1 + Math.random() * 3, Math.random() * 3, 0, 7); x.fill(); }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 1); return t; }
-function lookLikeJoshua(s) {
-  s.traverse(o => { if (o.isMesh && o.material.name === "Eyelashmat") o.visible = false; }); // stock lashes read as black eyeliner; his are light
-  s.traverse(o => { const L = o.isMesh && JOSH_LOOK[o.material.name]; if (!L) return; const m = o.material; m.color.setHex(L[0]); m.roughnessMap = null; if (m.name === "Hairmat") { m.transparent = false; m.alphaTest = .12; m.side = THREE.DoubleSide; m.depthWrite = true; } m.roughness = L[1]; if (L[2]) m.emissive.setHex(L[2]); m.needsUpdate = true; });
-  let head = null; s.traverse(o => { if (!head && o.isBone && /Head$/.test(o.name)) head = o; }); if (!head) return;
-  s.updateMatrixWorld(true); const k = 1 / head.getWorldScale(new THREE.Vector3()).x, m = new THREE.MeshStandardMaterial({ map: tortoise(), roughness: .25 }), g = new THREE.Group();
-  [-1, 1].forEach(d => { const r = new THREE.Mesh(new THREE.TorusGeometry(GL.r, GL.rim, 8, 40), m); r.scale.set(GL.wide, 1, 1); r.position.x = d * GL.sep; g.add(r); const arm = new THREE.Mesh(new THREE.BoxGeometry(.035, .05, 1.9), m); arm.position.set(d * (GL.sep + GL.r * GL.wide), .05, -.95); g.add(arm); });
-  const bridge = new THREE.Mesh(new THREE.BoxGeometry(GL.sep * 2 - GL.r * GL.wide * 2 + .06, .035, .035), m); bridge.position.y = GL.r * .45; g.add(bridge);
-  g.scale.setScalar(k); g.position.set(0, GL.y * k, GL.z * k); g.rotation.x = GL.tilt; head.add(g); s.glasses = g;
-  // jeans to the ankle (the rig's shorts stop mid-calf), and the white collar under his crewneck
-  const bone = n => { let b = null; s.traverse(o => { if (!b && o.isBone && o.name.endsWith(n)) b = o; }); return b; }, wp = o => o.getWorldPosition(new THREE.Vector3());
-  const jeans = new THREE.MeshStandardMaterial({ color: 0x1d2638, roughness: .95 });
-  for (const side of ["Left", "Right"]) { const leg = bone(side + "Leg"), foot = bone(side + "Foot"); if (!leg || !foot) continue;
-    const len = wp(leg).distanceTo(wp(foot)), kl = 1 / leg.getWorldScale(new THREE.Vector3()).x, c = new THREE.Mesh(new THREE.CylinderGeometry(GL.calf, GL.ankle, len * 1.02, 20, 1, true), jeans);
-    c.material.side = THREE.DoubleSide; c.scale.setScalar(kl); c.position.y = len / 2 * kl; c.castShadow = true; leg.add(c); }
-  // no bangs: drop the stock fringe (hair in front of the forehead, below his hairline)
-  const hairM = (() => { let h = null; s.traverse(o => { if (!h && o.isSkinnedMesh && o.material.name === "Hairmat") h = o; }); return h; })(), hd = bone("Head"), ht = bone("HeadTop_End");
-  if (hairM && hd && ht && hairM.geometry.index) { hairM.geometry = hairM.geometry.clone(); hairM.updateMatrixWorld(true); const g2 = hairM.geometry, ix = g2.index, v2 = new THREE.Vector3(), c0 = wp(hd), top = wp(ht), span = top.y - c0.y, fwd = new THREE.Vector3(0, 0, 1).transformDirection(hd.matrixWorld).setY(0).normalize();
-    const fringe = new Uint8Array(g2.attributes.position.count); for (let k = 0; k < fringe.length; k++) { hairM.getVertexPosition(k, v2); v2.applyMatrix4(hairM.matrixWorld); const h = (v2.y - c0.y) / span, f = v2.clone().sub(c0).setY(0).dot(fwd) / span; fringe[k] = (h < GL.fringeH && f > GL.fringeF) || h < GL.nape ? 1 : 0; }
-    const keep = []; for (let n = 0; n < ix.count; n += 3) { const a = ix.getX(n), b = ix.getX(n + 1), c = ix.getX(n + 2); if (!(fringe[a] || fringe[b] || fringe[c])) keep.push(a, b, c); } g2.setIndex(keep); }
-  // crewneck: paint the skin the V-neck shows (and the base of the neck) black, a white collar line on top
-  const neck = bone("Neck"), headTop = bone("HeadTop_End"), body = (() => { let b = null; s.traverse(o => { if (!b && o.isSkinnedMesh && o.material.name === "Bodymat" && o.material.map) b = o; }); return b; })();
-  if (neck && headTop && body) {
-    const N = wp(neck), H = wp(headTop).y - s.getWorldPosition(new THREE.Vector3()).y, img = body.material.map.image, W = img.width, Hh = img.height;
-    const col = document.createElement("canvas"), emi = document.createElement("canvas"); col.width = emi.width = W; col.height = emi.height = Hh;
-    const cx = col.getContext("2d"), ex = emi.getContext("2d"); cx.drawImage(img, 0, 0); ex.fillStyle = "#fff"; ex.fillRect(0, 0, W, Hh);
-    const pos = body.geometry.attributes.position, uv = body.geometry.attributes.uv, idx = body.geometry.index, v = new THREE.Vector3(), tag = new Uint8Array(pos.count);
-    body.updateMatrixWorld(true); s.updateMatrixWorld(true);
-    // per texel: interpolate each vertex's height above the neck across the triangle, so the neckline is a clean line, not triangle steps
-    const dy = new Float32Array(pos.count), rr = new Float32Array(pos.count), hh = new Float32Array(pos.count), HY = wp(bone("Head")).y, HT = wp(headTop).y;
-    for (let k = 0; k < pos.count; k++) { body.getVertexPosition(k, v); v.applyMatrix4(body.matrixWorld); dy[k] = (v.y - N.y) / H; rr[k] = Math.hypot(v.x - N.x, v.z - N.z) / H; hh[k] = (v.y - HY) / (HT - HY); }
-    const C = cx.getImageData(0, 0, W, Hh), E = ex.getImageData(0, 0, W, Hh), T = idx ? idx.count : pos.count, at = n => idx ? idx.getX(n) : n, near = k => hh[k] > GL.hairline - .1 || (rr[k] < GL.crewR * 1.3 && dy[k] > -GL.crewDown - .03 && dy[k] < GL.crewUp + GL.collarH + .03);
-    for (let n = 0; n < T; n += 3) { const q = [at(n), at(n + 1), at(n + 2)]; if (!q.some(near)) continue;
-      const P = q.map(k => [uv.getX(k) * W, uv.getY(k) * Hh]), [[x0, y0], [x1, y1], [x2, y2]] = P, den = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2); if (Math.abs(den) < 1e-9) continue;
-      for (let y = Math.max(0, Math.floor(Math.min(y0, y1, y2))); y <= Math.min(Hh - 1, Math.ceil(Math.max(y0, y1, y2))); y++) for (let x = Math.max(0, Math.floor(Math.min(x0, x1, x2))); x <= Math.min(W - 1, Math.ceil(Math.max(x0, x1, x2))); x++) {
-        const a = ((y1 - y2) * (x + .5 - x2) + (x2 - x1) * (y + .5 - y2)) / den, b = ((y2 - y0) * (x + .5 - x2) + (x0 - x2) * (y + .5 - y2)) / den, c = 1 - a - b; if (a < -.02 || b < -.02 || c < -.02) continue;
-        const d = a * dy[q[0]] + b * dy[q[1]] + c * dy[q[2]], r = a * rr[q[0]] + b * rr[q[1]] + c * rr[q[2]], h = a * hh[q[0]] + b * hh[q[1]] + c * hh[q[2]], hair = h > GL.hairline;
-        if (!hair && (r > GL.crewR || d < -GL.crewDown || d > GL.crewUp + GL.collarH)) continue;
-        const o = (y * W + x) * 4, sn = .72 + .5 * Math.abs(Math.sin(x * .9 + Math.sin(y * .21) * 3) * Math.sin(y * .05 + x * .013)), rgb = hair ? [176 * sn, 112 * sn, 62 * sn] : d > GL.crewUp ? [236, 235, 230] : [19, 19, 21]; C.data[o] = rgb[0]; C.data[o + 1] = rgb[1]; C.data[o + 2] = rgb[2]; E.data[o] = E.data[o + 1] = E.data[o + 2] = 0; } }
-    cx.putImageData(C, 0, 0); ex.putImageData(E, 0, 0);
-    const tex = (cv, srgb) => { const t = new THREE.CanvasTexture(cv); t.flipY = false; if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = body.material.map.wrapS; t.wrapT = body.material.map.wrapT; return t; };
-    body.material.map = tex(col, true); body.material.emissiveMap = tex(emi, true); body.material.needsUpdate = true;
-  }
-}
 if (false) gltf.load("https://assets.babylonjs.com/meshes/HVGirl.glb", g => {
   const names = [...new Set(g.scene.getObjectsByProperty("isMesh", true).map(m => m.material.name))]; console.log("HVGirl materials", names.join(","));
   CROWD.push({ src: g, turn: Math.PI / 2, shirt: /T-shirt|short/i, map: { walk: "Walking", run: "Walking", idle: "Idle" } }); reCrowd();
@@ -720,7 +671,7 @@ addEventListener("mouseup", () => G.mouseHeld = false);
 R.domElement.addEventListener("mousedown", () => { G.mouseHeld = !!document.pointerLockElement; if (G.paused) return; if (!document.pointerLockElement) R.domElement.requestPointerLock(); else shoot(); });
 // mouse always steers the camera; click locks it for endless turning
 // the Mac app (WKWebView, no "Safari/" in its UA) sends raw deltas through GS_mouse instead
-const IN_MAC_APP = /Vancouver ViceApp/.test(navigator.userAgent);
+const IN_MAC_APP = /VancouverViceApp/.test(navigator.userAgent) && /Macintosh/.test(navigator.userAgent);
 window.GS_mouse = (dx, dy) => { if (G.paused) return; G.mouseDX += dx; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + dy * .003 * (SET.invert ? -1 : 1))); G.mouseHeld = false; };
 addEventListener("mousemove", e => { if (G.paused || IN_MAC_APP) return; G.mouseDX += e.movementX; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + e.movementY * .003 * (SET.invert ? -1 : 1))); });
 document.addEventListener("pointerlockchange", () => { if (!document.pointerLockElement && !G.paused && G.step > 0) setPause(true); });
