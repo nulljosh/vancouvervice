@@ -86,7 +86,7 @@ function sidewalkPed(p) {
 }
 
 // ---- game state
-const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 0, 0, 0, 0, 0], owned: new Set([0, 1]), shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0, loot: { mac: 0, book: 0, phone: 0 } };
+const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 0, 0, 0, 0, 0], mag: [], reloadT: 0, recoil: 0, owned: new Set([0, 1]), shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0, loot: { mac: 0, book: 0, phone: 0 } };
 G.heroes = [{ name: "Joshua", p: { ...G.player }, a: 0, driving: null, ammo: 60 }, { name: "Alexandre", p: { x: 5 * block + 40, y: 15 * block + 40 }, a: 0, driving: null, ammo: 60 }];
 // Joshua runs Gastown, Ben hangs in Kitsilano, Alexandre is downtown Victoria
 G.heroes.splice(1, 0, { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 });
@@ -204,15 +204,23 @@ function punch() {
   if (!p.angry) { p.scared = 6; p.a = G.pa; }
 }
 const PICKUPS = [2, 3, 4, 5, 6, 2, 3, 4].map(w => ({ w, p: roadPoint(), m: null })); window.GS_PICK = PICKUPS;
-function gunTick(dt) { for (const k of PICKUPS) { if (!k.m) { k.m = new THREE.Group(); const g = gun.clone(); g.visible = true; g.scale.setScalar(2.4); g.position.set(0, 6, 0); g.rotation.set(0, 0, 0); const ring = new THREE.Mesh(new THREE.TorusGeometry(7, .5, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffb020 })); ring.rotation.x = -Math.PI / 2; ring.position.y = .6; k.m.add(g, ring); k.m.gun = g; scene.add(k.m); }
+function gunTick(dt) { for (const k of PICKUPS) { if (!k.m) { k.m = new THREE.Group(); const g = gun.clone(); g.visible = true; g.children.forEach((c, i) => c.visible = i === k.w - 1); g.scale.setScalar(3); g.position.set(0, 6, 0); g.rotation.set(0, 0, 0); const ring = new THREE.Mesh(new THREE.TorusGeometry(7, .5, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffb020 })); ring.rotation.x = -Math.PI / 2; ring.position.y = .6; k.m.add(g, ring); k.m.gun = g; scene.add(k.m); }
   k.m.visible = !k.got; if (k.got) continue; k.m.position.set(k.p.x, 0, k.p.y); k.m.gun.rotation.y += dt * 2; k.m.gun.position.y = 6 + Math.sin(performance.now() / 300) * 1.2;
   if (G.driving === null && dist(G.player, k.p) < 16) { k.got = true; const W = WEAPONS[k.w], add = Math.round(W.max / 2); G.owned.add(k.w); G.ammoW[k.w] = Math.min(W.max, (G.ammoW[k.w] || 0) + add); toast(`Picked up a ${W.name} (+${add}). Q or ${k.w + 1} to use it`); if (ac) chirp(600, 1200, .12, .06); saveGame(); } } }
+function reload() { const W = WEAPONS[G.weapon], w = G.weapon; if (!w || G.reloadT > 0 || !(G.ammoW[w] > 0) || (G.mag[w] ?? 0) >= W.mag) return; G.reloadT = W.reload; G.reloadW = w; if (ac) { chirp(700, 500, .05, .05, "square"); setTimeout(() => ac && chirp(1100, 1500, .04, .05, "square"), W.reload * 800); } }
+function reloadTick(dt) { if (!(G.reloadT > 0)) return; if (G.weapon !== G.reloadW) { G.reloadT = 0; return; } if ((G.reloadT -= dt) <= 0) { const w = G.reloadW, n = Math.min(WEAPONS[w].mag - (G.mag[w] || 0), G.ammoW[w]); G.mag[w] = (G.mag[w] || 0) + n; G.ammoW[w] -= n; G.reloadT = 0; } }
+// brass: each shot kicks a casing out of the right side that bounces once and lies there a moment
+const CASINGS = []; let casingGeo = null, casingMat = null;
+function casing() { if (G.weapon === 4) return; casingGeo ??= new THREE.CylinderGeometry(.18, .18, .55, 8); casingMat ??= new THREE.MeshStandardMaterial({ color: 0xc9a34a, metalness: .9, roughness: .3 }); let c = CASINGS.find(c => c.life <= 0); if (!c) { if (CASINGS.length > 24) return; c = { m: new THREE.Mesh(casingGeo, casingMat) }; scene.add(c.m); CASINGS.push(c); }
+  const a = G.pa, s = 30 + Math.random() * 20; c.life = 1.2; c.p = new THREE.Vector3(G.player.x + Math.cos(a) * 6, 14, G.player.y + Math.sin(a) * 6); c.v = new THREE.Vector3(-Math.sin(a) * s, 35 + Math.random() * 15, Math.cos(a) * s); c.m.visible = true; }
+function casingTick(dt) { for (const c of CASINGS) { if (c.life <= 0) continue; c.life -= dt; c.v.y -= 260 * dt; c.p.addScaledVector(c.v, dt); if (c.p.y < .2) { c.p.y = .2; c.v.y *= -.3; c.v.x *= .5; c.v.z *= .5; } c.m.position.copy(c.p); c.m.rotation.x += dt * 20; c.m.rotation.z += dt * 14; if (c.life <= 0) c.m.visible = false; } }
 function shoot() {
   if (G.driving !== null || G.paused) return;
   if (G.weapon === 0) { punch(); return; }
-  const W = WEAPONS[G.weapon], now = performance.now(); if (now - G.shotAt < W.rate) return;
-  if (G.ammoW[G.weapon] <= 0) { G.msg = `Out of ${W.name} ammo, Q to switch`; msgT = 2; return; }
-  G.shotAt = now; panic(G.player, 420); G.ammoW[G.weapon]--; G.ammo = G.ammoW[1]; G.flash = .08; gunfire(G.weapon);
+  const W = WEAPONS[G.weapon], w = G.weapon, now = performance.now(); if (now - G.shotAt < W.rate || G.reloadT > 0) return;
+  if (G.mag[w] == null) { const n = Math.min(W.mag || 99, G.ammoW[w] || 0); G.mag[w] = n; G.ammoW[w] -= n; } // first draw loads a magazine from the spare rounds
+  if (G.mag[w] <= 0) { if (G.ammoW[w] > 0) reload(); else { G.msg = `Out of ${W.name} ammo, Q to switch`; msgT = 2; if (ac && now - G.shotAt > 300) { G.shotAt = now; chirp(1400, 900, .03, .05, "square"); } } return; }
+  G.shotAt = now; panic(G.player, 420); G.mag[w]--; G.ammo = (G.ammoW[1] || 0) + (G.mag[1] || 0); G.recoil = 1; casing(); if (G.mag[w] === 0) setTimeout(reload, W.rate); // empty: straight into a reload G.flash = .06; G.kick = [0, .03, .08, .015, .06, .025, .1][G.weapon] || .03; gunfire(G.weapon);
   const hits = new Set(); for (let k = 0; k < (W.pellets || 1); k++) { const pa = G.pa; G.pa += (k - ((W.pellets || 1) - 1) / 2) * .12; const t = findTarget(W.range * perk("aim")); G.pa = pa; if (t) hits.add(t.kind + t.i); }
   [...hits].map(h => ({ kind: h.startsWith("ped") ? "ped" : "car", i: +h.replace(/\D/g, "") })).sort((a, b) => b.i - a.i).forEach(t => {
     if (t.kind === "ped") return killPed(t.i);
@@ -220,7 +228,7 @@ function shoot() {
   });
 }
 // GTA V style switch: camera lifts off the old hero, flies over the map, drops onto the new one
-const SW = { t: -1, from: null, to: null, up: .8, pan: 1.2, down: .8 }; window.GS_SW = SW;
+let muzzle = null; const SW = { t: -1, from: null, to: null, up: .8, pan: 1.2, down: .8 }; window.GS_SW = SW;
 function swapHero() {
   if (SW.t >= 0) return; G.carAnim = null; SW.from = { ...G.player };
   G.heroes[G.cur] = { ...G.heroes[G.cur], p: { ...G.player }, a: G.pa, driving: G.driving, ammo: G.ammo, ammoW: [...G.ammoW] };
@@ -232,7 +240,7 @@ function swapHero() {
 function wasted() { if (G.dieAt) return; G.dieAt = performance.now(); G.carAnim = null; G.msg = "WASTED"; msgT = 3.4;
   if (mission?.kind === "heist" && mission.stage === 1) { mission.stage = 0; mission.fled = false; G.loot.mac = G.loot.book = 0; STORE.alarm = false; STORE.loot = 0; restock(); } } // dying on the getaway drops the bag: the heist starts over, it never counts as losing the cops
 function respawn() { G.dieAt = 0; G.hp = 100; G.score = Math.max(0, G.score - 100); G.heat = 0; G.wanted = 0; G.cars = G.cars.filter(c => !c.cop); G.driving = null; G.player = { x: 6 * block + 40, y: 6 * block + 40 }; }
-function busted() { G.carAnim = null; G.heat = 0; G.hp = 100; G.msg = "BUSTED"; msgT = 3; G.ammo = 60; G.ammoW = [0, 60, 0, 0, 0, 0, 0]; G.cars = G.cars.filter(c => !c.cop); G.wanted = 0; G.score = Math.max(0, G.score - 50); G.driving = null; G.player = { x: 8 * block + 40, y: 5 * block + 40 }; }
+function busted() { G.carAnim = null; G.heat = 0; G.hp = 100; G.msg = "BUSTED"; msgT = 3; G.ammo = 60; G.ammoW = [0, 60, 0, 0, 0, 0, 0]; G.mag = []; G.reloadT = 0; G.cars = G.cars.filter(c => !c.cop); G.wanted = 0; G.score = Math.max(0, G.score - 50); G.driving = null; G.player = { x: 8 * block + 40, y: 5 * block + 40 }; }
 function newTarget() { const s = spots.filter(p => dist(p, G.player) > 600); G.target = s[Math.floor(Math.random() * s.length)] || G.target; }
 let msgT = 0;
 const RADIO = { st: 1, step: 0, next: 0 };
@@ -559,7 +567,7 @@ function tick(dt) {
   else if (s >= 5 && mission) runMission(dt);
   else if (s >= 5 && G.free) freeTick();
   if (!isFinite(G.player.x) || !isFinite(G.player.y) || solid(G.player.x, G.player.y) && G.driving === null && G.z === 0) { const safe = G.heroes[G.cur]?.p; G.player = safe && !solid(safe.x, safe.y) ? { ...safe } : { x: 8 * block + 40, y: 5 * block + 40 }; }
-  G.flash = Math.max(0, G.flash - dt); msgT -= dt; if (msgT <= 0) G.msg = "";
+  G.flash = Math.max(0, G.flash - dt); G.kick = Math.max(0, (G.kick || 0) - dt * .5); G.recoil = Math.max(0, (G.recoil || 0) - dt * 7); reloadTick(dt); casingTick(dt); msgT -= dt; if (msgT <= 0) G.msg = "";
 }
 
 // ---- renderer
@@ -1095,16 +1103,19 @@ function person(color, sex) {
   n.add(body, head); scene.add(n); return n;
 }
 // Joshua wears the Vancouver uniform: a yellow rain jacket with the hood up
-let hero = person(0xe8b21a); { const hood = new THREE.Mesh(new THREE.SphereGeometry(3, 48, 24, 0, Math.PI * 2, 0, Math.PI * .62), mat(0xe8b21a)); hood.position.y = 21.4; hood.scale.set(1, 1.1, .98); hero.add(hood); hero.hood = hood; } const gun = (() => { // a proper pistol: slide, frame, barrel, angled grip, trigger guard; gunmetal and polymer
-  const g = new THREE.Group(), metal = new THREE.MeshStandardMaterial({ color: 0x2b2e33, metalness: .85, roughness: .3 }), poly = new THREE.MeshStandardMaterial({ color: 0x141517, roughness: .7 });
-  const slide = new THREE.Mesh(new RoundedBoxGeometry(2.6, .55, .42, 3, .06), metal); slide.position.set(.3, .45, 0);
-  const frame = new THREE.Mesh(new RoundedBoxGeometry(2.1, .35, .38, 3, .05), poly); frame.position.set(.15, .05, 0);
-  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(.09, .09, .3, 20), metal); barrel.rotation.z = Math.PI / 2; barrel.position.set(1.65, .45, 0);
-  const grip = new THREE.Mesh(new RoundedBoxGeometry(.55, 1.3, .4, 3, .08), poly); grip.position.set(-.6, -.55, 0); grip.rotation.z = .28;
-  const guard = new THREE.Mesh(new THREE.TorusGeometry(.26, .05, 10, 24, Math.PI), poly); guard.position.set(.05, -.18, 0); guard.rotation.z = Math.PI;
-  const trig = new THREE.Mesh(new THREE.BoxGeometry(.06, .28, .08), metal); trig.position.set(.05, -.2, 0);
-  const sight = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, .1), metal); sight.position.set(1.4, .77, 0);
-  g.add(slide, frame, barrel, grip, guard, trig, sight); g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g; })(); gun.position.set(7, 14, 4); hero.add(gun);
+let hero = person(0xe8b21a); { const hood = new THREE.Mesh(new THREE.SphereGeometry(3, 48, 24, 0, Math.PI * 2, 0, Math.PI * .62), mat(0xe8b21a)); hood.position.y = 21.4; hood.scale.set(1, 1.1, .98); hero.add(hood); hero.hood = hood; } const GUNS = (() => { // one model per weapon, each its own silhouette: gunmetal, polymer and walnut
+  const metal = new THREE.MeshStandardMaterial({ color: 0x2b2e33, metalness: .85, roughness: .3 }), poly = new THREE.MeshStandardMaterial({ color: 0x141517, roughness: .7 }), wood = new THREE.MeshStandardMaterial({ color: 0x6b4428, roughness: .55 }), glass = new THREE.MeshStandardMaterial({ color: 0x0c1830, metalness: .6, roughness: .1 });
+  const box = (w, h, d, r = .05) => new RoundedBoxGeometry(w, h, d, 3, r), tube = (r, l, n = 20) => { const t = new THREE.CylinderGeometry(r, r, l, n); t.rotateZ(Math.PI / 2); return t; };
+  const make = parts => { const g = new THREE.Group(); for (const [geo, m, x, y, rz = 0] of parts) { const o = new THREE.Mesh(geo, m); o.position.set(x, y, 0); o.rotation.z = rz; o.castShadow = true; g.add(o); } return g; };
+  const guard = () => { const t = new THREE.TorusGeometry(.26, .05, 10, 24, Math.PI); t.rotateZ(Math.PI); return t; };
+  const pistol = make([[box(2.6, .55, .42, .06), metal, .3, .45], [box(2.1, .35, .38), poly, .15, .05], [tube(.09, .3), metal, 1.65, .45], [box(.55, 1.3, .4, .08), poly, -.6, -.55, .28], [guard(), poly, .05, -.18], [new THREE.BoxGeometry(.12, .1, .1), metal, 1.4, .77]]);
+  const shotgun = make([[tube(.12, 4.2), metal, 1.7, .32], [tube(.1, 3), metal, 1.3, .06], [box(1.1, .3, .34), wood, 1.7, .06], [box(1.4, .55, .38), metal, -.35, .25], [box(.45, 1, .36), wood, -.95, -.35, .35], [box(1.9, .55, .32), wood, -2, .02, .12], [guard(), metal, -.3, -.1]]);
+  const smg = make([[box(2.1, .6, .42), metal, .2, .3], [tube(.08, .7), metal, 1.6, .38], [box(.3, 1.2, .26), poly, .45, -.5, -.08], [box(.42, .95, .36), poly, -.45, -.35, .25], [box(1.1, .12, .12, .03), metal, -1.35, .45], [box(.12, .5, .12, .03), metal, -1.85, .2], [guard(), poly, 0, -.05]]);
+  const revolver = make([[tube(.14, 1.7), metal, 1.25, .45], [new THREE.CylinderGeometry(.34, .34, .62, 12).rotateZ(Math.PI / 2), metal, .25, .38], [box(1.1, .5, .34), metal, .15, .3], [box(.5, 1.25, .4, .1), wood, -.5, -.45, .4], [box(.1, .3, .12), metal, -.35, .7, .5], [guard(), metal, .05, -.05]]);
+  const ar = make([[box(2.4, .58, .4), poly, 0, .3], [box(1.7, .48, .44), poly, 2, .3], [tube(.07, 1.1), metal, 3.3, .34], [box(.36, 1.2, .3), metal, .55, -.45, -.25], [box(.42, .95, .36), poly, -.55, -.32, .3], [box(1.5, .62, .36), poly, -1.9, .18, .05], [box(.7, .22, .16), metal, 0, .7], [guard(), poly, 0, -.05]]);
+  const sniper = make([[box(2.2, .55, .4), metal, 0, .3], [tube(.08, 3.2), metal, 2.7, .36], [tube(.2, 1.8), poly, .25, 1], [tube(.24, .25), glass, 1.2, 1], [box(.2, .35, .16), metal, -.3, .7], [box(.2, .35, .16), metal, .8, .7], [box(.32, .7, .28), metal, .5, -.3, -.1], [box(.42, .95, .36), wood, -.55, -.32, .3], [box(2, .7, .34), wood, -2, .1, .06], [guard(), metal, 0, -.05]]);
+  return [null, pistol, shotgun, smg, revolver, ar, sniper]; })();
+const gun = new THREE.Group(); GUNS.forEach(m => m && gun.add(m)); window.GS_GUN = gun; // the hand holds all six; only the drawn one shows gun.position.set(7, 14, 4); hero.add(gun);
 // shared smooth car parts: one sedan geometry per size, one tyre and rim for every wheel
 const SEDAN_TURN = 0; // which way the sedan model faces: 0 if its nose is +x, Math.PI if it is -x
 const WHEEL = { tyre: new THREE.CylinderGeometry(3.6, 3.6, 2.6, 32).rotateX(Math.PI / 2), rim: new THREE.CylinderGeometry(2.3, 2.3, 2.8, 24).rotateX(Math.PI / 2), alloy: new THREE.MeshStandardMaterial({ color: 0xc8ccd0, metalness: .9, roughness: .3 }) };
@@ -1162,9 +1173,9 @@ function dressHero(name) {
   rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk"), punch: clip("Right_Jab_from_Guard"), grab: clip("Male_Run_Forward_Pick_Up_Left", "Right_Jab_from_Guard"), jump: clip("Regular_Jump"), fall: clip("falling_down"), getup: clip("Stand_Up1"), shoot: clip("Walk_Forward_While_Shooting_inplace"), die: clip("Shot_and_Fall_Backward"), idle2: clip("Idle_02") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
   hero.mix.acts.run ??= hero.mix.acts.walk; heroReady = true;
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
-  if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
+  if (hand) { heroHand = hand; scene.add(gun); gun.scale.setScalar(1.5); } // the gun follows the hand but aims where he faces (the rig's hand axes and its hidden 0.01 armature scale made a parented gun tiny and crooked) else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
 }
-let JOSH = null;
+let JOSH = null, heroHand = null; const handV = new THREE.Vector3();
 if (false) gltf.load("https://assets.babylonjs.com/meshes/HVGirl.glb", g => {
   const names = [...new Set(g.scene.getObjectsByProperty("isMesh", true).map(m => m.material.name))]; console.log("HVGirl materials", names.join(","));
   CROWD.push({ src: g, turn: Math.PI / 2, shirt: /T-shirt|short/i, map: { walk: "Walking", run: "Walking", idle: "Idle" } }); reCrowd();
@@ -1214,7 +1225,8 @@ function sync(now) {
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
   const kd = G.knock ? Math.min(1, (G.knock.dur - G.knock.t) * 5, G.knock.t / .45) : 0; hero.rotation.z = hero.mix?.acts.fall ? 0 : kd * Math.PI / 2; // knocked flat, back up over the last half second
-  hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
+  hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon && hero.visible; if (heroHand && gun.visible) { heroHand.getWorldPosition(handV); const rec = G.recoil || 0, aim = G.reloadT > 0 ? -1.1 + Math.sin(G.reloadT * 9) * .15 : performance.now() - G.shotAt < 700 ? rec * .45 : -.55; gun.rotation.set(0, -a, aim, "YXZ"); gun.position.set(handV.x - Math.cos(a) * rec * 1.6, handV.y - .5 + rec * .4, handV.z - Math.sin(a) * rec * 1.6); } GUNS.forEach((m, i) => { if (m) m.visible = i === G.weapon; }); if (!muzzle) { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,250,220,1)"); gr.addColorStop(.3, "rgba(255,190,80,.9)"); gr.addColorStop(1, "rgba(255,120,0,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); muzzle = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), blending: THREE.AdditiveBlending, depthWrite: false })); muzzle.light = new THREE.PointLight(0xffc070, 0, 90, 2); scene.add(muzzle, muzzle.light); }
+  { const on = G.flash > 0 && G.weapon && G.driving === null, fx = G.player.x + Math.cos(a) * 11 - Math.sin(a) * 3, fz = G.player.y + Math.sin(a) * 11 + Math.cos(a) * 3; muzzle.visible = on; muzzle.light.intensity = on ? 2600 : 0; if (on) { muzzle.position.set(fx, 14, fz); muzzle.light.position.set(fx, 15, fz); muzzle.scale.setScalar(5 + Math.random() * 4); muzzle.material.rotation = Math.random() * 6; } } // muzzle flash that lights the street
   const moving = G.keys.has("KeyW") || G.keys.has("KeyS") || !!G.carAnim, fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run, A = hero.mix.acts; if (A.idle && A.idle !== w) { // Joshua: idle standing, walk, run on Shift
       const bk = G.keys.has("KeyS") && !G.keys.has("KeyW"), sp = bk ? BACK : (fast ? SPRINT : JOG) * perk("run"), walking = bk || G.knock || A.run === w;
       const one = G.dieAt && A.die ? "die" : G.weapon && performance.now() - G.shotAt < 500 && A.shoot ? "shoot" : G.knock && A.fall ? (G.knock.t > GETUP ? "fall" : "getup") : G.z > 0 && A.jump ? "jump" : performance.now() - (G.punchAt || 0) < 450 && A.punch ? "punch" : performance.now() - (G.grabAt || 0) < 700 && A.grab ? "grab" : null;
@@ -1233,7 +1245,7 @@ function sync(now) {
     else { const k = e(Math.min(1, (T - SW.up - SW.pan) / SW.down)); x = SW.to.x; z = SW.to.y; y = H + (base.y - H) * k; if (k >= 1) SW.t = -1; }
     cam.position.set(x - (y < 200 ? Math.cos(a) * d : 0), y, z - (y < 200 ? Math.sin(a) * d : 0) + (y >= 200 ? 1 : 0)); cam.lookAt(x, 0, z); if (SW.t < 0) cam.rotation.order = "YXZ";
   } else {
-  const side = G.driving === null ? (rmC ? 4 : 14) : 0; cam.position.set(G.player.x - Math.cos(a) * d - Math.sin(a) * side, up, G.player.y - Math.sin(a) * d + Math.cos(a) * side); const pt = -.28 - (G.pitch || 0); cam.rotation.set(pt, -a - Math.PI / 2, 0, "YXZ"); cam.position.y = Math.max(8, up + (G.pitch || 0) * 60); }
+  const side = G.driving === null ? (rmC ? 4 : 14) : 0; cam.position.set(G.player.x - Math.cos(a) * d - Math.sin(a) * side, up, G.player.y - Math.sin(a) * d + Math.cos(a) * side); const pt = -.28 - (G.pitch || 0) + (G.kick || 0); /* the muzzle climbs on each shot */ cam.rotation.set(pt, -a - Math.PI / 2, 0, "YXZ"); cam.position.y = Math.max(8, up + (G.pitch || 0) * 60); }
   const tg = G.aimT && (G.aimT.kind === "ped" ? G.peds[G.aimT.i]?.p : G.cars[G.aimT.i]?.p); ring.visible = !!tg; if (tg) ring.position.set(tg.x, 1, tg.y);
   sun.position.set(G.player.x - 400, 900, G.player.y + 300); sun.target.position.set(G.player.x, 0, G.player.y);
   while (gooseMeshes.length < GEESE.length) gooseMeshes.push(gooseMesh()); gooseMeshes.forEach((m, i) => { const g = GEESE[i]; m.visible = !!g && g.hp > 0; if (g) { m.position.set(g.p.x, 0, g.p.y); m.rotation.y = -Math.atan2(G.player.y - g.p.y, G.player.x - g.p.x); } });
@@ -1260,9 +1272,9 @@ function drawBubbles() {
   bubbleEl.innerHTML = html;
 }
 function drawHud() {
-  drawBubbles(); const tipEl = document.getElementById("tip"); tipEl.style.display = (G.step < 5 || mission?.tip) && !G.paused ? "block" : "none"; tipEl.textContent = mission?.tip || tut[G.step] || "";
+  drawBubbles(); const tipEl = document.getElementById("tip"); tipEl.style.display = (G.step < 5 || mission?.tip) && !G.paused ? "block" : "none"; tipEl.textContent = mission?.tip || tut[G.step] || ""; const mb = document.getElementById("map").getBoundingClientRect(); tipEl.style.top = (mb.bottom > 0 ? mb.bottom + 10 : 14) + "px"; /* the objective sits in the top corner, under the minimap */
   const street = streetName(G.player.x, G.player.y);
-  hud.textContent = `${hood(G.player.x, G.player.y).name}` + (RAIN.live ? `   ${RAIN.live.temp}°C ${RAIN.live.text} (live)` : "") + "\n" + (G.step < 5 ? "▶ " + tut[G.step] + "\n" : "") + `${G.heroes[G.cur].name}   $${G.score}   ${"★".repeat(G.wanted)}\n${street}\n` + (G.driving !== null ? `${Math.round(Math.abs(G.cars[G.driving].v) / 4)} km/h` : (G.weapon ? `${WEAPONS[G.weapon].name} ${G.ammoW[G.weapon]}` : "Fists")) + (G.driving !== null ? `   Radio: ${STATIONS[RADIO.st].name}` : "") + `   Lv ${level()}  ${G.xp} XP` + (mission && G.step >= 5 ? "\n" + mission.text : "") + (G.free && G.step >= 5 ? `\nFree roam. Next job: ${G.free.title} ${isMine(G.free.who) ? "(yellow marker)" : `(Tab to ${G.free.who})`}` : "") + (G.msg ? "\n" + G.msg : "");
+  hud.textContent = `${hood(G.player.x, G.player.y).name}` + (RAIN.live ? `   ${RAIN.live.temp}°C ${RAIN.live.text} (live)` : "") + "\n" + (G.step < 5 ? "▶ " + tut[G.step] + "\n" : "") + `${G.heroes[G.cur].name}   $${G.score}   ${"★".repeat(G.wanted)}\n${street}\n` + (G.driving !== null ? `${Math.round(Math.abs(G.cars[G.driving].v) / 4)} km/h` : (G.weapon ? `${WEAPONS[G.weapon].name} ${G.mag[G.weapon] ?? Math.min(WEAPONS[G.weapon].mag, G.ammoW[G.weapon])}/${G.mag[G.weapon] == null ? Math.max(0, G.ammoW[G.weapon] - WEAPONS[G.weapon].mag) : G.ammoW[G.weapon]}` + (G.reloadT > 0 ? "  RELOADING" : "") : "Fists")) + (G.driving !== null ? `   Radio: ${STATIONS[RADIO.st].name}` : "") + `   Lv ${level()}  ${G.xp} XP` + (mission && G.step >= 5 && !mission.tip ? "\n" + mission.text : "") + (G.free && G.step >= 5 ? `\nFree roam. Next job: ${G.free.title} ${isMine(G.free.who) ? "(yellow marker)" : `(Tab to ${G.free.who})`}` : "") + (G.msg ? "\n" + G.msg : "");
   hpBar.style.width = Math.max(0, G.hp) + "%"; cross.style.color = G.aimT ? "#ff4040" : "#fff"; document.body.style.boxShadow = G.hurtT > 0 ? "inset 0 0 80px #c00" : "none";
   vanMap.forEach((row, r) => [...row].forEach((k, c) => { mx.fillStyle = k === "W" ? "#2255aa" : k === "P" ? "#2e8b3a" : k === "Y" ? "#d8c79a" : NAMES[k] ? "#ddd" : "#888"; mx.fillRect(c * 10, r * 10, 10, 10); }));
   mx.fillStyle = "#f33"; G.cars.filter(c => c.cop).forEach(c => mx.fillRect(c.p.x / block * 10 - 2, c.p.y / block * 10 - 2, 4, 4));
@@ -1333,7 +1345,7 @@ addEventListener("keydown", e => {
   const ov = overlay(); if (ov) { if (e.code === "Escape" && ov !== "title") closePanel(ov); if (ov === "title" && e.code === "Enter") $(save.game ? "tCont" : "tNew").click(); return; }
   if (e.code === "Escape") { setPause(!G.paused); return; }
   if (G.paused) return;
-  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { do G.weapon = (G.weapon + 1) % WEAPONS.length; while (!G.owned.has(G.weapon)); toast(WEAPONS[G.weapon].name); } if (/^Digit[1-7]$/.test(e.code)) { const w = +e.code[5] - 1; if (G.owned.has(w)) { G.weapon = w; toast(WEAPONS[w].name); } else toast(`No ${WEAPONS[w].name} yet. Guns are hidden around the city`); } if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); if (e.code === "KeyT") openTravel(); }
+  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { do G.weapon = (G.weapon + 1) % WEAPONS.length; while (!G.owned.has(G.weapon)); toast(WEAPONS[G.weapon].name); } if (/^Digit[1-7]$/.test(e.code)) { const w = +e.code[5] - 1; if (G.owned.has(w)) { G.weapon = w; toast(WEAPONS[w].name); } else toast(`No ${WEAPONS[w].name} yet. Guns are hidden around the city`); } if (e.code === "KeyR" && G.driving === null) reload(); if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); if (e.code === "KeyT") openTravel(); }
   if (["Tab", "Space", "ArrowUp", "ArrowDown"].includes(e.code)) e.preventDefault();
   G.keys.add(e.code);
 });

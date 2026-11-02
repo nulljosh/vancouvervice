@@ -7,6 +7,8 @@ Free roam the whole Lower Mainland, on foot or in a car: Free Roam on the title 
 The heist plays start to finish: grab up to four MacBooks and Mac minis (Joshua snatches each one off the table), the bigger staffer plants himself in the glass doorway and you knock him down to get out, then two stars and a car chase. Dying on the getaway sends you back to try again.
 The store on Georgia rebuilt from the concept art: limestone back wall, living green walls, pale oak tables, a polished stone floor. The two staff are real people now, in blue tees and lanyards, and they swing back.
 Six guns: start with the pistol and find a shotgun, SMG, revolver, assault rifle and sniper rifle lying around the city. Q or 1 to 7 switches between the ones you own, and each has its own crack, thump and echo.
+Every gun is a real model in his hand, aimed where he faces, with a muzzle flash, recoil, a kick to the camera and brass flying out. Magazines run dry and R reloads on foot (an empty one reloads itself).
+The objective sits in a card under the minimap. Stolen cars jammed against a wall ease out onto the lane. Open sea now surrounds the big-road map.
 Every shop on the real streets has its own front: gun store, clothing, barber, cafe, restaurant, pawn, pharmacy, convenience and pub, picked from the business at that address.
 All of Brookswood (32 to 48 Avenue, 196 to 208 Street) and Vancouver from Stanley Park to Commercial Drive, every building from Overture.
 Crowds walk at a real pace instead of windmilling their arms, and people who get hit flinch and lunge back.

@@ -16,9 +16,16 @@ The corridor (big-road map) runs from Tsawwassen to Chilliwack and Harrison; the
 
 Gotchas: never run WebKit or screenshot jobs while tests/web.mjs runs (swiftshader starves and checks fail); copsCome is a known flake; Overpass needs a User-Agent header or it answers 406.
 
+## In flight (2026-11-02, about 14:10)
+Committed and pushed as df3e0b3 (v1 work); GitHub CI run 41522166683 was still on the web job, then tag v2.0.0. Uncommitted on top: the door guard routes to the doorway and starts by the entrance; six gun models (GUNS in play.html) that follow the hand bone in world space and aim where he faces (a parented gun was 100x too small because the rig hides a 0.01 armature scale); muzzle flash and camera kick; magazines (WEAPONS mag and reload in js/data.js, G.mag, R reloads on foot, empty mags reload themselves), recoil and brass casings; the objective in a card under the minimap (#tip); stolen cars stuck against walls ease onto the lane (unbox); open sea on the corridor from Overture land (scratchpad ocean.py). Web test 20 was running on all of it. Commit those paths when it passes, deploy, then run tests/_perf.mjs (WebKit, every map) and fix the slowest thing first.
+
+Joshua also asked for: graphics, stability, reliability and performance next. The blender-model skill (~/.claude/skills/blender-model, committed in labs) builds props in headless Blender without Higgsfield; Higgsfield is at about 455 credits, at the 450 floor.
+
 ## Next, in order
-1. Full test run passing, then commit everything, push, deploy, wait for green CI, tag v2.0.0, send Joshua the Mac zip again.
-2. Work down the v2 list in roadmap.md, one item per pass, with a video for each.
+1. Web test 20 passing, commit the in-flight work, deploy, tag v2.0.0 once CI is green, send Joshua the Mac zip again.
+2. Profile with tests/_perf.mjs and fix the worst frame times; then graphics.
+3. Work down the v2 list in roadmap.md, one item per pass, with a video for each.
+4. When v2 (3.0.0) lands, Joshua wants a full QA of the whole game: every feature, every mission and free roam on every map, with video, before calling it done.
 
 ## Restart prompt
 ```
