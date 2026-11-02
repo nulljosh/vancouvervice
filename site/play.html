@@ -549,12 +549,17 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(R1.w, R1.h), mat(0xd9d6cf)); floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R1.y + R1.h / 2);
   add(boxM(R1.w, 130, 6, white), cx, 65, R1.y + 3); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + 3, 65, R1.y + R1.h / 2); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + R1.w - 3, 65, R1.y + R1.h / 2);
   add(boxM(R1.w - 12, 4, 40, mat(0xe9e6df)), cx, 62, R1.y + 26); add(boxM(R1.w - 12, 10, 1, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .3 })), cx, 69, R1.y + 46);
-  for (let st = 0; st < 12; st++) add(boxM(36, 5, 4, mat(0xbdbab2)), R1.x + 30, 2.5 + st * 5, R1.y + 96 - st * 4);
+  // staircase on the right as you walk in, around the corner; glass elevator on the left
+  for (let st = 0; st < 12; st++) add(boxM(36, 5, 4, mat(0xbdbab2)), R1.x + R1.w - 28, 2.5 + st * 5, R1.y + 96 - st * 4);
+  { const str = boxM(4, 76, 4, mat(0xb2afa7)); str.scale.set(1, 1, 1); for (const sx of [-19, 19]) { const g = boxM(3, 4, 60, mat(0xa8a59d)); g.position.set(R1.x + R1.w - 28 + sx, 32, R1.y + 74); g.rotation.x = Math.atan2(60, 48); scene.add(g); } } // stair stringers
+  add(boxM(30, 128, 30, new THREE.MeshPhysicalMaterial({ color: 0xdfeef0, roughness: .04, transparent: true, opacity: .26 })), R1.x + 28, 64, R1.y + 96);
+  add(boxM(4, 128, 4, mat(0xb8bbbf)), R1.x + 13, 64, R1.y + 111); add(boxM(4, 128, 4, mat(0xb8bbbf)), R1.x + 43, 64, R1.y + 111);
+  add(boxM(24, 24, 24, mat(0xc9ccd0)), R1.x + 28, 13, R1.y + 96);
   const sky = new THREE.Mesh(new THREE.PlaneGeometry(R1.w - 20, 40), new THREE.MeshBasicMaterial({ color: 0xffffff })); sky.rotation.x = Math.PI / 2; add(sky, cx, 128, R1.y + R1.h / 2);
   for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 130, 2, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .16 })), cx + sx * (R1.w / 4 + 9), 65, R1.y + R1.h - 3);
   const wall = new THREE.Mesh(new THREE.PlaneGeometry(150, 40), new THREE.MeshBasicMaterial({ color: 0x2a6fdb })); add(wall, cx, 92, R1.y + 6.5);
   const wood = mat(0xc9a77c), screen = new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: .2, metalness: .3 });
-  for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) { const tx = cx + sx * 50, tz = R1.y + 52 + row * 30; add(boxM(70, 3, 18, wood), tx, 12, tz); for (const lx of [-28, 28]) add(boxM(3, 12, 3, mat(0x9a9a96)), tx + lx, 6, tz);
+  for (let row = 0; row < 2; row++) for (const sx of [-1, 1]) { const tx = cx + sx * 34, tz = R1.y + 64 + row * 34; add(boxM(70, 3, 20, wood), tx, 12, tz); for (const lx of [-28, 28]) add(boxM(3, 12, 3, mat(0x9a9a96)), tx + lx, 6, tz);
     for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
   for (const lx of [-60, 0, 60]) { const l = new THREE.PointLight(0xffffff, 700, 180, 2); l.position.set(cx + lx, 60, R1.y + R1.h / 2); scene.add(l); }
   setTimeout(() => { for (const [dx, dz] of [[-80, 40], [70, 90]]) { const st = person(0x1e6fd9); st.position.set(cx + dx, 0, R1.y + dz); st.rotation.y = -Math.PI / 2; scene.add(st); } });
