@@ -530,12 +530,13 @@ function dressHero(name) {
 }
 let JOSH = null;
 // Joshua's look, from his portrait: ginger curls, fair skin, black top, dark jeans, tortoiseshell glasses
-const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.42, z: 1.2, tilt: -.26, r: .28, wide: 1.12, rim: .026, sep: .39, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74 };
+const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.42, z: 1.2, tilt: -.26, r: .28, wide: 1.12, rim: .026, sep: .39, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74, fringeH: .74, fringeF: .3, nape: .42 };
 // tortoiseshell: dark brown with amber flecks, like his frames
 function tortoise() { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.fillStyle = "#2a160c"; x.fillRect(0, 0, 64, 64);
   for (let i = 0; i < 70; i++) { x.fillStyle = ["#5b3315", "#7a4a1e", "#3b200f", "#9a6a2c"][i % 4]; x.beginPath(); x.ellipse(Math.random() * 64, Math.random() * 64, 1 + Math.random() * 5, 1 + Math.random() * 3, Math.random() * 3, 0, 7); x.fill(); }
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 1); return t; }
 function lookLikeJoshua(s) {
+  s.traverse(o => { if (o.isMesh && o.material.name === "Eyelashmat") o.visible = false; }); // stock lashes read as black eyeliner; his are light
   s.traverse(o => { const L = o.isMesh && JOSH_LOOK[o.material.name]; if (!L) return; const m = o.material; m.color.setHex(L[0]); m.roughnessMap = null; if (m.name === "Hairmat") { m.transparent = false; m.alphaTest = .12; m.side = THREE.DoubleSide; m.depthWrite = true; } m.roughness = L[1]; if (L[2]) m.emissive.setHex(L[2]); m.needsUpdate = true; });
   let head = null; s.traverse(o => { if (!head && o.isBone && /Head$/.test(o.name)) head = o; }); if (!head) return;
   s.updateMatrixWorld(true); const k = 1 / head.getWorldScale(new THREE.Vector3()).x, m = new THREE.MeshStandardMaterial({ map: tortoise(), roughness: .25 }), g = new THREE.Group();
@@ -548,6 +549,11 @@ function lookLikeJoshua(s) {
   for (const side of ["Left", "Right"]) { const leg = bone(side + "Leg"), foot = bone(side + "Foot"); if (!leg || !foot) continue;
     const len = wp(leg).distanceTo(wp(foot)), kl = 1 / leg.getWorldScale(new THREE.Vector3()).x, c = new THREE.Mesh(new THREE.CylinderGeometry(GL.calf, GL.ankle, len * 1.02, 20, 1, true), jeans);
     c.material.side = THREE.DoubleSide; c.scale.setScalar(kl); c.position.y = len / 2 * kl; c.castShadow = true; leg.add(c); }
+  // no bangs: drop the stock fringe (hair in front of the forehead, below his hairline)
+  const hairM = (() => { let h = null; s.traverse(o => { if (!h && o.isSkinnedMesh && o.material.name === "Hairmat") h = o; }); return h; })(), hd = bone("Head"), ht = bone("HeadTop_End");
+  if (hairM && hd && ht && hairM.geometry.index) { hairM.geometry = hairM.geometry.clone(); hairM.updateMatrixWorld(true); const g2 = hairM.geometry, ix = g2.index, v2 = new THREE.Vector3(), c0 = wp(hd), top = wp(ht), span = top.y - c0.y, fwd = new THREE.Vector3(0, 0, 1).transformDirection(hd.matrixWorld).setY(0).normalize();
+    const fringe = new Uint8Array(g2.attributes.position.count); for (let k = 0; k < fringe.length; k++) { hairM.getVertexPosition(k, v2); v2.applyMatrix4(hairM.matrixWorld); const h = (v2.y - c0.y) / span, f = v2.clone().sub(c0).setY(0).dot(fwd) / span; fringe[k] = (h < GL.fringeH && f > GL.fringeF) || h < GL.nape ? 1 : 0; }
+    const keep = []; for (let n = 0; n < ix.count; n += 3) { const a = ix.getX(n), b = ix.getX(n + 1), c = ix.getX(n + 2); if (!(fringe[a] || fringe[b] || fringe[c])) keep.push(a, b, c); } g2.setIndex(keep); }
   // crewneck: paint the skin the V-neck shows (and the base of the neck) black, a white collar line on top
   const neck = bone("Neck"), headTop = bone("HeadTop_End"), body = (() => { let b = null; s.traverse(o => { if (!b && o.isSkinnedMesh && o.material.name === "Bodymat" && o.material.map) b = o; }); return b; })();
   if (neck && headTop && body) {
@@ -566,7 +572,7 @@ function lookLikeJoshua(s) {
         const a = ((y1 - y2) * (x + .5 - x2) + (x2 - x1) * (y + .5 - y2)) / den, b = ((y2 - y0) * (x + .5 - x2) + (x0 - x2) * (y + .5 - y2)) / den, c = 1 - a - b; if (a < -.02 || b < -.02 || c < -.02) continue;
         const d = a * dy[q[0]] + b * dy[q[1]] + c * dy[q[2]], r = a * rr[q[0]] + b * rr[q[1]] + c * rr[q[2]], h = a * hh[q[0]] + b * hh[q[1]] + c * hh[q[2]], hair = h > GL.hairline;
         if (!hair && (r > GL.crewR || d < -GL.crewDown || d > GL.crewUp + GL.collarH)) continue;
-        const o = (y * W + x) * 4, rgb = hair ? [176, 112, 62] : d > GL.crewUp ? [236, 235, 230] : [19, 19, 21]; C.data[o] = rgb[0]; C.data[o + 1] = rgb[1]; C.data[o + 2] = rgb[2]; E.data[o] = E.data[o + 1] = E.data[o + 2] = 0; } }
+        const o = (y * W + x) * 4, sn = .72 + .5 * Math.abs(Math.sin(x * .9 + Math.sin(y * .21) * 3) * Math.sin(y * .05 + x * .013)), rgb = hair ? [176 * sn, 112 * sn, 62 * sn] : d > GL.crewUp ? [236, 235, 230] : [19, 19, 21]; C.data[o] = rgb[0]; C.data[o + 1] = rgb[1]; C.data[o + 2] = rgb[2]; E.data[o] = E.data[o + 1] = E.data[o + 2] = 0; } }
     cx.putImageData(C, 0, 0); ex.putImageData(E, 0, 0);
     const tex = (cv, srgb) => { const t = new THREE.CanvasTexture(cv); t.flipY = false; if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = body.material.map.wrapS; t.wrapT = body.material.map.wrapT; return t; };
     body.material.map = tex(col, true); body.material.emissiveMap = tex(emi, true); body.material.needsUpdate = true;
