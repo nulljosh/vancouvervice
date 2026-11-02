@@ -17,13 +17,19 @@ You switch between them any time. Their stories cross at the heist.
 
 ## Act one: Joshua gets in over his head
 
-**1. Out the door.** The game starts mid-run. Joshua bursts out of the Apple Store on Georgia with a bag of Mac minis. Two employees in blue shirts chase him onto the sidewalk. One is on the phone to the cops. *Get out of here.*
+**1. The Georgia Store.** The game starts inside the Apple Store on Georgia. Six Mac minis on the table ends and nobody's looking. Grab them; the two employees in blue shirts turn on you at the first one. Walk out with stock and they chase you onto the sidewalk while one calls the cops. *Get out of here.*
 
 **2. Jack a car.** One star, a siren getting closer. Grab the first car at the curb.
 
 **3. Lose the cops.** Stars climb when you hit things and drain when you break line of sight. Lose them past the Art Gallery.
 
 **4. Pawn the Mac minis.** There's no inventory screen. A line in the corner says *Mac minis: 6*. Sell them on Granville. The pawn guy pays half what you hoped and asks where you got them.
+
+**4a. Colin's night deposit.** Colin manages the McDonald's on Granville and brags about the night deposit to anyone who'll listen. He laughs at you until you pull a gun. Take the bag, two stars, lose them.
+
+**4b. Club Velvet.** Your girl is at Club Velvet on Granville, laughing at something Colin said, wearing nothing he could afford before last night. She's done with you. They leave together in his gold car and you tail him home to an underground lot in Yaletown. Now you know where Colin lives.
+
+Between jobs the city is free roam. The next job waits at its marker: Joshua's at the Steam Clock, Ben's at Dad's garage, Alexandre's in Victoria.
 
 **5. The debt.** The minis were never Joshua's idea. They were a payment. He owes Dmitri, a crypto guy in a Patagonia vest who runs a fake co-working space in Gastown. Dmitri wants forty grand by Friday.
 

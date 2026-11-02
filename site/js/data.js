@@ -31,8 +31,10 @@ export const LINES = ["Sorry!", "Canucks are gonna choke again, eh", "Rent's thi
 export const BUMPS = ["Watch it, bud", "Hey! Eyes up", "Seriously?"];
 export const FIGHTS = ["You got a problem?", "Wanna go?", "Say that again"];
 export const STORY = [
-  { title: "Joshua: Get Out of Here", kind: "evade", text: "You just burst out of the Apple Store on Georgia with a bag of Mac minis. Two guys in blue shirts are yelling behind you and one's already on the phone to the cops. Jack a car and lose them", pay: 300 },
-  { title: "Joshua: Pawn the Mac minis", kind: "deliver", at: "pawn", text: "Six Mac minis, no receipts, no questions you want asked. Drive them to Granville Pawn (green on the map) before Dmitri finds out they were never yours to sell, then walk in and take the cash", pay: 400 },
+  { title: "Joshua: The Georgia Store", kind: "heist", text: "Six Mac minis on the tables at the store on Georgia, and nobody's looking yet. Grab them and run for the door. Two guys in blue shirts won't let it go and one will call the cops: jack a car and lose them", pay: 300 },
+  { title: "Joshua: Pawn the Mac minis", kind: "deliver", at: "pawn", chain: true, text: "Six Mac minis, no receipts, no questions you want asked. Drive them to Granville Pawn (green on the map) before Dmitri finds out they were never yours to sell, then walk in and take the cash", pay: 400 },
+  { title: "Joshua: Colin's Night Deposit", kind: "rob", text: "Colin manages the McDonald's on Granville and brags about the night deposit to anyone who'll listen. Walk in with a gun out, take the bag, and lose the cops", pay: 500 },
+  { title: "Joshua: Club Velvet", kind: "club", text: "Your girl's at Club Velvet on Granville tonight. So, it turns out, is Colin. Go find her", pay: 600 },
   { title: "Joshua: Night Shift", kind: "taxi", text: "Cover a buddy's cab. Pick up the fare", pay: 350 },
   { title: "Alexandre: Island Business", kind: "hit", text: "Someone's been talking. Find the marked man and deal with him", pay: 500 },
   { title: "Joshua: Heat on Hastings", kind: "evade", text: "Get the cops' attention, three stars, then lose them", pay: 600 },
