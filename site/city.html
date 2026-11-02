@@ -34,8 +34,8 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { buildHero } from "./js/hero.js";
 
 // ?area=victoria (Alexandre's turf) or kits; default downtown Vancouver
-const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley", harrison: "Harrison Hot Springs", brookswood: "Brookswood", corridor: "Highway 1" }[AREA] || "Vancouver";
-const SUBURB = AREA === "brookswood"; // houses on lots, pitched roofs, ditches and tall firs instead of downtown towers
+const AREA = new URLSearchParams(location.search).get("area") || "vancouver", AREA_NAME = { vancouver: "Vancouver", victoria: "Victoria", kits: "Kitsilano", langley: "Langley", harrison: "Harrison Hot Springs", brookswood: "Brookswood", fortlangley: "Fort Langley", corridor: "Highway 1" }[AREA] || "Vancouver";
+const SUBURB = AREA === "brookswood" || AREA === "fortlangley"; // houses on lots, pitched roofs, ditches and tall firs instead of downtown towers
 const D = await fetch(`data/${AREA}.json`).then(r => r.ok ? r.json() : fetch("data/vancouver.json").then(r => r.json()));
 const HIGHWAY = AREA === "corridor"; // the drive between the real-scale towns: Highway 1 and the big roads at half scale (tools/corridor.py)
 // every map shares one compass: +x east, +z south. Its origin and scale turn a spot into latitude and longitude, so a car can drive off one map and onto the next
@@ -127,7 +127,9 @@ const LANDMARKS = { brookswood: [
   // the Chevron at 208 St and 40 Ave: canopy over two pump islands, the store west of it with a chamfered south-east corner
   // Brookswood Secondary, 37A Ave: every footprint in this box is school (portables too); tennis courts to the north, sign at the drive
   { kind: "school", box: [1712, 564, 1872, 698], name: "Brookswood Secondary School", sign: [1724, 619], courts: [1807, 525.6, 87, 27], pads: [], field: [1619, 512, 1755, 606] },
-  { kind: "gas", x: 1536.4, z: 82, W: 12.4, D: 9.3, store: [1513.5, 79.3, 24, 22], name: "Chevron", pads: [[1499, 53, 1548, 104]] }] }[AREA] || [];
+  { kind: "gas", x: 1536.4, z: 82, W: 12.4, D: 9.3, store: [1513.5, 79.3, 24, 22], name: "Chevron", pads: [[1499, 53, 1548, 104]] }],
+  // Fort Langley National Historic Site: the cedar palisade, corners measured off Esri imagery (N, E, S, W)
+  fortlangley: [{ kind: "fort", wall: [[533.8, -56], [586.4, -22.9], [459.6, 107.8], [410.8, 74.6]], field: [405, -60, 590, 110], name: "Fort Langley" }] }[AREA] || [];
 // no trees on a landmark, its lot or its courts
 const PAVED = LANDMARKS.flatMap(L => [...(L.pads || []), ...(L.W ? [[L.x - L.W / 2 - 3, L.z - L.D / 2 - 3, L.x + L.W / 2 + 3, L.z + L.D / 2 + 3]] : []), ...(L.box ? [L.box] : []), ...(L.field ? [L.field] : []), ...(L.courts ? [[L.courts[0] - L.courts[2] / 2 - 2, L.courts[1] - L.courts[3] / 2 - 2, L.courts[0] + L.courts[2] / 2 + 2, L.courts[1] + L.courts[3] / 2 + 2]] : [])]);
 const paved = (x, z) => PAVED.some(([a, b, c, d]) => x > a && x < c && z > b && z < d);
@@ -367,7 +369,7 @@ if (HIGHWAY) { const wcell = new Map(); D.water.forEach(w => { let x0 = 1e9, x1 
         for (const sd of [1, -1]) { const h1 = hash(x * sd, z), off = r.w / 2 + 6 + h1 * h1 * 70, jx = x + nx * off * sd, jz = z + nz * off * sd, k = hash(jz, jx); if (h1 > .7 || nearRoad(jx, jz, 4) || wet(jx, jz)) continue;
           if (k < .45) { const H = 22 + k * 40; fir.push([jx, jz, H * .34, H, k]); } else if (k < .7) { const H = 18 + k * 20; cedar.push([jx, jz, H * .41, H, k]); } else { const H = 10 + k * 9; maple.push([jx, jz, H * .77, H, k]); } } } } }
   billboards("tree-fir", fir); billboards("tree-cedar", cedar); billboards("tree-maple", maple); console.log("highway:", fir.length + cedar.length + maple.length, "trees"); }
-if (!SUBURB && !HIGHWAY) { const mp = treePts.filter(([x, z]) => !solid(x, z)).map(([x, z]) => { const k = hash(x, z), H = 8 + k * 5; return [x, z, H * .77, H, k]; }); billboards("tree-maple", mp); window.TREES = mp.length; treePts.length = 0; }
+if (!HIGHWAY) { const mp = treePts.filter(([x, z]) => !solid(x, z)).map(([x, z]) => { const k = hash(x, z), H = 8 + k * 5; return [x, z, H * .77, H, k]; }); billboards("tree-maple", mp); window.TREES = mp.length; treePts.length = 0; }
 { const pts = treePts.filter(([x, z]) => !solid(x, z)); const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(.18, .26, 4, 12), new THREE.MeshStandardMaterial({ color: 0x5a4432, roughness: .9 }), pts.length);
   const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.4, 3), new THREE.MeshStandardMaterial({ color: 0x3f6f35, roughness: .85 }), pts.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
   pts.forEach(([x, z], i) => { trunk.setMatrixAt(i, m4.makeTranslation(x, 2, z)); const k = .8 + ((x * 13.7 + z * 7.1) % 1 + 1) % 1 * .6; sc.set(k, k * 1.15, k); crown.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 4.8 * k, z), q, sc)); }); trunk.castShadow = crown.castShadow = true; scene.add(trunk, crown); window.TREES = (window.TREES || 0) + pts.length; }
@@ -406,6 +408,11 @@ if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ color: 0xd9d6cf, ro
     if (pos.length) { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals(); wallG.push(g); } }
   if (wallG.length) { const t = photo("soundwall", 4); t.repeat.set(1 / 7.15, 1 / 4); const m = new THREE.Mesh(mergeGeometries(wallG), new THREE.MeshStandardMaterial({ map: t, roughness: .9, side: THREE.DoubleSide })); m.castShadow = m.receiveShadow = true; scene.add(m); }
   console.log("highway:", signs.length, "distance signs,", wallG.length, "sound walls"); }
+for (const L of LANDMARKS) if (L.kind === "fort") { const t = new THREE.TextureLoader().load("materials/palisade.webp"); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.anisotropy = 8; // logs 4.6 m tall, the image every 8 m
+  const pos = [], uv = []; let run = 0; for (let i = 0; i < L.wall.length; i++) { const [ax, az] = L.wall[i], [bx, bz] = L.wall[(i + 1) % L.wall.length], len = Math.hypot(bx - ax, bz - az);
+    pos.push(ax, 0, az, bx, 0, bz, bx, 4.6, bz, ax, 0, az, bx, 4.6, bz, ax, 4.6, az); uv.push(run / 8, 0, (run + len) / 8, 0, (run + len) / 8, 1, run / 8, 0, (run + len) / 8, 1, run / 8, 1); run += len; }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals();
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: t, alphaTest: .5, roughness: .95, side: THREE.DoubleSide })); m.castShadow = m.receiveShadow = true; m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: t, alphaTest: .5 }); scene.add(m); }
 if (DOWNTOWN) { const at = (lat, lon) => fromLL(lat, lon), under = (x, z) => (grid.get(key(Math.floor(x / CELL), Math.floor(z / CELL))) || []).find(b => inside(b, x, z));
   const white = new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: .55, side: THREE.DoubleSide }), glassM = new THREE.MeshStandardMaterial({ color: 0x1d2a33, metalness: .8, roughness: .12 });
   { const [x, z] = at(49.28466, -123.11186), b = under(x, z), h = Math.max(b?.h || 0, 120); // Harbour Centre: the revolving restaurant's saucer on top of the tower
@@ -633,7 +640,7 @@ function portal() { if (!S.driving || inRoom || S.leaving || S.p.distanceTo(S.ar
   try { localStorage.setItem("vv-handoff", JSON.stringify({ to, lat, lon, a: S.car.a, v: S.car.v, P: { cash: P.cash, hp: P.hp, stars: P.stars, starT: P.starT }, car: S.carKind, auto: !!S.auto && !S.auto.done, trip0: S.trip0, simT: S.simT, ts: window.TS, t: Date.now() })); } catch {}
   document.body.insertAdjacentHTML("beforeend", `<div style="position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;font:600 26px -apple-system,Helvetica;color:#fff;z-index:9">${say}</div>`); setTimeout(() => location.search = "?area=" + to, 300); }
 document.getElementById("load").remove();
-if (AREA === "brookswood" && !HO) toast("Brookswood, south Langley. 200 Street at 40 Avenue"); if (HIGHWAY) toast("Highway 1. Vancouver is west. Brookswood is south down 200 Street");
+if (AREA === "brookswood" && !HO) toast("Brookswood, south Langley. 200 Street at 40 Avenue"); if (AREA === "fortlangley") toast("Fort Langley. Glover Road, the old fort and the Fraser"); if (HIGHWAY) toast("Highway 1. Vancouver is west. Brookswood is south down 200 Street");
 if (AREA === "victoria") { toast("Victoria. Alexandre's town. Tab to fly back to Vancouver"); }
 
 const RG = (() => { const nodes = new Map(), id = (x, z) => Math.round(x * 2) + "," + Math.round(z * 2), V = { motorway: 46, motorway_link: 20, trunk: 34, trunk_link: 18, primary: 20, primary_link: 14, secondary: 18, tertiary: 15, residential: 11, unclassified: 11 };

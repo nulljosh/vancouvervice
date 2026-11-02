@@ -13,8 +13,8 @@ We take one area to A+ before starting the next: real street names, every landma
 | 2 | Downtown Vancouver | 49.2833, -123.1187 | downtown | live, polishing |
 | 3 | Kitsilano | 49.2690, -123.1575 | suburb | live |
 | 4 | Langley City | 49.1044, -122.6604 | town centre | live |
-| 5 | Fort Langley | 49.1680, -122.5790 | village | next |
-| 6 | Walnut Grove | 49.1640, -122.6400 | suburb | |
+| 5 | Fort Langley | 49.1680, -122.5790 | village | live: real footprints, photo trees, the fort's palisade |
+| 6 | Walnut Grove | 49.1640, -122.6400 | suburb | next |
 | 7 | Surrey City Centre | 49.1890, -122.8490 | downtown | |
 | 8 | Cloverdale | 49.1050, -122.7240 | town centre | |
 | 9 | White Rock and South Surrey | 49.0250, -122.8030 | beach town | |
