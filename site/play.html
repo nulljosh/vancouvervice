@@ -489,6 +489,20 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   else if (k === "A") { n = boxM(w, 55, w * .7, 0xd9d2c0); n.position.y = 27; for (let i = 0; i < 6; i++) { const col = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 50, 32), mat(0xf2eee4)); col.position.set(-w / 2 + 15 + i * (w - 30) / 5, -2, w * .35 + 4); n.add(col); } const d = new THREE.Mesh(new THREE.SphereGeometry(22, 64, 32), mat(0xbfb8a6)); d.position.y = 32; n.add(d); }
   else if (k === "O") { n = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2, 45, 96), mat(0x5a5f66)); n.position.y = 22; }
   else if (k === "I") { n = new THREE.Group(); [0xc0392b, 0x2e6fa8, 0xe0a526, 0x3d8c55].forEach((c, i) => { const b = boxM(w / 2 - 8, 26, w / 2 - 8, c); b.position.set((i % 2 - .5) * w / 2, 13, (Math.floor(i / 2) - .5) * w / 2); n.add(b); }); }
+  else if (bx === 7 && by === 4) { // the store pavilion on W Georgia: two-storey glass box, thin timber-soffit roof far overhanging, stone steps, living walls, bare trees (no logo)
+    n = new THREE.Group(); const gw = w * .78, gd = w * .62, gh = 120, ov = 26;
+    const glassBox = boxM(gw, gh, gd, new THREE.MeshPhysicalMaterial({ color: 0xbfd6dc, roughness: .04, metalness: .2, transparent: true, opacity: .32 })); glassBox.position.y = gh / 2; n.add(glassBox);
+    const mezz = boxM(gw - 8, 4, gd * .55, mat(0xe9e6df)); mezz.position.set(0, gh / 2, -gd * .2); n.add(mezz);
+    const floorIn = boxM(gw - 4, 1, gd - 4, mat(0xd9d4c8)); floorIn.position.y = 1; n.add(floorIn);
+    for (let t = 0; t < 4; t++) { const tb = boxM(30, 3, 9, mat(0xc9a77c)); tb.position.set(-30 + (t % 2) * 60, 12, 10 + Math.floor(t / 2) * 22); n.add(tb); }
+    const roof = boxM(gw + ov * 2, 7, gd + ov * 2, mat(0xdedcd6)); roof.position.y = gh + 4; n.add(roof);
+    const soffit = new THREE.Mesh(new THREE.PlaneGeometry(gw + ov * 2, gd + ov * 2), mat(0x9a6a42)); soffit.rotation.x = Math.PI / 2; soffit.position.y = gh + .4; n.add(soffit);
+    for (const [cxo, czo] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const col = boxM(7, gh, 7, mat(0xcfccc4)); col.position.set(cxo * (gw / 2 + 3), gh / 2, czo * (gd / 2 + 3)); n.add(col); }
+    for (let st = 0; st < 4; st++) { const step = boxM(w - st * 6, 4, 14 - st * 2, mat(0x9b9b96)); step.position.set(0, 2 + st * 4, gd / 2 + 26 - st * 6); n.add(step); }
+    for (const sx of [-1, 1]) { const green = boxM(10, gh * .9, gd * .9, mat(0x2f5a2c)); green.position.set(sx * (gw / 2 + 16), gh * .45, 0); n.add(green); }
+    for (const tx of [-gw / 2 + 10, gw / 2 - 10]) { const trunk = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.6, 40, 8), mat(0x6b5a4a)); trunk.position.set(tx, 20, gd / 2 + 40); n.add(trunk);
+      for (let br = 0; br < 5; br++) { const b2 = new THREE.Mesh(new THREE.CylinderGeometry(.4, .7, 18, 6), mat(0x6b5a4a)); b2.position.set(tx + Math.cos(br * 1.3) * 5, 40, gd / 2 + 40 + Math.sin(br * 1.3) * 5); b2.rotation.set(Math.sin(br * 1.3) * .6, 0, -Math.cos(br * 1.3) * .6); n.add(b2); } }
+    const lobbyLight = new THREE.PointLight(0xfff0d8, 600, 220, 2); lobbyLight.position.set(0, 80, 0); n.add(lobbyLight); }
   else if (k === "L") { n = boxM(w, 50, w * .6, 0xccbf99); n.position.y = 25; const d = new THREE.Mesh(new THREE.SphereGeometry(30, 64, 32), mat(0x669980)); d.position.y = 35; n.add(d); }
   else {
     const hash = (bx * 37 + by * 91) % 7, core = by >= 3 && by <= 7 && bx >= 6 && bx <= 12, h = 80 + hash * 60 + (core ? 200 : 0), v = (bx * 7 + by) % 3;
@@ -533,9 +547,12 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
 { // the store on Georgia: white room, long wooden tables of laptops and phones, a video wall, staff in blue. No logos.
   const R1 = ROOMS[1], cx = R1.x + R1.w / 2, white = mat(0xf4f4f2), add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(R1.w, R1.h), mat(0xd9d6cf)); floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R1.y + R1.h / 2);
-  add(boxM(R1.w, 90, 6, white), cx, 45, R1.y + 3); add(boxM(6, 90, R1.h, white), R1.x + 3, 45, R1.y + R1.h / 2); add(boxM(6, 90, R1.h, white), R1.x + R1.w - 3, 45, R1.y + R1.h / 2);
-  for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 90, 2, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .16 })), cx + sx * (R1.w / 4 + 9), 45, R1.y + R1.h - 3);
-  const wall = new THREE.Mesh(new THREE.PlaneGeometry(150, 40), new THREE.MeshBasicMaterial({ color: 0x2a6fdb })); add(wall, cx, 34, R1.y + 6.5);
+  add(boxM(R1.w, 130, 6, white), cx, 65, R1.y + 3); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + 3, 65, R1.y + R1.h / 2); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + R1.w - 3, 65, R1.y + R1.h / 2);
+  add(boxM(R1.w - 12, 4, 40, mat(0xe9e6df)), cx, 62, R1.y + 26); add(boxM(R1.w - 12, 10, 1, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .3 })), cx, 69, R1.y + 46);
+  for (let st = 0; st < 12; st++) add(boxM(36, 5, 4, mat(0xbdbab2)), R1.x + 30, 2.5 + st * 5, R1.y + 96 - st * 4);
+  const sky = new THREE.Mesh(new THREE.PlaneGeometry(R1.w - 20, 40), new THREE.MeshBasicMaterial({ color: 0xffffff })); sky.rotation.x = Math.PI / 2; add(sky, cx, 128, R1.y + R1.h / 2);
+  for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 130, 2, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .16 })), cx + sx * (R1.w / 4 + 9), 65, R1.y + R1.h - 3);
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(150, 40), new THREE.MeshBasicMaterial({ color: 0x2a6fdb })); add(wall, cx, 92, R1.y + 6.5);
   const wood = mat(0xc9a77c), screen = new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: .2, metalness: .3 });
   for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) { const tx = cx + sx * 50, tz = R1.y + 52 + row * 30; add(boxM(70, 3, 18, wood), tx, 12, tz); for (const lx of [-28, 28]) add(boxM(3, 12, 3, mat(0x9a9a96)), tx + lx, 6, tz);
     for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
@@ -662,7 +679,7 @@ function sync(now) {
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
   hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
-  const moving = G.keys.has("KeyW") || G.keys.has("KeyS"), fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run; if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? 270 : 140) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } // standing: settle on a feet-together frame of the walk (the model has no idle clip) hero.mix.mixer.update(1 / 60); } // run cycle covers ~50 units/s at 1x, match it to real speed
+  const moving = G.keys.has("KeyW") || G.keys.has("KeyS"), fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run; if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? 270 : 140) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } hero.mix.mixer.update(1 / 60); } // standing settles on a feet-together walk frame (the model has no idle clip); // run cycle covers ~50 units/s at 1x, match it to real speed
   hero.legs.forEach((l, j) => l.rotation.z = moving ? Math.sin(now / (fast ? 55 : 100) + j * Math.PI) * (fast ? .9 : .6) : 0);
   const back = G.driving === null ? 70 : 110, up = G.driving === null ? 38 : 48; let d = back;
   while (d > 12 && solid(G.player.x - Math.cos(a) * d, G.player.y - Math.sin(a) * d)) d -= 6;
