@@ -530,13 +530,17 @@ function dressHero(name) {
 }
 let JOSH = null;
 // Joshua's look, from his portrait: ginger curls, fair skin, black top, dark jeans, tortoiseshell glasses
-const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.48, z: 1.24, tilt: -.2, r: .29, sep: .37, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74 };
+const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.42, z: 1.2, tilt: -.26, r: .28, wide: 1.12, rim: .026, sep: .39, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74 };
+// tortoiseshell: dark brown with amber flecks, like his frames
+function tortoise() { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"); x.fillStyle = "#2a160c"; x.fillRect(0, 0, 64, 64);
+  for (let i = 0; i < 70; i++) { x.fillStyle = ["#5b3315", "#7a4a1e", "#3b200f", "#9a6a2c"][i % 4]; x.beginPath(); x.ellipse(Math.random() * 64, Math.random() * 64, 1 + Math.random() * 5, 1 + Math.random() * 3, Math.random() * 3, 0, 7); x.fill(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 1); return t; }
 function lookLikeJoshua(s) {
   s.traverse(o => { const L = o.isMesh && JOSH_LOOK[o.material.name]; if (!L) return; const m = o.material; m.color.setHex(L[0]); m.roughnessMap = null; if (m.name === "Hairmat") { m.transparent = false; m.alphaTest = .12; m.side = THREE.DoubleSide; m.depthWrite = true; } m.roughness = L[1]; if (L[2]) m.emissive.setHex(L[2]); m.needsUpdate = true; });
   let head = null; s.traverse(o => { if (!head && o.isBone && /Head$/.test(o.name)) head = o; }); if (!head) return;
-  s.updateMatrixWorld(true); const k = 1 / head.getWorldScale(new THREE.Vector3()).x, m = new THREE.MeshStandardMaterial({ color: 0x5a3418, roughness: .3 }), g = new THREE.Group();
-  [-1, 1].forEach(d => { const r = new THREE.Mesh(new THREE.TorusGeometry(GL.r, .04, 10, 32), m); r.position.x = d * GL.sep; g.add(r); const arm = new THREE.Mesh(new THREE.BoxGeometry(.05, .06, 1.9), m); arm.position.set(d * (GL.sep + GL.r), .05, -.95); g.add(arm); });
-  const bridge = new THREE.Mesh(new THREE.BoxGeometry(GL.sep * 2 - GL.r * 2 + .1, .05, .05), m); bridge.position.y = .08; g.add(bridge);
+  s.updateMatrixWorld(true); const k = 1 / head.getWorldScale(new THREE.Vector3()).x, m = new THREE.MeshStandardMaterial({ map: tortoise(), roughness: .25 }), g = new THREE.Group();
+  [-1, 1].forEach(d => { const r = new THREE.Mesh(new THREE.TorusGeometry(GL.r, GL.rim, 8, 40), m); r.scale.set(GL.wide, 1, 1); r.position.x = d * GL.sep; g.add(r); const arm = new THREE.Mesh(new THREE.BoxGeometry(.035, .05, 1.9), m); arm.position.set(d * (GL.sep + GL.r * GL.wide), .05, -.95); g.add(arm); });
+  const bridge = new THREE.Mesh(new THREE.BoxGeometry(GL.sep * 2 - GL.r * GL.wide * 2 + .06, .035, .035), m); bridge.position.y = GL.r * .45; g.add(bridge);
   g.scale.setScalar(k); g.position.set(0, GL.y * k, GL.z * k); g.rotation.x = GL.tilt; head.add(g); s.glasses = g;
   // jeans to the ankle (the rig's shorts stop mid-calf), and the white collar under his crewneck
   const bone = n => { let b = null; s.traverse(o => { if (!b && o.isBone && o.name.endsWith(n)) b = o; }); return b; }, wp = o => o.getWorldPosition(new THREE.Vector3());
