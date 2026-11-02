@@ -6,6 +6,8 @@ All the releases, newest first. Every version is tagged on GitHub with builds at
 Joshua moves like a person: a real idle when standing, a jog on W and a sprint on Shift, each timed to his stride so the feet stay planted.
 The North Shore mountains rise across the inlet: Grouse with its ski runs, Crown and the Lions, painted on Higgsfield, in place of the old grey domes. Rain hazes them and fog hides them.
 Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump, and when a car hits him he goes down, lies there and gets back up.
+Joshua draws and fires his pistol on the move, and on WASTED he takes the hit and falls where he stood before waking up at the hospital. Standing around, he shifts his weight now and then.
+Brookswood, south Langley, on real streets (fast travel): every lot gets its house with siding, windows and a shingled gable roof, tall Douglas firs in every yard, gravel shoulders and ditches, the Brookswood Village shops with their signs, and Mount Baker and Golden Ears on the horizon.
 BC Place wears its red LED band and roof cables; Harbour Centre's two lit glass lifts ride up and down the tower.
 Physics: a car at speed knocks you flat and you get back up; your car stops on other cars instead of driving through them.
 Traffic thinks: cars brake and honk for you and for pedestrians, queue behind each other, pick a way at every intersection, turn through it smoothly and hold the right-hand lane.

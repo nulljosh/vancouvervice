@@ -6,7 +6,7 @@ Everything the web game loads, where it lives and where it came from. Paths are 
 
 | Path | What | Triangles | Size | Source |
 |---|---|---|---|---|
-| `characters/hero.glb` | Joshua's body with idle, walk, run, jab, jump, fall and get-up clips (`Idle`, `Casual_Walk`, `Run_02`, `Right_Jab_from_Guard`, `Regular_Jump`, `falling_down`, `Stand_Up1`) | 31k | 1.8 MB | Converted with Blender, clips from the Higgsfield rig, merged by bone name |
+| `characters/hero.glb` | Joshua's body with idle, second idle, walk, run, jab, jump, fall, get-up, shoot-while-walking and death clips (`Idle`, `Idle_02`, `Casual_Walk`, `Run_02`, `Right_Jab_from_Guard`, `Regular_Jump`, `falling_down`, `Stand_Up1`, `Walk_Forward_While_Shooting_inplace`, `Shot_and_Fall_Backward`) | 31k | 1.9 MB | Converted with Blender, clips from the Higgsfield rig, merged by bone name |
 | `characters/people/*.glb` | The crowd: 6 men, 6 women, each with walk and idle | 7k to 9k | 2.4 MB each | Microsoft Rocketbox, MIT |
 | `vehicles/sedan.glb` | The everyday car, tinted per car | 12k | 1.2 MB | Higgsfield image to 3D |
 | `props/tree.glb` | Street tree, on the 60 nearest blocks' trees | 12k | 288 KB | Higgsfield image to 3D, decimated in Blender |
