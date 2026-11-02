@@ -9,6 +9,7 @@ Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump
 Joshua draws and fires his pistol on the move, and on WASTED he takes the hit and falls where he stood before waking up at the hospital. Standing around, he shifts his weight now and then.
 Brookswood, south Langley, on real streets (fast travel): every real building footprint (Overture Maps), houses with photo siding, shingled roofs, garages, front doors and driveways, photo Douglas firs, red cedars and bigleaf maples, photo lawns and asphalt, the Brookswood Village strip mall with its parking lots and real shop signs, Mount Baker and Golden Ears at their true bearings.
 Brookswood landmarks built by hand from aerial photos: a 40 Avenue duplex row, the Apostolic Faith Church on 207 Street, the Chevron at 208 Street and 40 Avenue, and Brookswood Secondary with its tennis courts.
+Cloverdale on real streets (fast travel): heritage false fronts down 176 Street, maples, every building from Overture.
 Surrey City Centre on real streets (fast travel): its towers at their real heights on photo facades, grass between the blocks, Golden Ears and the North Shore on the horizon.
 Walnut Grove on real streets (fast travel), every building from Overture footprints. Glover Road in Fort Langley gets 1920s wooden false fronts.
 Fort Langley on real streets (fast travel): every building from Overture footprints, photo maples down Glover Road, the Fraser behind the village and the cedar palisade of the old fort measured off aerial photos. Highway 1 is in fast travel too.

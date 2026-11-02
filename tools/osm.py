@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -17,6 +17,8 @@ AREAS = {
     "fortlangley": ((49.1680, -122.5790), (49.1600, -122.5960, 49.1760, -122.5640)),  # Glover Road at Mavis Avenue, the village and the fort
     "walnutgrove": ((49.1640, -122.6400), (49.1560, -122.6560, 49.1720, -122.6240)),  # 88 Avenue at 208 Street, Walnut Grove
     "surrey": ((49.1890, -122.8490), (49.1810, -122.8630, 49.1970, -122.8350)),  # King George Boulevard at Central City, Surrey City Centre
+    "cloverdale": ((49.1060, -122.7330), (49.0980, -122.7470, 49.1140, -122.7190)),  # 176 Street at 57 Avenue, old Cloverdale
+    "whiterock": ((49.0200, -122.8020), (49.0120, -122.8160, 49.0280, -122.7880)),  # Marine Drive above the pier, White Rock
 }
 
 
