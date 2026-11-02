@@ -7,7 +7,8 @@ Joshua moves like a person: a real idle when standing, a jog on W and a sprint o
 The North Shore mountains rise across the inlet: Grouse with its ski runs, Crown and the Lions, painted on Higgsfield, in place of the old grey domes. Rain hazes them and fog hides them.
 Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump, and when a car hits him he goes down, lies there and gets back up.
 Joshua draws and fires his pistol on the move, and on WASTED he takes the hit and falls where he stood before waking up at the hospital. Standing around, he shifts his weight now and then.
-Brookswood, south Langley, on real streets (fast travel): every lot gets its house with siding, windows and a shingled gable roof, tall Douglas firs in every yard, gravel shoulders and ditches, the Brookswood Village shops with their signs, and Mount Baker and Golden Ears on the horizon.
+Brookswood, south Langley, on real streets (fast travel): every real building footprint (Overture Maps), houses with photo siding, shingled roofs, garages, front doors and driveways, photo Douglas firs, red cedars and bigleaf maples, photo lawns and asphalt, the Brookswood Village strip mall with its parking lots and real shop signs, Mount Baker and Golden Ears at their true bearings.
+Brookswood landmarks built by hand from aerial photos: a 40 Avenue duplex row, the Apostolic Faith Church on 207 Street, the Chevron at 208 Street and 40 Avenue, and Brookswood Secondary with its tennis courts.
 BC Place wears its red LED band and roof cables; Harbour Centre's two lit glass lifts ride up and down the tower.
 Physics: a car at speed knocks you flat and you get back up; your car stops on other cars instead of driving through them.
 Traffic thinks: cars brake and honk for you and for pedestrians, queue behind each other, pick a way at every intersection, turn through it smoothly and hold the right-hand lane.

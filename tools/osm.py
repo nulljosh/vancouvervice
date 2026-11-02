@@ -13,7 +13,7 @@ AREAS = {
     "victoria": ((48.4250, -123.3650), (48.4150, -123.3800, 48.4350, -123.3500)),
     "langley": ((49.1044, -122.6604), (49.0950, -122.6750, 49.1120, -122.6450)),
     "harrison": ((49.2972, -121.7850), (49.2935, -121.7990, 49.3085, -121.7690)),
-    "brookswood": ((49.0757, -122.6688), (49.0680, -122.6840, 49.0840, -122.6540)),  # 200 St and 40 Ave, south Langley
+    "brookswood": ((49.0757, -122.6688), (49.0680, -122.6840, 49.0840, -122.6420)),  # 200 St and 40 Ave, south Langley
 }
 
 
@@ -107,6 +107,7 @@ def main():
     query = f"""[out:json][timeout:120];
 (way["building"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street|service|pedestrian|footway)$"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
+ way["amenity"="parking"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["leisure"~"^(park|garden|pitch)$"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["natural"="coastline"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["natural"="water"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
@@ -118,7 +119,8 @@ def main():
  node["railway"="station"]["name"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}););
 out geom;"""
 
-    for endpoint in ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"):
+    MIRRORS = ("https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass.private.coffee/api/interpreter")
+    for endpoint in MIRRORS:
         req = urllib.request.Request(endpoint, data=urllib.parse.urlencode({"data": query}).encode(), headers={"User-Agent": "vancouvervice-game/1.0"})
         try:
             with urllib.request.urlopen(req, timeout=180) as response:
@@ -127,10 +129,10 @@ out geom;"""
                 raise RuntimeError(data["remark"])
             break
         except (urllib.error.URLError, TimeoutError, RuntimeError):
-            if "kumi" in endpoint:
+            if endpoint == MIRRORS[-1]:
                 raise
 
-    out = {"origin": [lat0, lon0], "buildings": [], "roads": [], "parks": [], "water": [], "pois": [], "rail": [], "stations": []}
+    out = {"origin": [lat0, lon0], "buildings": [], "roads": [], "parks": [], "water": [], "pois": [], "rail": [], "stations": [], "lots": []}
     northwest = xz({"lat": bbox[2], "lon": bbox[1]})
     southeast = xz({"lat": bbox[0], "lon": bbox[3]})
     coasts = []
@@ -157,6 +159,8 @@ out geom;"""
             try: h = float(h)
             except ValueError: h = float(t.get("building:levels", 0) or 0) * 3.3 or (18 if t["building"] in ("commercial", "office", "apartments") else 9)
             out["buildings"].append({"p": pts[:-1], "h": round(max(3, min(h, 330)), 1), "n": t.get("name", "")})
+        elif t.get("amenity") == "parking":
+            if len(pts) >= 4 and pts[0] == pts[-1]: out["lots"].append(pts[:-1])
         elif "highway" in t:
             out["roads"].append({"p": pts, "w": WIDTH.get(t["highway"], 6), "n": t.get("name", ""), "k": t["highway"]})
         elif t.get("leisure") or t.get("natural") == "water":
@@ -170,7 +174,7 @@ out geom;"""
     path.write_text(encoded)
     if args.area == "downtown":
         path.with_name("vancouver.json").write_text(encoded)
-    print(args.area, {key: len(out[key]) for key in ("pois", "buildings", "roads", "parks", "water", "rail", "stations")}, path.stat().st_size // 1024, "KB")
+    print(args.area, {key: len(out[key]) for key in ("pois", "buildings", "roads", "parks", "water", "rail", "stations", "lots")}, path.stat().st_size // 1024, "KB")
 
 
 if __name__ == "__main__":

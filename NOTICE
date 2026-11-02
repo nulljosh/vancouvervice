@@ -1,0 +1,18 @@
+Vancouver Vice
+Copyright 2026 Joshua Trommel
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+It includes data and models from others, under their own licenses:
+
+Map data
+  OpenStreetMap contributors, Open Database License (ODbL) 1.0. https://www.openstreetmap.org/copyright
+  Overture Maps Foundation building footprints (OpenStreetMap, Microsoft and Google footprints), ODbL 1.0. https://overturemaps.org
+  Esri World Imagery was used only as a reference for measuring hand-built landmarks; no imagery ships with the game.
+
+Models
+  People: Microsoft Rocketbox avatar library, MIT License.
+  Car: Ferrari 458 Italia by vicent091036, CC BY 4.0.
+  Soldier (three.js examples, Mixamo animation) and HVGirl (Babylon.js assets), under their projects' licenses.
+
+Generated art
+  Textures, tree cut-outs, mountain panoramas and Joshua's rig clips were made for this project with Higgsfield and are covered by the Apache License above.
