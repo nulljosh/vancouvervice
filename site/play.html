@@ -433,7 +433,7 @@ function runMission(dt) {
   if (m.kind === "evade") { if (m.stage === 0 && G.wanted >= 3) { m.stage = 1; m.text = "Lose the cops"; toast(m.text); } else if (m.stage === 1 && G.wanted === 0) done(500); }
 }
 // Clip ground speeds, measured from the planted foot (hero-local units per second). Jog on W, sprint on Shift.
-const WALK_V = 9.6, RUN_V = 50.3, JOG = 75, SPRINT = 115, BACK = 15;
+const WALK_V = 9.6, RUN_V = 50.3, JOG = 75, SPRINT = 115, BACK = 15, KNOCK = 3.2, GETUP = 1.5; // knocked down for KNOCK s, the last GETUP s getting up
 // a car's footprint in its own frame: [along, across] for a point, so hits match the body, not a circle
 const carLocal = (c, q) => { const dx = q.x - c.p.x, dy = q.y - c.p.y, ca = Math.cos(c.a), sa = Math.sin(c.a); return [dx * ca + dy * sa, -dx * sa + dy * ca]; };
 // ---- street smarts
@@ -505,7 +505,7 @@ function tick(dt) {
     move(c, dt);
   });
   if (G.driving === null && !G.knock && !G.carAnim) for (const c of G.cars) { const v = Math.abs(c.v), [lx, ly] = carLocal(c, G.player);
-    if (v > 40 && Math.abs(lx) < 23 && Math.abs(ly) < 13) { const dir = c.v >= 0 ? c.a : c.a + Math.PI, push = Math.min(v, 300) * .8; G.knock = { vx: Math.cos(dir) * push + Math.cos(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, vy: Math.sin(dir) * push + Math.sin(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, t: 1.6, dur: 1.6 };
+    if (v > 40 && Math.abs(lx) < 23 && Math.abs(ly) < 13) { const dir = c.v >= 0 ? c.a : c.a + Math.PI, push = Math.min(v, 300) * .8; G.knock = { vx: Math.cos(dir) * push + Math.cos(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, vy: Math.sin(dir) * push + Math.sin(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, t: KNOCK, dur: KNOCK };
       c.v *= .25; bang(.5); hurt(Math.min(70, v / 5)); G.z = 0; G.vz = 0; if (G.hp <= 0) { wasted(); return; } break; } }
   if (G.driving !== null) { const c = G.cars[G.driving]; if (Math.abs(c.v) > 120) G.peds.forEach((p, i) => { if (!p.dead && dist(p.p, c.p) < 20) { killPed(i); G.score -= 10; } }); }
   if (living().length < (TOUCH ? 30 : 55)) G.peds.push(sidewalkPed(roadPoint()));
@@ -562,7 +562,9 @@ ocean.rotation.x = -Math.PI / 2; ocean.position.set(W / 2, -2, H / 2); ocean.mat
 const skyDome = new Sky(); skyDome.scale.setScalar(15000); scene.add(skyDome);
 skyDome.material.uniforms.turbidity.value = 7; skyDome.material.uniforms.rayleigh.value = 1.6; skyDome.material.uniforms.mieCoefficient.value = .005; skyDome.material.uniforms.mieDirectionalG.value = .85;
 const sunDir = new THREE.Vector3();
-for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(500 + i % 3 * 150, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x405c4d)); m.scale.y = (600 + i % 4 * 180) / (500 + i % 3 * 150); m.position.set(i * 520 - 400, 0, -1500 - i % 2 * 300); scene.add(m); }
+const northShore = (() => { const t = new THREE.TextureLoader().load("materials/northshore.webp"); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.MirroredRepeatWrapping; t.repeat.x = 2; t.anisotropy = 4;
+  const R = 2800, arc = 2.3, H = R * arc / 2 * 600 / 2048, m = new THREE.Mesh(new THREE.CylinderGeometry(R, R, H, 96, 1, true, Math.PI - arc / 2, arc), new THREE.MeshLambertMaterial({ map: t, alphaTest: .5, side: THREE.BackSide, fog: false }));
+  m.geometry.translate(0, H / 2 - 160, 0); m.renderOrder = -1; scene.add(m); return m; })();
 // facades, cached per style: storey grid, a few lit windows. glass = Vancouver's teal condo towers, brick = Gastown and Yaletown, concrete = offices, shop = podium storefronts
 const FACADE = {};
 // photo facades and ground (Higgsfield, site/materials): swapped in over the drawn canvases once each loads; plain white
@@ -738,7 +740,11 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
     ship.position.set(0, 0, -w * .55 / 2 - 52); n.add(ship); }
   else if (k === "S") { n = new THREE.Group(); const bowl = new THREE.Mesh(new THREE.CylinderGeometry(w / 2, w / 2 + 4, 40, 64), mat(0xd8d8d4)); bowl.position.y = 20; bowl.castShadow = true; n.add(bowl);
     const roof = new THREE.Mesh(new THREE.SphereGeometry(w / 2, 64, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xf4f4f2, roughness: .35 })); roof.scale.y = .22; roof.position.y = 40; n.add(roof);
-    for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2, m = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.4, 90, 8), mat(0xeeeeea)); m.position.set(Math.cos(a) * (w / 2 + 2), 70, Math.sin(a) * (w / 2 + 2)); m.rotation.set(Math.sin(a) * .18, 0, -Math.cos(a) * .18); m.castShadow = true; n.add(m); } }
+    for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2, m = new THREE.Mesh(new THREE.CylinderGeometry(1, 1.4, 90, 8), mat(0xeeeeea)); m.position.set(Math.cos(a) * (w / 2 + 2), 70, Math.sin(a) * (w / 2 + 2)); m.rotation.set(Math.sin(a) * .18, 0, -Math.cos(a) * .18); m.castShadow = true; n.add(m); }
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(w / 2 + 4.4, w / 2 + 4.4, 5, 96, 1, true), new THREE.MeshBasicMaterial({ color: 0xe0362c })); band.position.y = 34; n.add(band);
+    const cab = []; for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2, top = [Math.cos(a) * (w / 2 + 2) - Math.cos(a) * 8, 114, Math.sin(a) * (w / 2 + 2) - Math.sin(a) * 8]; // ponytail: mast tip from its .18 lean, close enough by eye
+      for (const f of [.42, .2]) cab.push(...top, Math.cos(a + f * .5) * w * f, 40 + w * .11 * (1 - f * f * 4), Math.sin(a + f * .5) * w * f); }
+    n.add(new THREE.LineSegments(new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(cab, 3)), new THREE.LineBasicMaterial({ color: 0xdedede }))); }
   else if (k === "E") { // Science World: faceted silver geodesic, dark panel seams, a light at every joint, set low in a glass pavilion
     n = new THREE.Group(); const r = w / 2.1, geo = new THREE.IcosahedronGeometry(r, 4), cols = [], pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i += 3) { const v = .78 + ((i * 7919) % 23) / 23 * .2; for (let j = 0; j < 3; j++) cols.push(v, v, v * 1.02); }
@@ -751,9 +757,10 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
     const pav = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.18, r * 1.3, 22, 8), new THREE.MeshPhysicalMaterial({ color: 0x23323b, roughness: .06, metalness: .55 })); pav.position.y = 11; n.add(pav);
     const roofRing = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.22, r * 1.22, 4, 8), mat(0xe8e8e4)); roofRing.position.y = 24; n.add(roofRing); }
   else if (k === "H") { n = boxM(60, 480, 60, faceMat("concrete", 1, 60, 480)); n.position.y = 240;
-    const lift = boxM(10, 470, 6, new THREE.MeshPhysicalMaterial({ color: 0xe8c66a, roughness: .1, metalness: .6 })); lift.position.set(0, 0, 33); n.add(lift);
+    const shaft = new THREE.MeshStandardMaterial({ color: 0xe8c66a, roughness: .15, metalness: .6, emissive: 0x6a4a10 }), car = new THREE.MeshBasicMaterial({ color: 0xffe2a0 });
+    for (const sx of [-14, 14]) { const lift = boxM(10, 470, 6, shaft); lift.position.set(sx, 0, 33); n.add(lift); const c = boxM(8, 12, 3, car); c.position.set(sx, -225 + (sx > 0 ? 230 : 0), 37); n.add(c); (PROPS.lifts ??= []).push(c); }
     const saucer = new THREE.Mesh(new THREE.CylinderGeometry(58, 40, 26, 64), mat(0xc9c9c2)); saucer.position.y = 250; n.add(saucer);
-    const ring = new THREE.Mesh(new THREE.CylinderGeometry(59, 59, 8, 64), new THREE.MeshPhysicalMaterial({ color: 0x27323a, roughness: .05, metalness: .7 })); ring.position.y = 252; n.add(ring);
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(59, 59, 8, 64), new THREE.MeshStandardMaterial({ color: 0x27323a, roughness: .05, metalness: .7, emissive: 0x7a5a20 })); ring.position.y = 252; n.add(ring);
     const cap = new THREE.Mesh(new THREE.CylinderGeometry(30, 50, 10, 48), mat(0xbdbdb5)); cap.position.y = 268; n.add(cap); }
   else if (k === "G") { n = new THREE.Group(); for (let i = 0; i < 3; i++) { const bw = w / 3 - 6, bh = 55 + i * 10, b = boxM(bw, bh, w, faceMat("brick", i, bw, bh)); b.position.set((i - 1) * w / 3, bh / 2, 0); n.add(b); // Water Street warehouses: brick facades, a cornice and a stone sill
       const cor = boxM(bw + 6, 5, w + 6, mat(0x6a3a28)); cor.position.set(b.position.x, bh + 2.5, 0); n.add(cor); const sill = boxM(bw + 2, 3, w + 2, mat(0xbdb39c)); sill.position.set(b.position.x, 16, 0); n.add(sill); }
@@ -1020,7 +1027,8 @@ function rigFor(n, color, c) {
   const s = SkeletonUtils.clone(c.src.scene); s.updateMatrixWorld(true);
   const h = new THREE.Box3().setFromObject(s).getSize(new THREE.Vector3()).y || 1; s.scale.multiplyScalar(24 / h); s.rotation.y = c.turn;
   s.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); if (c.shirt && o.material.color && c.shirt.test(o.material.name)) o.material.color.lerp(new THREE.Color(color), c.src.scene === undefined ? .7 : .45); o.castShadow = true; o.frustumCulled = false; n.body ??= o; } });
-  const mixer = new THREE.AnimationMixer(s), acts = {}; for (const [k, name] of Object.entries(c.map)) { const stand = c.strip && k === "idle"; let clip = c.src.animations.find(a => a.name === (stand ? "walk" : name)) || c.src.animations[0]; if (!clip) continue; if (c.strip) { clip = clip.clone(); clip.tracks = clip.tracks.filter(t => !/^Bip01\.position$/.test(t.name)); } acts[k] = mixer.clipAction(clip); if (stand) acts[k].stand = clip.duration * .125; } // the crowd's own idle clip is a bind pose, so standing is the walk held on its feet-together frame
+  const mixer = new THREE.AnimationMixer(s), acts = {}; for (const [k, name] of Object.entries(c.map)) { const stand = c.strip && k === "idle"; let clip = c.src.animations.find(a => a.name === (stand ? "walk" : name)) || c.src.animations[0]; if (!clip) continue; if (c.strip) { clip = clip.clone(); clip.tracks = clip.tracks.filter(t => !/^Bip01\.position$/.test(t.name)); } if (k === "jump") { clip = clip.clone(); const hp = clip.tracks.find(t => t.name === "Hips.position"); if (hp) { hp.values = hp.values.slice(); const y0 = hp.values[1]; for (let i = 1; i < hp.values.length; i += 3) hp.values[i] = Math.min(hp.values[i], y0); } } // the game lifts him; the clip only bends
+    acts[k] = mixer.clipAction(clip); if (stand) acts[k].stand = clip.duration * .125; if (/^(punch|jump|fall|getup)$/.test(k)) { acts[k].setLoop(THREE.LoopOnce); acts[k].clampWhenFinished = true; } } // the crowd's own idle clip is a bind pose, so standing is the walk held on its feet-together frame
   n.mix = { mixer, acts, cur: "walk" }; acts.walk?.play(); mixer.setTime(Math.random() * 2); n.add(s); n.gl = s;
 }
 function soldierFor(n, color, src = SOLDIER) {
@@ -1129,7 +1137,7 @@ function dressHero(name) {
   const key = HERO_BODY[name], src = key === "hero" ? JOSH : BODY[key]; if (!src) return;
   if (hero.gl) hero.remove(hero.gl); hero.children.forEach(ch => { if (ch !== gun) ch.visible = false; }); hero.body = null; hero.mix = null;
   const clip = (n, or) => (src.animations.find(a => a.name === n) || src.animations.find(a => a.name === or) || src.animations[0])?.name; // Joshua's own idle, walk and run (Higgsfield rig)
-  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
+  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk"), punch: clip("Right_Jab_from_Guard"), jump: clip("Regular_Jump"), fall: clip("falling_down"), getup: clip("Stand_Up1") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
   hero.mix.acts.run ??= hero.mix.acts.walk; heroReady = true;
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
   if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
@@ -1183,10 +1191,12 @@ function sync(now) {
     m.rotation.set(0, -p.a, 0); m.legs.forEach((l, j) => l.rotation.z = Math.sin(p.t + j * Math.PI) * .5); m.arms[1].rotation.z = p.punching > 0 ? 1.5 : 0; });
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
-  const kd = G.knock ? Math.min(1, (G.knock.dur - G.knock.t) * 5, G.knock.t / .45) : 0; hero.rotation.z = kd * Math.PI / 2; // knocked flat, back up over the last half second
+  const kd = G.knock ? Math.min(1, (G.knock.dur - G.knock.t) * 5, G.knock.t / .45) : 0; hero.rotation.z = hero.mix?.acts.fall ? 0 : kd * Math.PI / 2; // knocked flat, back up over the last half second
   hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
   const moving = G.keys.has("KeyW") || G.keys.has("KeyS") || !!G.carAnim, fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run, A = hero.mix.acts; if (A.idle && A.idle !== w) { // Joshua: idle standing, walk, run on Shift
       const bk = G.keys.has("KeyS") && !G.keys.has("KeyW"), sp = bk ? BACK : (fast ? SPRINT : JOG) * perk("run"), walking = bk || G.knock || A.run === w;
+      const one = G.knock && A.fall ? (G.knock.t > GETUP ? "fall" : "getup") : G.z > 0 && A.jump ? "jump" : performance.now() - (G.punchAt || 0) < 450 && A.punch ? "punch" : null;
+      if (one) { setAnim(hero, one); const c = A[one], D = c.getClip().duration; c.timeScale = one === "fall" ? D / (KNOCK - GETUP) : one === "getup" ? D / GETUP : one === "jump" ? D / .75 : D / .45; } else
       setAnim(hero, !moving || G.knock ? "idle" : walking ? "walk" : "run"); if (A.run !== w) A.run.timeScale = sp / RUN_V; w.timeScale = (bk ? -1 : 1) * sp / (A.run === w ? RUN_V : WALK_V); }
     else if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? SPRINT : JOG) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } hero.mix.mixer.update(1 / 60); } // standing settles on a feet-together walk frame (the model has no idle clip); // run cycle covers ~50 units/s at 1x, match it to real speed
   hero.legs.forEach((l, j) => l.rotation.z = moving ? Math.sin(now / (fast ? 55 : 100) + j * Math.PI) * (fast ? .9 : .6) : 0);
@@ -1208,7 +1218,8 @@ function sync(now) {
   if (!RAIN.live && (RAIN.t -= 1 / 60) <= 0) { RAIN.on = !RAIN.on; RAIN.t = RAIN.on ? 45 + Math.random() * 45 : 60 + Math.random() * 90; if (RAIN.on) toast("It's raining. Of course it is."); }
   rain.visible = RAIN.on; rain.material.color.setHex(RAIN.snow ? 0xffffff : 0xaabbcc); rain.material.size = RAIN.snow ? 3 : 1.6; if (RAIN.on) { rain.position.set(G.player.x, 0, G.player.y); const a = rainGeo.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= RAIN.snow ? 2 : 9; if (a[i] < 0) a[i] += 400; } rainGeo.attributes.position.needsUpdate = true; }
   ambient(1 / 60, day); sky.setRGB((.08 + .54 * day) * (RAIN.on ? .75 : 1), (.1 + .64 * day) * (RAIN.on ? .78 : 1), (.2 + .66 * day) * (RAIN.on ? .8 : 1)); scene.fog.far = RAIN.fog ? 700 : RAIN.on ? 1600 : 3200; scene.fog.color = sky; sun.intensity = .5 + day * 1.4;
-  sunDir.setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - (4 + day * 40)), THREE.MathUtils.degToRad(200)); skyDome.material.uniforms.sunPosition.value.copy(sunDir); ocean.material.uniforms.sunDirection.value.copy(sunDir); skyDome.position.set(G.player.x, 0, G.player.y);
+  sunDir.setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - (4 + day * 40)), THREE.MathUtils.degToRad(200)); skyDome.material.uniforms.sunPosition.value.copy(sunDir); ocean.material.uniforms.sunDirection.value.copy(sunDir); skyDome.position.set(G.player.x, 0, G.player.y); PROPS.lifts?.forEach((c, i) => c.position.y = -225 + 230 * (1 - Math.cos(performance.now() / 9000 + i * 2.2)));
+  northShore.position.set(G.player.x, 0, G.player.y); northShore.visible = !RAIN.fog; { const hz = RAIN.on ? .55 : .18; northShore.material.color.setScalar(1 - hz); northShore.material.emissive.copy(sky).multiplyScalar(hz); }
   skyDome.material.uniforms.rayleigh.value = RAIN.on ? 4 : 1.6; skyDome.material.uniforms.turbidity.value = RAIN.on ? 18 : 7; scene.background = null;
   FOAM.forEach((f, i) => { f.material.opacity = .3 + Math.sin(performance.now() / 700 + i) * .25; }); skyTick();
   STEAM.forEach((p, i) => { const t = (performance.now() / 1800 + i / 3) % 1; p.position.y = 48 + t * 22; p.material.opacity = .7 * (1 - t); p.scale.setScalar(8 + t * 16); });

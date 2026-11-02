@@ -4,6 +4,9 @@ All the releases, newest first. Every version is tagged on GitHub with builds at
 
 ## 1.27 (unreleased)
 Joshua moves like a person: a real idle when standing, a jog on W and a sprint on Shift, each timed to his stride so the feet stay planted.
+The North Shore mountains rise across the inlet: Grouse with its ski runs, Crown and the Lions, painted on Higgsfield, in place of the old grey domes. Rain hazes them and fog hides them.
+Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump, and when a car hits him he goes down, lies there and gets back up.
+BC Place wears its red LED band and roof cables; Harbour Centre's two lit glass lifts ride up and down the tower.
 Physics: a car at speed knocks you flat and you get back up; your car stops on other cars instead of driving through them.
 Traffic thinks: cars brake and honk for you and for pedestrians, queue behind each other, pick a way at every intersection, turn through it smoothly and hold the right-hand lane.
 People think: gunfire and explosions send the street running away from you, walkers wait at the curb for a gap and dodge a car coming at them, and cops chase you down the streets instead of through buildings.
