@@ -384,6 +384,16 @@ if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ color: 0xd9d6cf, ro
         const km = Math.round(Math.hypot((lon + 123.1187) * 72800, (lat - 49.2833) * 110540) / 1000); if (km < 3) continue; const sg = signMesh(`1 West   Vancouver  ${km} km`, "#1f6b3a", 2.2);
         sg.position.set(x + nx * (r.w / 2 + 3), 6, z + nz * (r.w / 2 + 3)); sg.rotation.y = Math.atan2(ax - bx, az - bz); /* faces the drivers coming at it */ scene.add(sg); signs.push([x, z]);
         for (const o of [-1.6, 1.6]) { const post = new THREE.Mesh(poleGeo, poleMat); post.scale.y = 1.4; post.position.set(x + nx * (r.w / 2 + 3) + (bx - ax) / L * o, 2.4, z + nz * (r.w / 2 + 3) + (bz - az) / L * o); scene.add(post); } } } }
+  // exit signs: before every westbound off-ramp, the real name of the street it lands on
+  const named = []; for (const r of D.roads) if (r.n && /^(trunk|primary|secondary|tertiary)$/.test(r.k)) for (const q of r.p) named.push([q[0], q[1], r.n]);
+  const fwy = []; for (const r of D.roads) if (r.ow && r.k === "motorway") for (let i = 1; i < r.p.length; i++) fwy.push([r.p[i - 1], r.p[i], r.w]);
+  const exits = []; for (const r of D.roads) { if (r.k !== "motorway_link" || !r.ow) continue; const [sx, sz] = r.p[0]; let seg = null, sd = 8;
+    for (const [a, b, w] of fwy) { const dx = b[0] - a[0], dz = b[1] - a[1], l2 = dx * dx + dz * dz || 1, t = Math.max(0, Math.min(1, ((sx - a[0]) * dx + (sz - a[1]) * dz) / l2)), d = Math.hypot(a[0] + dx * t - sx, a[1] + dz * t - sz); if (d < sd) { sd = d; seg = [dx / Math.sqrt(l2), dz / Math.sqrt(l2), w]; } }
+    if (!seg || seg[0] > -.3) continue; const [ex, ez] = r.p.at(-1); let nm = null, nd = 60; for (const [x, z, n] of named) { const d = Math.hypot(x - ex, z - ez); if (d < nd) { nd = d; nm = n; } }
+    if (!nm || exits.some(([x, z]) => Math.hypot(x - sx, z - sz) < 300)) continue; exits.push([sx, sz]);
+    const [ux, uz, w] = seg, bx = sx - ux * 130 - uz * (w / 2 + 3.5), bz = sz - uz * 130 + ux * (w / 2 + 3.5), sg = signMesh(`EXIT  ${nm.replace(/ Street$/, " St").replace(/ Avenue$/, " Ave").replace(/ Highway$/, " Hwy")}`, "#1f6b3a", 2);
+    sg.position.set(bx, 6.2, bz); sg.rotation.y = Math.atan2(-ux, -uz); scene.add(sg); (window.EXITS ||= []).push([bx, bz, ux, uz, nm]); for (const o2 of [-1.6, 1.6]) { const post = new THREE.Mesh(poleGeo, poleMat); post.scale.y = 1.4; post.position.set(bx + ux * o2, 2.4, bz + uz * o2); scene.add(post); } }
+  console.log("highway:", exits.length, "exit signs");
   // sound walls: grey concrete panels on the outside of each freeway carriageway, open at every ramp, bridge and shore
   const links = new Map(); for (const r of D.roads) if (/_link$/.test(r.k)) for (const [x, z] of r.p) { const k = key(Math.floor(x / 20), Math.floor(z / 20)); if (!links.has(k)) links.set(k, []); links.get(k).push([x, z]); }
   const nearLink = (x, z) => { for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const [px, pz] of links.get(key(Math.floor(x / 20) + i, Math.floor(z / 20) + j)) || []) if (Math.hypot(px - x, pz - z) < 45) return true; return false; };
