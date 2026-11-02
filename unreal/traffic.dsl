@@ -1,0 +1,15 @@
+; BP_TrafficCar EventGraph. Drives the car round its Points loop (lane points from the real roads, set by
+; unreal/traffic.py) at Speed cm/s, turning smoothly toward each point.
+(event EventTick (DeltaSeconds)
+  (bind pts (Variables|Default|GetPoints))
+  (bind n (Utilities|Array|Length pts))
+  (if (> n 1)
+    (bind i (Variables|Default|GetIndex))
+    (bind target (Utilities|Array|Get(acopy) pts i))
+    (bind loc (Transformation|GetActorLocation))
+    (bind next (Math|Interpolation|VInterptoConstant loc target DeltaSeconds (Variables|Default|GetSpeed)))
+    (bind look (Math|Rotator|FindLookatRotation loc target))
+    (bind rot (Math|Interpolation|RInterpTo (Transformation|GetActorRotation) (Math|Rotator|MakeRotator :Roll 0.0 :Pitch 0.0 :Yaw (.yaw look)) DeltaSeconds 4.0))
+    (Transformation|SetActorLocationAndRotation :NewLocation next :NewRotation rot)
+    (if (< (Math|Vector|Distance(Vector) next target) 120.0)
+      (Variables|Default|SetIndex (select (>= (+ i 1) n) 0 (+ i 1))))))

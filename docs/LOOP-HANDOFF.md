@@ -17,7 +17,7 @@ Rules for this Mac (16 GB): one heavy thing at a time. No Playwright or WebKit r
 ## Next, in order
 1. Done 2026-11-02: walk and drive tests pass (`python3 unreal/qa.py`, `qa.py drive`), our own downtown replaces the Google tiles, Joshua is his Higgsfield model on his own clips. Clip recording: Unreal to the front, close Message Log and the content drawer (ctrl+space), full-screen `screencapture -V`, crop.
 2. Joshua's new look (single cuff, grey dad runners, white socks): Higgsfield render 620d4af1 is approved; the 3D build (image_to_3d with rig, about 38 credits) waits on a credit top-up past the 450 floor. Then the same pipeline: unscale in Blender, `unreal/import_hero.py`, consolidate onto his clips.
-3. Street life: parked and moving cars on the real roads, people on the sidewalks, street trees and lights from the map data.
+3. Street life: done for cars, lights and trees (tools/ue_props.py + unreal/street_props.py; tools/ue_traffic.py + unreal/traffic.py + BP_TrafficCar from unreal/traffic.dsl). Still to do: people on the sidewalks, wheels not tinted by the paint, the white wireframe mission dome replaced by a proper marker, traffic stopping for the player.
 4. Port the heist from the web game: the store interior, grab the Macs, the guard in the doorway, two stars and the chase. Then guns, cops and stars.
 5. Free roam beyond downtown (the other site/data maps through tools/ue_city.py), then the rest of the v2 list in roadmap.md.
 
