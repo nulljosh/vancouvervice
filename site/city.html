@@ -66,6 +66,7 @@ const photo = (name, metres) => { const t = new THREE.TextureLoader().load(`mate
 // the real horizon from Brookswood: Mount Baker to the south-east, Golden Ears to the north-east, photo panoramas on bands that ride with the camera
 // [file, bearing (radians from south toward east, three's cylinder angle), height in degrees of the image]
 const DOWNTOWN = AREA === "vancouver" || AREA === "downtown";
+if (DOWNTOWN) for (const b of D.buildings) b.h = { "BC Place": 44, "Rogers Arena": 34, "Canada Place": 14 }[b.n] ?? b.h; // OSM undersells the stadiums
 if (SUBURB || HIGHWAY || DOWNTOWN) for (const [f, th, deg] of DOWNTOWN ? [["northshore", Math.PI, 8], ["mt-baker", 1.2, 4]] : [["mt-baker", 1.08, 9], ["mt-goldenears", 2.74, 6.5], ...(HIGHWAY ? [["northshore", 3.45, 7]] : [])] /* a little taller than life, the way they feel on a clear day */) {
   const t = new THREE.TextureLoader().load(`materials/${f}.webp`, t => { const k = t.image.width / t.image.height, ang = deg * Math.PI / 180, Rr = 2800, h = Rr * Math.tan(ang), arc = ang * k;
     const m = new THREE.Mesh(new THREE.CylinderGeometry(Rr, Rr, h, 64, 1, true, th - arc / 2, arc), new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.BackSide, fog: false, depthWrite: false }));
@@ -405,6 +406,17 @@ if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ color: 0xd9d6cf, ro
     if (pos.length) { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals(); wallG.push(g); } }
   if (wallG.length) { const t = photo("soundwall", 4); t.repeat.set(1 / 7.15, 1 / 4); const m = new THREE.Mesh(mergeGeometries(wallG), new THREE.MeshStandardMaterial({ map: t, roughness: .9, side: THREE.DoubleSide })); m.castShadow = m.receiveShadow = true; scene.add(m); }
   console.log("highway:", signs.length, "distance signs,", wallG.length, "sound walls"); }
+if (DOWNTOWN) { const at = (lat, lon) => fromLL(lat, lon), under = (x, z) => (grid.get(key(Math.floor(x / CELL), Math.floor(z / CELL))) || []).find(b => inside(b, x, z));
+  const white = new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: .55, side: THREE.DoubleSide }), glassM = new THREE.MeshStandardMaterial({ color: 0x1d2a33, metalness: .8, roughness: .12 });
+  { const [x, z] = at(49.28466, -123.11186), b = under(x, z), h = Math.max(b?.h || 0, 120); // Harbour Centre: the revolving restaurant's saucer on top of the tower
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(15, 12, 9, 64), glassM); disc.position.set(x, h + 6, z); const rim = new THREE.Mesh(new THREE.CylinderGeometry(15.4, 15.4, 1.2, 64), white); rim.position.set(x, h + 10.6, z);
+    const core = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 12, 32), white); core.position.set(x, h + 1, z); scene.add(disc, rim, core);
+    const sh = new THREE.Mesh(new THREE.BoxGeometry(22, h, 22), new THREE.MeshStandardMaterial({ map: (() => { const t = photo("glass", 1); t.repeat.set(22 / 14, h / 14); return t; })(), roughness: .12, metalness: .55 })); sh.position.set(x, h / 2, z); sh.castShadow = true; scene.add(sh); } // the shaft the glass lifts ride
+  const named = n => { const b = D.buildings.find(q => q.n === n); return b && [b.p.reduce((a, q) => a + q[0], 0) / b.p.length, b.p.reduce((a, q) => a + q[1], 0) / b.p.length, b.h]; };
+  { const [x, z] = named("Canada Place") || at(49.28870, -123.11130); for (let i = 0; i < 5; i++) { const sail = new THREE.Mesh(new THREE.ConeGeometry(9, 26, 48, 1, true), white); sail.position.set(x - 30 + i * 15, 22, z - 10 + (i % 2) * 4); sail.scale.z = .55; sail.castShadow = true; scene.add(sail); } } // Canada Place: five white sails
+  { const [x, z, h] = named("BC Place") || [...at(49.27675, -123.11193), 44]; // BC Place: the white roof and the red LED band
+    const roof = new THREE.Mesh(new THREE.SphereGeometry(352, 128, 24, 0, Math.PI * 2, 0, .302), white); /* a shallow dome, 105 m to the rim and 16 m high */ roof.scale.set(1, 1, .8); roof.position.set(x, h - 352 * Math.cos(.302), z); // the cap's rim sits on the stadium walls roof.castShadow = true;
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(352 * Math.sin(.302) + .5, 352 * Math.sin(.302) + .5, 4, 128, 1, true), new THREE.MeshBasicMaterial({ color: 0xd81e2a, side: THREE.DoubleSide })); band.scale.z = .8; band.position.set(x, h - 2, z); scene.add(roof, band); } }
 console.log("street furniture:", signs, "signs,", signals.length, "signals,", lampPts.length, "lamps");
 
 // interiors: every named place from OSM belongs to the building it sits in; E at a wall walks you inside a room built for that kind of place
