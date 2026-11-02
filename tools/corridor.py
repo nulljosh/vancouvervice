@@ -1,4 +1,4 @@
-"""Export the drive from Brookswood to downtown Vancouver: Highway 1 and the big roads around it, the Fraser and the inlet.
+"""Export the Lower Mainland free-roam map: Highway 1 and every big road from the North Shore to Chilliwack, the Fraser and the inlet.
 
 Run: python3 tools/corridor.py [--hw cached-highways.json] [--water cached-water.json] [--buildings]
 --buildings adds Overture footprints within 350 m of a motorway, trunk or primary road (cached raw rows in --rows).
@@ -10,7 +10,8 @@ from osm import rings, clip, coast_water
 
 SCALE = 0.5
 ORIGIN = (49.0757, -122.6688)  # Brookswood's origin, so the two maps share a reference
-BBOX = (49.06, -123.16, 49.31, -122.63)
+BBOX = (49.00, -123.30, 49.40, -121.74)  # the Lower Mainland, Tsawwassen and the North Shore to Chilliwack and Harrison
+BUILT = (49.06, -123.16, 49.31, -122.63)  # Overture footprints only here (the cached 120 MB of rows); the valley east of it is mostly farmland
 KEEP = {"motorway", "motorway_link", "trunk", "trunk_link", "primary", "primary_link"}
 MIRRORS = ("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")
 
@@ -86,7 +87,7 @@ def overture_rows(path):
     cache = pathlib.Path(path)
     if cache.exists(): return json.loads(cache.read_text())
     import duckdb
-    s, w, n, e = BBOX
+    s, w, n, e = BUILT
     db = duckdb.connect()
     db.execute("INSTALL spatial; LOAD spatial; INSTALL httpfs; LOAD httpfs; SET s3_region='us-west-2';")
     rows = db.execute(f"""

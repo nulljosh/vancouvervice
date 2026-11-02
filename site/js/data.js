@@ -22,7 +22,7 @@ export const PERKS = {
 };
 export const HERO_LOOK = { Joshua: 0xe8b21a, Ben: 0x2a5fb8, Alexandre: 0x1c1c1f };
 export const STARS = [1, 20, 60, 140, 260];
-export const WEAPONS = [{ name: "Fists" }, { name: "Pistol", dmg: 1, range: 600, rate: 250, max: 90 }, { name: "Shotgun", dmg: 3, range: 220, rate: 800, pellets: 3, max: 30 }, { name: "SMG", dmg: 1, range: 450, rate: 90, max: 240 }];
+export const WEAPONS = [{ name: "Fists" }, { name: "Pistol", dmg: 1, range: 600, rate: 250, max: 90 }, { name: "Shotgun", dmg: 3, range: 220, rate: 800, pellets: 3, max: 30 }, { name: "SMG", dmg: 1, range: 450, rate: 90, max: 240 }, { name: "Revolver", dmg: 2, range: 650, rate: 600, max: 36 }, { name: "Assault rifle", dmg: 1, range: 750, rate: 110, max: 300 }, { name: "Sniper rifle", dmg: 5, range: 1500, rate: 1300, max: 20 }];
 export const ACH = { first: "First Blood", thief: "Grand Theft Auto", five: "Five Star Menace", copkill: "Cop Killer", island: "Island Hopper", tourist: "Tourist: every landmark", courier: "Courier: 5 deliveries", taxi: "Night Shift: first fare", ghost: "Ghost: lost a 3 star chase", champ: "Level 5" };
 export const MISSIONS = ["deliver", "taxi", "evade"];
 export const STATIONS = [{ name: "Off" }, { name: "Kits Beach FM", bpm: 104, root: 55, beat: [1, 0, 0, 0, 1, 0, 0, 0], hat: true }, { name: "Hastings Hardcore", bpm: 150, root: 41, beat: [1, 0, 1, 0, 1, 0, 1, 1], hat: true }, { name: "CBC Rain Radio", bpm: 70, root: 48, beat: [1, 0, 0, 0, 0, 0, 0, 0], pad: true }];
@@ -60,7 +60,7 @@ export const STORY = [
 ];
 // Granville Pawn on Granville St between W Georgia and Robson; prices per item
 export const PAWN = { x: 8 * block + 40, y: 6 * block + 170, name: "Granville Pawn" };
-export const LOOT = { mac: ["Mac mini", 150], phone: ["phone", 40] };
+export const LOOT = { mac: ["Mac mini", 150], book: ["MacBook", 300], phone: ["phone", 40] };
 export const SKIN = [0xf1c9a5, 0xd9a680, 0xb67b53, 0x8d5a3b, 0x5c3a24];
 export const HAIR = [0x1c140f, 0x3b2616, 0x6b4a2b, 0xb58a4c, 0x8f8f8f];
 export const PANTS = [0x2b3440, 0x1f1f24, 0x4a3b2a, 0x3b4f6b, 0x5a5a5a];

@@ -2,7 +2,16 @@
 
 All the releases, newest first. Every version is tagged on GitHub with builds attached.
 
-## 1.27 (unreleased)
+## 2.0.0
+Free roam the whole Lower Mainland, on foot or in a car: Free Roam on the title screen starts you in Brookswood, and walking or driving off the edge of any town puts you on the big-road map, which runs from Tsawwassen and the North Shore out to Chilliwack and Harrison. Reach a town on it and you are on its real streets. T opens a go-anywhere menu.
+The heist plays start to finish: grab up to four MacBooks and Mac minis (Joshua snatches each one off the table), the bigger staffer plants himself in the glass doorway and you knock him down to get out, then two stars and a car chase. Dying on the getaway sends you back to try again.
+The store on Georgia rebuilt from the concept art: limestone back wall, living green walls, pale oak tables, a polished stone floor. The two staff are real people now, in blue tees and lanyards, and they swing back.
+Six guns: start with the pistol and find a shotgun, SMG, revolver, assault rifle and sniper rifle lying around the city. Q or 1 to 7 switches between the ones you own, and each has its own crack, thump and echo.
+Every shop on the real streets has its own front: gun store, clothing, barber, cafe, restaurant, pawn, pharmacy, convenience and pub, picked from the business at that address.
+All of Brookswood (32 to 48 Avenue, 196 to 208 Street) and Vancouver from Stanley Park to Commercial Drive, every building from Overture.
+Crowds walk at a real pace instead of windmilling their arms, and people who get hit flinch and lunge back.
+Highway 1 overpasses stand up off the ground: every bridge on the drive gets its own deck with ramps, concrete edges and abutments, while the freeway runs underneath.
+Ladner, Maple Ridge, Abbotsford, Mission and Chilliwack on real streets (fast travel): heritage fronts in the old downtowns, sand along the river at Ladner and Mission, photo grass in every park. The whole Lower Mainland list is now on the map.
 Joshua moves like a person: a real idle when standing, a jog on W and a sprint on Shift, each timed to his stride so the feet stay planted.
 The North Shore mountains rise across the inlet: Grouse with its ski runs, Crown and the Lions, painted on Higgsfield, in place of the old grey domes. Rain hazes them and fog hides them.
 Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump, and when a car hits him he goes down, lies there and gets back up.

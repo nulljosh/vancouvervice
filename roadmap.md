@@ -4,6 +4,22 @@
 
 The goal: a GTA-style game set in the real Vancouver, good enough that friends play it for real. Measured honestly against GTA 3 through GTA 6.
 
+## v2: the list (ships as 3.0.0)
+
+Joshua's v1 shipped as 2.0.0 (free roam on foot or by car across the Lower Mainland). v2 is about making it look and play like a real game. Every item gets screenshots or a video before it counts.
+
+- [ ] People: replace the crowd with Higgsfield-rigged people (eight or so looks, men and women, all ages) wearing Joshua's walk, run, jab and fall, like the store staff now.
+- [ ] Stores you walk into: a gun store where you buy guns and ammo, a barber that changes Joshua's hair, a clothing store that changes his outfit, a cafe and a pawn shop, each with its own interior.
+- [ ] Guns that look like guns: a model per weapon in his hand, muzzle flash, shell casings, a reload, and recoil in the camera.
+- [ ] Mission 1, cinematic: a short intro cutscene, the Macs into a bag he carries, sliding doors that open for him, staff who grab at him on the way out.
+- [ ] All of Vancouver: join Kits, East Van and the downtown map into one city, then Richmond and Burnaby, with streaming so it stays fast.
+- [ ] Open ocean west of the old map edge on the big-road map (Overture has no ocean polygons; use the land polygons and fill the rest as sea).
+- [ ] Parked cars against walls you can still steal and drive (snap a stolen car onto the nearest lane).
+- [ ] Brookswood landmarks across the whole neighbourhood, not just 40 Avenue.
+- [ ] The story on the real streets: missions, heroes, weapons and radio from play.html running on city.html.
+- [ ] One save across every map.
+- [ ] Polish carried over: the Port Mann overhead, buildings inside the fort and the Big House, music for the trailer, Richmond Centre, Coquitlam and Port Coquitlam.
+
 ## Where we are (end of 2026-09-22)
 
 Unreal engine live: real Vancouver streets stream via Google 3D Tiles and MCP. Live at vancouvervice.heyitsmejosh.com, repo nulljosh/vancouvervice (local folder is still `~/Documents/Code/vancouvervice`).

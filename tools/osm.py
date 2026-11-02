@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown|newwest|steveston|lonsdale|ambleside|portmoody. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown|newwest|steveston|lonsdale|ambleside|portmoody|ladner|mapleridge|abbotsford|mission|chilliwack. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -8,12 +8,12 @@ import argparse, json, math, urllib.request, urllib.parse, pathlib
 WIDTH = {"motorway": 18, "trunk": 16, "primary": 14, "secondary": 12, "tertiary": 10, "residential": 8, "unclassified": 8, "living_street": 6, "service": 5, "pedestrian": 6, "footway": 2.5}
 
 AREAS = {
-    "downtown": ((49.2833, -123.1187), (49.2690, -123.1500, 49.2960, -123.0950)),
+    "downtown": ((49.2833, -123.1187), (49.2550, -123.1650, 49.3150, -123.0750)),  # downtown, Stanley Park, the West End, Fairview, Mount Pleasant and Strathcona to Commercial Drive
     "kits": ((49.2690, -123.1575), (49.2620, -123.1750, 49.2760, -123.1400)),
     "victoria": ((48.4250, -123.3650), (48.4150, -123.3800, 48.4350, -123.3500)),
     "langley": ((49.1044, -122.6604), (49.0950, -122.6750, 49.1120, -122.6450)),
     "harrison": ((49.2972, -121.7850), (49.2935, -121.7990, 49.3085, -121.7690)),
-    "brookswood": ((49.0757, -122.6688), (49.0680, -122.6840, 49.0840, -122.6420)),  # 200 St and 40 Ave, south Langley
+    "brookswood": ((49.0757, -122.6688), (49.0580, -122.6870, 49.0920, -122.6400)),  # 200 St and 40 Ave; all of Brookswood, 32 to 48 Ave, 196 to 208 St
     "fortlangley": ((49.1680, -122.5790), (49.1600, -122.5960, 49.1760, -122.5640)),  # Glover Road at Mavis Avenue, the village and the fort
     "walnutgrove": ((49.1640, -122.6400), (49.1560, -122.6560, 49.1720, -122.6240)),  # 88 Avenue at 208 Street, Walnut Grove
     "surrey": ((49.1890, -122.8490), (49.1810, -122.8630, 49.1970, -122.8350)),  # King George Boulevard at Central City, Surrey City Centre
@@ -25,7 +25,16 @@ AREAS = {
     "lonsdale": ((49.3140, -123.0800), (49.3060, -123.0940, 49.3220, -123.0660)),  # Lonsdale Avenue above the Quay, North Vancouver
     "ambleside": ((49.3290, -123.1560), (49.3210, -123.1700, 49.3370, -123.1420)),  # Marine Drive at 14th Street, Ambleside, West Vancouver
     "portmoody": ((49.2790, -122.8450), (49.2710, -122.8590, 49.2870, -122.8310)),  # Murray Street at Rocky Point, Port Moody
+    "ladner": ((49.0890, -123.0820), (49.0810, -123.0960, 49.0970, -123.0680)),  # Delta Street, Ladner village, Delta
+    "mapleridge": ((49.2190, -122.6010), (49.2110, -122.6150, 49.2270, -122.5870)),  # 224 Street, Maple Ridge town centre
+    "abbotsford": ((49.0500, -122.3040), (49.0420, -122.3180, 49.0580, -122.2900)),  # Essendene Avenue, historic downtown Abbotsford
+    "mission": ((49.1330, -122.3090), (49.1250, -122.3230, 49.1410, -122.2950)),  # First Avenue, Mission on the Fraser
+    "chilliwack": ((49.1580, -121.9510), (49.1500, -121.9650, 49.1660, -121.9370)),  # Wellington Avenue, downtown Chilliwack
 }
+
+
+SHOP_KIND = {"supermarket": "grocery", "convenience": "grocery", "grocery": "grocery", "clothes": "clothes", "fashion": "clothes", "boutique": "clothes", "shoes": "clothes", "jewelry": "clothes", "bag": "clothes",
+             "hairdresser": "barber", "barber": "barber", "beauty": "barber", "weapons": "guns", "hunting": "guns", "pawnbroker": "pawn", "second_hand": "pawn", "electronics": "electronics", "mobile_phone": "electronics", "computer": "electronics"}  # each kind gets its own storefront in city.html
 
 
 def rings(ways):
@@ -115,7 +124,7 @@ def main():
     (lat0, lon0), bbox = AREAS[args.area]
     kx = math.cos(math.radians(lat0)) * 111320
     def xz(p): return [round((p["lon"] - lon0) * kx, 1), round(-(p["lat"] - lat0) * 110540, 1)]
-    query = f"""[out:json][timeout:120];
+    query = f"""[out:json][timeout:360];
 (way["building"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["highway"~"^(motorway|trunk|primary|secondary|tertiary|residential|unclassified|living_street|service|pedestrian|footway)$"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
  way["amenity"="parking"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
@@ -134,7 +143,7 @@ out geom;"""
     for endpoint in MIRRORS:
         req = urllib.request.Request(endpoint, data=urllib.parse.urlencode({"data": query}).encode(), headers={"User-Agent": "vancouvervice-game/1.0"})
         try:
-            with urllib.request.urlopen(req, timeout=180) as response:
+            with urllib.request.urlopen(req, timeout=400) as response:  # the Vancouver box takes minutes
                 data = json.load(response)
             if "remark" in data:
                 raise RuntimeError(data["remark"])
@@ -150,7 +159,7 @@ out geom;"""
     for el in data["elements"]:
         t, g = el.get("tags", {}), el.get("geometry")
         if el["type"] == "node":
-            kind = t.get("amenity") or t.get("tourism") or ("grocery" if t.get("shop") in ("supermarket", "convenience", "grocery") else "shop")
+            kind = t.get("amenity") or t.get("tourism") or SHOP_KIND.get(t.get("shop"), "shop")
             if t.get("railway") == "station": out["stations"].append([*xz(el), t["name"]]); continue
             out["pois"].append([*xz(el), kind, t["name"]]); continue
         if el["type"] == "relation":

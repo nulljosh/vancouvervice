@@ -5,9 +5,9 @@
 <link rel="stylesheet" href="css/brand.css"><link rel="stylesheet" href="css/play.css"></head><body>
 <div id="hud"></div><div id="bubbles"></div><div id="tip"></div><div id="toast"></div><div id="card" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000b;z-index:5"><div style="max-width:520px;padding:28px 30px;background:#15171c;border-radius:14px;border:1px solid #333"><h2 id="cardT" style="margin:0 0 10px;font-size:28px"></h2><div id="cardB" style="font-weight:500;line-height:1.6;white-space:pre-line;opacity:.9"></div><button id="cardGo" style="margin-top:18px;font:600 17px Helvetica,sans-serif;padding:10px 24px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer">Let's go</button></div></div><div id="hp"><i></i></div>
 <div id="touch"><div id="stick"><div id="knob"></div></div><div id="btns"><button data-k="KeyF">Punch</button><button data-k="Tab">Swap</button><button data-k="KeyQ">Gun</button><button data-k="Escape">II</button><button data-k="KeyE">Car</button><button data-k="KeyT">Travel</button><button data-k="Brake">Back</button><button data-k="Space">Jump</button><button data-k="ShiftLeft">Run</button><button class="fire" data-k="Fire">Fire</button></div></div><canvas id="map"></canvas><div id="cross">+</div>
-<div id="title"><div class="logo">VANCOUVER<br><b>VICE</b></div><p class="sub">Gastown to Victoria. Three crooks, one rainy city.</p><nav><button id="tCont">Continue</button><button id="tNew">New Game</button><button id="tSet">Settings</button><button id="tQuit">Quit</button></nav></div>
+<div id="title"><div class="logo">VANCOUVER<br><b>VICE</b></div><p class="sub">Gastown to Victoria. Three crooks, one rainy city.</p><nav><button id="tCont">Continue</button><button id="tNew">New Game</button><button id="tRoam">Free Roam</button><button id="tSet">Settings</button><button id="tQuit">Quit</button></nav></div>
 <div id="settings" class="panel"><h2>Settings</h2><label>Graphics<select id="sGfx"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><label>Volume<input id="sVol" type="range" min="0" max="1" step=".05"></label><label>Mouse speed<input id="sSens" type="range" min=".3" max="2.5" step=".1"></label><label>Invert look<input id="sInv" type="checkbox"></label><button id="sDone">Done</button></div>
-<div id="travel" class="panel"><h2>Fast travel</h2><button data-t="0">Gastown</button><button data-t="1">Kitsilano</button><button data-t="2">Victoria</button><button data-a="brookswood">Brookswood (real streets)</button><button data-a="fortlangley">Fort Langley (real streets)</button><button data-a="walnutgrove">Walnut Grove (real streets)</button><button data-a="surrey">Surrey City Centre (real streets)</button><button data-a="cloverdale">Cloverdale (real streets)</button><button data-a="whiterock">White Rock (real streets)</button><button data-a="metrotown">Metrotown, Burnaby (real streets)</button><button data-a="newwest">New Westminster (real streets)</button><button data-a="steveston">Steveston (real streets)</button><button data-a="lonsdale">Lonsdale, North Vancouver (real streets)</button><button data-a="ambleside">Ambleside, West Vancouver (real streets)</button><button data-a="portmoody">Port Moody (real streets)</button><button data-a="corridor">Highway 1 (drive to Vancouver)</button><button data-a="langley">Langley (real streets)</button><button data-a="harrison">Harrison Hot Springs (real streets)</button><button id="trX">Cancel</button></div>
+<div id="travel" class="panel"><h2>Fast travel</h2><button data-t="0">Gastown</button><button data-t="1">Kitsilano</button><button data-t="2">Victoria</button><button data-a="brookswood">Brookswood (real streets)</button><button data-a="fortlangley">Fort Langley (real streets)</button><button data-a="walnutgrove">Walnut Grove (real streets)</button><button data-a="surrey">Surrey City Centre (real streets)</button><button data-a="cloverdale">Cloverdale (real streets)</button><button data-a="whiterock">White Rock (real streets)</button><button data-a="metrotown">Metrotown, Burnaby (real streets)</button><button data-a="newwest">New Westminster (real streets)</button><button data-a="steveston">Steveston (real streets)</button><button data-a="lonsdale">Lonsdale, North Vancouver (real streets)</button><button data-a="ambleside">Ambleside, West Vancouver (real streets)</button><button data-a="portmoody">Port Moody (real streets)</button><button data-a="ladner">Ladner, Delta (real streets)</button><button data-a="mapleridge">Maple Ridge (real streets)</button><button data-a="abbotsford">Abbotsford (real streets)</button><button data-a="mission">Mission (real streets)</button><button data-a="chilliwack">Chilliwack (real streets)</button><button data-a="corridor">Highway 1 (drive to Vancouver)</button><button data-a="langley">Langley (real streets)</button><button data-a="harrison">Harrison Hot Springs (real streets)</button><button id="trX">Cancel</button></div>
 <div id="pause"><h1>PAUSED</h1><button id="resume">Resume</button><button id="savebtn">Save game</button><button id="setbtn">Settings</button><button id="trbtn">Fast travel</button><button id="fs">Full screen</button><button onclick="try{const s=JSON.parse(localStorage.gs||'{}');delete s.game;localStorage.gs=JSON.stringify(s)}catch{};location.reload()">New game</button><button onclick="location.href='city.html'">Real streets (new)</button><button onclick="location.href='real.html'">Real Vancouver (beta)</button><button id="exitbtn">Exit game</button>
 <p style="opacity:.6;font-size:12px">Car: Ferrari 458 Italia by vicent091036, CC-BY 4.0. Characters: Soldier from the three.js examples (Mixamo), HVGirl from the Babylon.js assets.</p><p style="opacity:.8">Joshua: +50% mission cash, cops cool off fast. Ben: fastest runner, two-punch knockouts. Alexandre: steady aim, faster cars, tougher.<br>W A S D move, mouse look (click to lock), click or Enter attack, Shift run, Space jump, F punch, Q or 1-4 weapons, R radio in a car, E car, T fast travel, Tab swap, Esc pause. On phones: stick, drag to look, buttons.</p></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -86,7 +86,7 @@ function sidewalkPed(p) {
 }
 
 // ---- game state
-const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 16, 120], shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0, loot: { mac: 0, phone: 0 } };
+const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 0, 0, 0, 0, 0], owned: new Set([0, 1]), shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0, loot: { mac: 0, book: 0, phone: 0 } };
 G.heroes = [{ name: "Joshua", p: { ...G.player }, a: 0, driving: null, ammo: 60 }, { name: "Alexandre", p: { x: 5 * block + 40, y: 15 * block + 40 }, a: 0, driving: null, ammo: 60 }];
 // Joshua runs Gastown, Ben hangs in Kitsilano, Alexandre is downtown Victoria
 G.heroes.splice(1, 0, { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 });
@@ -123,6 +123,11 @@ G.cars.forEach(c => c.ai && lane(c));
 save.settings ??= { gfx: TOUCH ? "low" : "high", vol: .8, sens: 1, invert: false }; const SET = save.settings;
 let MASTER; const OUT = () => { if (!MASTER) { MASTER = ac.createGain(); MASTER.gain.value = SET.vol; MASTER.connect(ac.destination); } return MASTER; };
 // ---- sound
+const GUNSND = [null, [.35, .03, 1800, 160, .9], [.6, .07, 700, 90, 1.1], [.18, .015, 2400, 200, .6], [.5, .05, 1200, 120, 1], [.3, .025, 2000, 140, .8], [.9, .09, 900, 70, 1.2]]; // [length s, decay s, crack Hz, thump Hz, volume] per weapon
+const gunfire = w => { ac ??= new AudioContext(); const P = GUNSND[w] || GUNSND[1], [len, dec, tone, thump, vol] = P, t = ac.currentTime, o = OUT(), n = Math.round(ac.sampleRate * len), b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ac.sampleRate * dec));
+  const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(); s.buffer = b; f.type = "bandpass"; f.frequency.value = tone * (.9 + Math.random() * .2); f.Q.value = .6; g.gain.value = vol; s.connect(f).connect(g).connect(o); s.start(t);
+  const os = ac.createOscillator(), og = ac.createGain(); os.frequency.setValueAtTime(thump, t); os.frequency.exponentialRampToValueAtTime(32, t + .14); og.gain.setValueAtTime(vol * .9, t); og.gain.exponentialRampToValueAtTime(.001, t + .2); os.connect(og).connect(o); os.start(t); os.stop(t + .22);
+  const dl = ac.createDelay(), eg = ac.createGain(); dl.delayTime.value = .09 + Math.random() * .05; eg.gain.value = .3; g.connect(dl).connect(eg).connect(o); };
 let ac; const bang = v => { ac ??= new AudioContext(); const n = ac.sampleRate * .25, b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4) * v; const s = ac.createBufferSource(); s.buffer = b; s.connect(OUT()); s.start(); };
 
 function lane(c) {
@@ -158,6 +163,9 @@ function toggleCar() {
   if (c.ai) { addHeat(4, 1); unlock("thief"); gainXP(5); const p = sidewalkPed(d); p.p = { x: d.x - Math.sin(c.a) * 14, y: d.y + Math.cos(c.a) * 14 }; p.scared = 4; say(p, ["Hey! That's my car!", "Are you serious?!", "I'm calling the cops!"][Math.floor(Math.random() * 3)]); G.peds.push(p); }
   c.ai = false; G.carAnim = { kind: "in", t: 0, dur: Math.max(.25, Math.min(.6, dist(G.player, d) / 120)) + .25, from: { ...G.player }, door: d, car: c };
 }
+// a car parked hard against a wall (or into it) gets eased onto the nearest lane, facing whichever way is open
+function unbox(c) { const stuck = () => solid(c.p.x, c.p.y) || [24, -24].every(k => solid(c.p.x + Math.cos(c.a) * k, c.p.y + Math.sin(c.a) * k)); if (!stuck()) return;
+  const a0 = Math.round(c.a / (Math.PI / 2)) * Math.PI / 2, p0 = { ...c.p }; for (let q = 0; q < 4; q++) { c.a = a0 + q * Math.PI / 2; c.p = { ...p0 }; lane(c); if (!stuck()) { G.player = { ...c.p }; return; } } c.p = p0; c.a = a0; }
 function carAnimTick(dt) {
   const A = G.carAnim, c = A.car; A.t += dt; const k = Math.min(1, A.t / A.dur);
   if (A.kind === "in") {
@@ -165,7 +173,7 @@ function carAnimTick(dt) {
     const walk = (A.dur - .25) / A.dur; // walk to the door, then slide in
     if (k < walk) { const e = k / walk; G.player = { x: A.from.x + (A.door.x - A.from.x) * e, y: A.from.y + (A.door.y - A.from.y) * e }; G.pa = Math.atan2(A.door.y - A.from.y, A.door.x - A.from.x); }
     else { if (!A.thunk) { A.thunk = true; bang(.12); } const e = (k - walk) / (1 - walk); G.player = { x: A.door.x + (c.p.x - A.door.x) * e, y: A.door.y + (c.p.y - A.door.y) * e }; G.pa = c.a; }
-    if (k >= 1) { G.carAnim = null; G.driving = G.cars.indexOf(c); G.player = { ...c.p }; }
+    if (k >= 1) { G.carAnim = null; G.driving = G.cars.indexOf(c); G.player = { ...c.p }; unbox(c); }
   } else {
     G.player = { x: A.from.x + (A.to.x - A.from.x) * k, y: A.from.y + (A.to.y - A.from.y) * k }; G.pa = A.a;
     if (k >= 1) G.carAnim = null;
@@ -192,15 +200,19 @@ function punch() {
   const p = G.peds[best]; p.hp = (p.hp ?? 3) - perk("fists"); bang(.4); addHeat(12, 1); gainXP(2);
   const nx = p.p.x + Math.cos(G.pa) * 8, ny = p.p.y + Math.sin(G.pa) * 8; if (!solid(nx, ny)) p.p = { x: nx, y: ny };
   if (p.hp <= 0) { if (Math.random() < .35) { G.loot.phone++; toast("Grabbed a phone. Granville Pawn will take it"); } killPed(best); return; }
-  if (p.angry === undefined) p.angry = Math.random() < .45;
+  p.hitT = .3; if (p.angry === undefined) p.angry = Math.random() < .7;
   if (!p.angry) { p.scared = 6; p.a = G.pa; }
 }
+const PICKUPS = [2, 3, 4, 5, 6, 2, 3, 4].map(w => ({ w, p: roadPoint(), m: null })); window.GS_PICK = PICKUPS;
+function gunTick(dt) { for (const k of PICKUPS) { if (!k.m) { k.m = new THREE.Group(); const g = gun.clone(); g.visible = true; g.scale.setScalar(2.4); g.position.set(0, 6, 0); g.rotation.set(0, 0, 0); const ring = new THREE.Mesh(new THREE.TorusGeometry(7, .5, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffb020 })); ring.rotation.x = -Math.PI / 2; ring.position.y = .6; k.m.add(g, ring); k.m.gun = g; scene.add(k.m); }
+  k.m.visible = !k.got; if (k.got) continue; k.m.position.set(k.p.x, 0, k.p.y); k.m.gun.rotation.y += dt * 2; k.m.gun.position.y = 6 + Math.sin(performance.now() / 300) * 1.2;
+  if (G.driving === null && dist(G.player, k.p) < 16) { k.got = true; const W = WEAPONS[k.w], add = Math.round(W.max / 2); G.owned.add(k.w); G.ammoW[k.w] = Math.min(W.max, (G.ammoW[k.w] || 0) + add); toast(`Picked up a ${W.name} (+${add}). Q or ${k.w + 1} to use it`); if (ac) chirp(600, 1200, .12, .06); saveGame(); } } }
 function shoot() {
   if (G.driving !== null || G.paused) return;
   if (G.weapon === 0) { punch(); return; }
   const W = WEAPONS[G.weapon], now = performance.now(); if (now - G.shotAt < W.rate) return;
   if (G.ammoW[G.weapon] <= 0) { G.msg = `Out of ${W.name} ammo, Q to switch`; msgT = 2; return; }
-  G.shotAt = now; panic(G.player, 420); G.ammoW[G.weapon]--; G.ammo = G.ammoW[1]; G.flash = .08; bang(G.weapon === 2 ? 1 : .7);
+  G.shotAt = now; panic(G.player, 420); G.ammoW[G.weapon]--; G.ammo = G.ammoW[1]; G.flash = .08; gunfire(G.weapon);
   const hits = new Set(); for (let k = 0; k < (W.pellets || 1); k++) { const pa = G.pa; G.pa += (k - ((W.pellets || 1) - 1) / 2) * .12; const t = findTarget(W.range * perk("aim")); G.pa = pa; if (t) hits.add(t.kind + t.i); }
   [...hits].map(h => ({ kind: h.startsWith("ped") ? "ped" : "car", i: +h.replace(/\D/g, "") })).sort((a, b) => b.i - a.i).forEach(t => {
     if (t.kind === "ped") return killPed(t.i);
@@ -214,12 +226,13 @@ function swapHero() {
   G.heroes[G.cur] = { ...G.heroes[G.cur], p: { ...G.player }, a: G.pa, driving: G.driving, ammo: G.ammo, ammoW: [...G.ammoW] };
   G.cur = (G.cur + 1) % G.heroes.length; const h = G.heroes[G.cur]; tint(hero, HERO_LOOK[h.name] ?? 0xe8b21a); hero.hood.visible = h.name === "Joshua" && !hero.gl; dressHero(h.name); G.player = { ...h.p }; G.pa = h.a; G.ammo = h.ammo; if (h.ammoW) G.ammoW = h.ammoW;
   G.driving = h.driving !== null && h.driving < G.cars.length && !G.cars[h.driving].cop ? h.driving : null;
-  SW.to = { ...G.player }; SW.t = 0; chirp(220, 90, 1.2, .08, "sawtooth");
+  SW.to = { ...G.player }; SW.t = 0; SW.t0 = performance.now(); chirp(220, 90, 1.2, .08, "sawtooth");
   G.msg = "Now playing " + h.name; msgT = 3; toast(PERKS[h.name]?.blurb || h.name);
 }
-function wasted() { if (G.dieAt) return; G.dieAt = performance.now(); G.carAnim = null; G.msg = "WASTED"; msgT = 3.4; }
+function wasted() { if (G.dieAt) return; G.dieAt = performance.now(); G.carAnim = null; G.msg = "WASTED"; msgT = 3.4;
+  if (mission?.kind === "heist" && mission.stage === 1) { mission.stage = 0; mission.fled = false; G.loot.mac = G.loot.book = 0; STORE.alarm = false; STORE.loot = 0; restock(); } } // dying on the getaway drops the bag: the heist starts over, it never counts as losing the cops
 function respawn() { G.dieAt = 0; G.hp = 100; G.score = Math.max(0, G.score - 100); G.heat = 0; G.wanted = 0; G.cars = G.cars.filter(c => !c.cop); G.driving = null; G.player = { x: 6 * block + 40, y: 6 * block + 40 }; }
-function busted() { G.carAnim = null; G.heat = 0; G.hp = 100; G.msg = "BUSTED"; msgT = 3; G.ammo = 60; G.ammoW = [0, 60, 16, 120]; G.cars = G.cars.filter(c => !c.cop); G.wanted = 0; G.score = Math.max(0, G.score - 50); G.driving = null; G.player = { x: 8 * block + 40, y: 5 * block + 40 }; }
+function busted() { G.carAnim = null; G.heat = 0; G.hp = 100; G.msg = "BUSTED"; msgT = 3; G.ammo = 60; G.ammoW = [0, 60, 0, 0, 0, 0, 0]; G.cars = G.cars.filter(c => !c.cop); G.wanted = 0; G.score = Math.max(0, G.score - 50); G.driving = null; G.player = { x: 8 * block + 40, y: 5 * block + 40 }; }
 function newTarget() { const s = spots.filter(p => dist(p, G.player) > 600); G.target = s[Math.floor(Math.random() * s.length)] || G.target; }
 let msgT = 0;
 const RADIO = { st: 1, step: 0, next: 0 };
@@ -237,8 +250,8 @@ function radioTick() {
   }
 }
 // --- save: autosave progress every few seconds
-function saveGame() { if (DEMO) return; save.game = { v: 2, stage: mission ? mission.stage : 0, taken: STORE.macs.filter(m => m.taken).length, score: G.score, step: G.step, mission: mission ? mission.n : null, free: G.free ? G.free.n : null, loot: G.loot, heroes: G.heroes.map((h, i) => i === G.cur ? { ...h, p: G.player, a: G.pa, driving: null } : { ...h, driving: null }), cur: G.cur, ammoW: G.ammoW }; persist(); }
-function loadGame() { const g = save.game; if (!g || !Array.isArray(g.heroes) || (g.heroes.length < 2 || g.heroes.length > 3) || !g.heroes.every(h => h?.p && isFinite(h.p.x) && isFinite(h.p.y)) || solid(g.heroes[g.cur ?? 0].p.x, g.heroes[g.cur ?? 0].p.y)) { if (g) { delete save.game; persist(); } return false; } Object.assign(G, { loot: g.loot ?? G.loot, score: g.score, step: g.step, cur: g.cur, ammoW: g.ammoW }); G.heroes = g.heroes.length === 3 ? g.heroes : [g.heroes[0], { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 }, g.heroes[1]]; if (g.heroes.length === 2 && g.cur === 1) G.cur = 2; G.player = { ...G.heroes[G.cur].p }; G.pa = G.heroes[G.cur].a; tint(hero, HERO_LOOK[G.heroes[G.cur].name] ?? 0xe8b21a); hero.hood.visible = G.heroes[G.cur].name === "Joshua" && !hero.gl; if (cell(G.player.x, G.player.y) === "P") G.player = { ...[{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }][G.cur] };
+function saveGame() { if (DEMO) return; save.game = { v: 2, stage: mission ? mission.stage : 0, taken: STORE.macs.filter(m => m.taken).length, score: G.score, step: G.step, mission: mission ? mission.n : null, free: G.free ? G.free.n : null, loot: G.loot, owned: [...G.owned], heroes: G.heroes.map((h, i) => i === G.cur ? { ...h, p: G.player, a: G.pa, driving: null } : { ...h, driving: null }), cur: G.cur, ammoW: G.ammoW }; persist(); }
+function loadGame() { const g = save.game; if (!g || !Array.isArray(g.heroes) || (g.heroes.length < 2 || g.heroes.length > 3) || !g.heroes.every(h => h?.p && isFinite(h.p.x) && isFinite(h.p.y)) || solid(g.heroes[g.cur ?? 0].p.x, g.heroes[g.cur ?? 0].p.y)) { if (g) { delete save.game; persist(); } return false; } Object.assign(G, { loot: g.loot ?? G.loot, score: g.score, step: g.step, cur: g.cur, ammoW: g.ammoW, owned: new Set(g.owned || [0, 1, 2, 3]) }); G.heroes = g.heroes.length === 3 ? g.heroes : [g.heroes[0], { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 }, g.heroes[1]]; if (g.heroes.length === 2 && g.cur === 1) G.cur = 2; G.player = { ...G.heroes[G.cur].p }; G.pa = G.heroes[G.cur].a; tint(hero, HERO_LOOK[G.heroes[G.cur].name] ?? 0xe8b21a); hero.hood.visible = G.heroes[G.cur].name === "Joshua" && !hero.gl; if (cell(G.player.x, G.player.y) === "P") G.player = { ...[{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }][G.cur] };
   if (G.step >= 5) { restoring = true; const old = g.v !== 2; if (old || (g.mission == null && g.free == null)) startMission(0); else if (g.mission != null) startMission(g.mission); else freeRoam(g.free);
     if (!old && mission && g.stage > 0 && (mission.kind === "rob" || mission.kind === "heist")) mission.stage = mission.kind === "rob" ? 2 : g.stage; // already paid: pick up at the getaway
     STORE.macs.slice(0, old ? 0 : g.taken | 0).forEach(m => { m.taken = true; m.mesh.visible = false; }); restoring = false; } return true; }
@@ -308,45 +321,48 @@ function pawnTick() {
   if (G.driving !== null) return;
   const rm = inRoom(G.player);
   if (!rm) { const r = ROOMS.find(r => dist(G.player, r.door) < 30); if (r) { G.player = { x: r.x + r.w / 2, y: r.y + r.h - 22 }; G.pa = -Math.PI / 2; G.atPawn = false; toast(r.hello); } return; }
+  const guard = rm === ROOMS[1] && STORE.staff.find(q => q.block && !q.dead && dist(q.p, q.block) < 14); if (guard && G.player.y > rm.y + rm.h - 22) { G.player = { x: G.player.x, y: rm.y + rm.h - 22 }; if (!G.guardT || performance.now() - G.guardT > 2500) { G.guardT = performance.now(); toast("He's blocking the door. Knock him down (F)"); } }
   if (G.player.y > rm.y + rm.h - 9) { G.player = { ...rm.out }; G.pa = -Math.PI / 2; G.atPawn = false; return; }
   if (rm !== ROOM) return; // only the pawn shop has a counter
   if (dist(G.player, COUNTER) > 30) { G.atPawn = false; return; } if (G.atPawn) return; G.atPawn = true;
   const rows = Object.entries(G.loot).filter(([k, n]) => n > 0 && LOOT[k]); if (!rows.length) { toast("Granville Pawn: nothing to sell. Come back with something shiny"); return; }
   let total = 0; const lines = rows.map(([k, n]) => { const [name, each] = LOOT[k]; total += n * each; return `${n} x ${name} at $${each}   $${n * each}`; });
-  G.score += total; G.loot = { mac: 0, phone: 0 }; gainXP(Math.round(total / 10)); bang(.3); saveGame(); card("Granville Pawn", lines.join("\n") + `\n\nCash on the counter: $${total}. No receipts, no questions.`);
+  G.score += total; G.loot = { mac: 0, book: 0, phone: 0 }; gainXP(Math.round(total / 10)); bang(.3); saveGame(); card("Granville Pawn", lines.join("\n") + `\n\nCash on the counter: $${total}. No receipts, no questions.`);
 }
 // fast travel: the camera lifts off, flies over the city and drops you on the other side
 const TRAVEL = [{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }];
 function fastTravel(i) {
   if (G.wanted > 0) { toast("Lose the cops first"); return false; }
-  if (SW.t >= 0) return false; G.carAnim = null; SW.from = { ...G.player }; G.driving = null; G.player = { ...TRAVEL[i] }; SW.to = { ...G.player }; SW.t = 0; if (ac) chirp(220, 90, 1.2, .08, "sawtooth"); return true;
+  if (SW.t >= 0) return false; G.carAnim = null; SW.from = { ...G.player }; G.driving = null; G.player = { ...TRAVEL[i] }; SW.to = { ...G.player }; SW.t = 0; SW.t0 = performance.now(); if (ac) chirp(220, 90, 1.2, .08, "sawtooth"); return true;
 }
 // The store on Georgia: Mac minis on the tables, two staff who notice the first grab, an alarm, and fresh stock
 // while you're away. It runs in free roam too, so the store is a repeatable score: rob it, pawn it, lie low.
-const STORE = { macs: [], staff: [], alarm: false, alarmT: 0, loot: 0, wasIn: false, restockT: 0 };
-const storeIn = () => inRoom(G.player) === ROOMS[1];
-const staffPed = i => { const R = ROOMS[1], p = { p: { x: R.x + (i ? 150 : 26), y: R.y + (i ? 122 : 62) }, a: i ? Math.PI : 0, t: 0, hood: { ...HOODS.downtown, shirts: [0x1e6fd9] }, uniform: 0x1e6fd9, staff: true, still: true }; G.peds.push(p); return p; };
+const CARRY = 4, STORE = { macs: [], staff: [], alarm: false, alarmT: 0, loot: 0, wasIn: false, restockT: 0 };
+const storeIn = () => inRoom(G.player) === ROOMS[1], restock = () => STORE.macs.forEach(m => { m.taken = false; m.fly = null; m.mesh.visible = true; if (m.home) m.mesh.position.copy(m.home); m.mesh.scale.setScalar(1); });
+const staffPed = i => { const R = ROOMS[1], p = { p: { x: R.x + (i ? 150 : 30), y: R.y + (i ? 40 : 128) }, a: i ? Math.PI : 0, t: 0, hood: { ...HOODS.downtown, shirts: [0x1e6fd9] }, uniform: 0x1e6fd9, staff: true, still: true, sex: i ? "f" : "m" }; G.peds.push(p); return p; };
 STORE.staff = [0, 1].map(staffPed);
 function storeTick(dt) {
   const inside = storeIn(), R = ROOMS[1];
-  if (inside && G.heroes[G.cur].name === "Joshua") for (const m of STORE.macs) if (!m.taken && dist(m, G.player) < 22) {
-    m.taken = true; m.mesh.visible = false; G.loot.mac++; STORE.loot++; if (ac) chirp(1200, 1800, .08, .05);
-    toast(`Mac mini ${STORE.macs.filter(x => x.taken).length}/${STORE.macs.length}`);
-    if (!STORE.alarm) { STORE.alarm = true; STORE.staff.forEach((p, i) => { p.angry = true; say(p, i ? "Hey! Those aren't paid for!" : "Stop! Security!"); }); }
+  if (STORE.doors) { const o = Math.hypot(G.player.x - (R.x + R.w / 2), G.player.y - (R.y + R.h)) < 60 ? 1 : 0; for (const d of STORE.doors) { d.o += (o - d.o) * Math.min(1, dt * 6); d.position.x = R.x + R.w / 2 + d.sx * (9 + d.o * 17); d.handle.position.x = d.position.x - d.sx * 7; } }
+  for (const m of STORE.macs) if (m.fly != null) { m.fly = Math.min(1, m.fly + dt * 4); const t = m.fly; m.mesh.position.set(m.home.x + (G.player.x - m.home.x) * t, m.home.y + Math.sin(t * Math.PI) * 8 + (13 - m.home.y) * t, m.home.z + (G.player.y - m.home.z) * t); m.mesh.scale.setScalar(1 - t * .6); if (t >= 1) { m.fly = null; m.mesh.visible = false; } } // the Mac lifts off the table into his hands
+  if (inside && G.heroes[G.cur].name === "Joshua") for (const m of STORE.macs) if (!m.taken && STORE.loot < CARRY && dist(m, G.player) < 20) { // you can carry four, then it's a run for the door
+    m.taken = true; m.home ??= m.mesh.position.clone(); m.fly = 0; G.grabAt = performance.now(); G.loot[m.kind] = (G.loot[m.kind] || 0) + 1; STORE.loot++; if (ac) chirp(1200, 1800, .08, .05);
+    toast(STORE.loot < CARRY ? `${LOOT[m.kind][0]} ${STORE.loot}/${CARRY}` : "Arms full. Run for the door");
+    if (!STORE.alarm) { STORE.alarm = true; STORE.staff.forEach((p, i) => { p.angry = true; say(p, i ? "Hey! Those aren't paid for!" : "Stop! Security! Nobody leaves!"); }); STORE.staff[0].block = { x: R.x + R.w / 2, y: R.y + R.h - 16 }; } // he plants himself in the doorway
   }
   // out the door with stock: both staff follow you onto Georgia and one calls it in
   let fled = false;
   if (STORE.wasIn && !inside && STORE.loot > 0 && G.driving === null && dist(G.player, R.out) > 120) STORE.loot = 0;
   if (STORE.wasIn && !inside && STORE.loot > 0 && G.driving === null) {
-    fled = true; STORE.loot = 0; addHeat(19, 1);
+    fled = true; STORE.loot = 0; addHeat(59, 2); /* two stars: a real chase, not one that fizzles in seconds */
     STORE.staff.forEach((p, i) => { if (!p.dead) { p.angry = true; p.p = { x: G.player.x + (i ? 36 : -36), y: G.player.y + 24 }; say(p, i ? "He's running! Call it in!" : "Drop the bag!"); } });
   }
   STORE.wasIn = inside;
   if (STORE.alarm && ac && (inside || dist(G.player, R.out) < 500) && (STORE.alarmT -= dt) <= 0) { STORE.alarmT = .55; chirp(STORE.tone = STORE.tone === 880 ? 660 : 880, STORE.tone, .4, .025, "square"); }
   // three minutes away from the store and it's restocked, alarm off, staff back behind the tables
   if (STORE.alarm && !inside && dist(G.player, R.out) > 800 && (STORE.restockT += dt) > 180) {
-    STORE.restockT = 0; STORE.alarm = false; STORE.macs.forEach(m => { m.taken = false; m.mesh.visible = true; });
-    STORE.staff = STORE.staff.map((p, i) => { if (p.dead || !G.peds.includes(p)) return staffPed(i); p.angry = false; p.p = { x: R.x + (i ? 150 : 26), y: R.y + (i ? 122 : 62) }; return p; });
+    STORE.restockT = 0; STORE.alarm = false; restock();
+    STORE.staff = STORE.staff.map((p, i) => { if (p.dead || !G.peds.includes(p)) return staffPed(i); p.angry = false; p.p = { x: R.x + (i ? 150 : 30), y: R.y + (i ? 40 : 128) }; return p; });
   }
   return fled;
 }
@@ -381,7 +397,7 @@ function startMission(n) {
   if (kind === "rob") { if (COLIN.dead || !G.peds.includes(COLIN)) COLIN = colinPed(); G.target = { ...ROOMS[3].out }; mission.text = "Rob Colin at the McDonald's on Granville"; }
   if (kind === "club") { const R = ROOMS[4]; mission.colin = roomPed(R, 46, 56, { uniform: 0x1c1c22, sex: "m", a: 0 }); mission.girl = roomPed(R, 60, 64, { uniform: 0x9b1b4a, dress: true, sex: "f", a: Math.PI }); G.target = { ...R.out }; mission.text = "Go to Club Velvet on Granville"; }
   if (kind === "meet") { G.target = { ...story.at }; mission.text = story.text; }
-  if (kind === "heist") { mission.text = "Grab the Mac minis off the tables, then run for the door"; G.target = { ...ROOMS[1].out }; }
+  if (kind === "heist") { mission.text = "Walk along the tables to grab the Macs, then run for the door"; G.target = { ...ROOMS[1].out }; }
   if (story) { mission.text = story.text; mission.pay = story.pay; if (kind === "meet") mission.target = { ...story.at }; if (!restoring && kind !== "meet") card(story.title, story.text + `\n\nPays $${story.pay}. Follow the ${story.kind === "hit" ? "red dot on the map" : story.kind === "evade" ? "sirens" : "yellow beacon"}.`); } else toast("Mission: " + mission.text);
 }
 function runMission(dt) {
@@ -395,9 +411,9 @@ function runMission(dt) {
   if (m.kind === "meet" && dist(G.player, m.target ?? G.target) < 60) { const s = STORY[m.n]; done(0); card(s.title.replace(/^[\w ]+: /, ""), s.scene); } // the scene is the payoff
   if (m.kind === "heist" && G.heroes[G.cur].name === "Joshua") {
     const got = STORE.macs.filter(x => x.taken).length;
-    if (m.stage === 0) m.text = m.tip = m.fled ? "" : storeIn() ? (got ? `Mac minis ${got}/${STORE.macs.length}. Grab the rest or run for the door` : "Walk up to the Mac minis on the tables to grab them") : "Get back in the store on Georgia (yellow beacon)";
+    if (m.stage === 0) m.text = m.tip = m.fled ? "" : storeIn() ? (got ? (STORE.loot >= CARRY ? "Arms full. Get through the door" : `Macs ${STORE.loot}/${CARRY}. Grab more or run for the door`) : "Walk along the tables and grab a few Macs") : "Get back in the store on Georgia (yellow beacon)";
     if (m.stage === 0 && m.fled) { m.stage = 1; m.text = m.tip = "Staff on your heels and the cops are coming. Get in a car (E) and lose them"; }
-    else if (m.stage === 1 && G.wanted === 0 && dist(G.player, ROOMS[1].out) > 600) done(300);
+    else if (m.stage === 1 && G.wanted === 0 && dist(G.player, ROOMS[1].out) > 400) done(300);
   }
   if (m.kind === "rob" && G.heroes[G.cur].name === "Joshua") {
     const inside = inRoom(G.player) === ROOMS[3];
@@ -473,16 +489,18 @@ function tick(dt) {
   }
   for (const p of G.peds) {
     if (p.dead || p.walkUp) continue;
+    if (p.block && !storeIn()) p.block = null;
+    if (p.block && dist(p.p, G.player) > 40) { const d = dist(p.p, p.block), clear = [.25, .5, .75].every(f => !solid(p.p.x + (p.block.x - p.p.x) * f, p.p.y + (p.block.y - p.p.y) * f)), ax = ROOMS[1].x + 14, tg = clear ? p.block : Math.abs(p.p.x - ax) > 4 ? { x: ax, y: p.p.y } : { x: ax, y: p.block.y }; /* over to the wall aisle, down it, then across to the door */ p.a = d > 4 ? Math.atan2(tg.y - p.p.y, tg.x - p.p.x) : Math.atan2(G.player.y - p.p.y, G.player.x - p.p.x); if (d > 4) { const nx = p.p.x + Math.cos(p.a) * 48 * dt, ny = p.p.y + Math.sin(p.a) * 48 * dt; if (!solid(nx, ny)) p.p = { x: nx, y: ny }; else if (!solid(nx, p.p.y)) p.p = { x: nx, y: p.p.y }; else if (!solid(p.p.x, ny)) p.p = { x: p.p.x, y: ny }; p.t += dt * 20; } continue; }
     if (p.angry && G.driving === null && dist(p.p, G.player) < 300) {
       p.a = Math.atan2(G.player.y - p.p.y, G.player.x - p.p.x); p.swingT = (p.swingT || 0) - dt;
       if (dist(p.p, G.player) < 16) { if (p.swingT <= 0) { p.swingT = 1; p.punching = .3; bang(.3); hurt(7); if (G.hp <= 0) { wasted(); return; } } p.punching = Math.max(0, (p.punching || 0) - dt); continue; }
-      const nx = p.p.x + Math.cos(p.a) * 80 * dt, ny = p.p.y + Math.sin(p.a) * 80 * dt; if (!solid(nx, ny)) p.p = { x: nx, y: ny }; else if (!solid(nx, p.p.y)) p.p = { x: nx, y: p.p.y }; else if (!solid(p.p.x, ny)) p.p = { x: p.p.x, y: ny }; p.t += dt * 20; continue;
+      const nx = p.p.x + Math.cos(p.a) * 48 * dt, ny = p.p.y + Math.sin(p.a) * 48 * dt; if (!solid(nx, ny)) p.p = { x: nx, y: ny }; else if (!solid(nx, p.p.y)) p.p = { x: nx, y: p.p.y }; else if (!solid(p.p.x, ny)) p.p = { x: p.p.x, y: ny }; p.t += dt * 20; continue;
     }
     if (p.dance) p.a += p.dance * dt * .9; // dancers turn on the spot to the beat
     if (p.still) continue; // staff, Colin, dancers: they hold their spot until something sets them off
     if (p.scared > 0 && p.from && (p.steerT = (p.steerT || 0) - dt) <= 0) { p.steerT = .4; p.a = Math.atan2(p.p.y - p.from.y, p.p.x - p.from.x) + (Math.random() - .5) * .6; }
     if (roadway(p.p.x, p.p.y)) { const car = G.cars.find(c => Math.abs(c.v) > 60 && dist(c.p, p.p) < 70 && (([lx, ly]) => lx > 0 && Math.abs(ly) < 16)(carLocal(c, p.p))); if (car) { const [, ly] = carLocal(car, p.p); p.a = car.a + Math.sign(ly || 1) * Math.PI / 2; p.scared = Math.max(p.scared || 0, 1); } }
-    const sp = p.scared > 0 ? 90 : 30 * (p.hood?.slow || 1); p.scared = (p.scared || 0) - dt; const nx = p.p.x + Math.cos(p.a) * sp * dt, ny = p.p.y + Math.sin(p.a) * sp * dt;
+    const sp = p.scared > 0 ? 48 : 21 * (p.hood?.slow || 1); /* a real walk is 1.4 m/s; the crowd has only a walk clip, so fleeing is a hurried walk, not a sprint */ p.scared = (p.scared || 0) - dt; const nx = p.p.x + Math.cos(p.a) * sp * dt, ny = p.p.y + Math.sin(p.a) * sp * dt;
     if (!(p.scared > 0) && roadway(nx, ny) && !roadway(p.p.x, p.p.y) && G.cars.some(c => Math.abs(c.v) > 20 && dist(c.p, { x: nx, y: ny }) < 170 && (([lx, ly]) => lx > 0 && Math.abs(ly) < 22)(carLocal(c, { x: nx, y: ny })))) { p.waitT = .3; continue; } // wait at the curb
     p.t += dt * sp / 4;
     if (solid(nx, ny)) { const d = [0, 1, 2, 3].map(i => i * Math.PI / 2).filter(a => !solid(p.p.x + Math.cos(a) * 8, p.p.y + Math.sin(a) * 8)), walk = d.filter(a => !roadway(p.p.x + Math.cos(a) * 16, p.p.y + Math.sin(a) * 16)); // turn the corner along the sidewalk, not out into the lanes
@@ -530,7 +548,7 @@ function tick(dt) {
   if (G.hp < 100 && G.wanted === 0) G.hp = Math.min(100, G.hp + dt * 5);
   G.aimT = G.driving === null ? findTarget(G.weapon ? 600 : 28) : null; G.hurtT -= dt; toastT -= dt; if (toastT <= 0) document.getElementById("toast").style.display = "none";
   for (const c of [...G.cars]) if (c.burnT && (c.burnT -= dt) <= 0) explode(c);
-  streetLife(dt); geeseTick(dt); pawnTick(); if (storeTick(dt) && mission?.kind === "heist") mission.fled = true;
+  streetLife(dt); geeseTick(dt); pawnTick(); gunTick(dt); if (storeTick(dt) && mission?.kind === "heist") mission.fled = true;
   // tutorial then missions
   const s = G.step;
   if (s === 0 && dist(G.player, walkFrom) > 100) G.step = 1;
@@ -915,9 +933,9 @@ function skyTick() { const t = performance.now() / 1000, len = SKY.z1 - SKY.z0 -
   for (const lx of [-40, 40]) { const l = new THREE.PointLight(0xffd9a0, 900, 160, 2); l.position.set(cx + lx, 40, R0.y + R0.h / 2); scene.add(l); }
 }
 { // the store on Georgia: white room, long wooden tables of laptops and phones, a video wall, staff in blue. No logos.
-  const R1 = ROOMS[1], cx = R1.x + R1.w / 2, white = mat(0xf4f4f2), add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R1.w, R1.h), mat(0xd9d6cf)); floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R1.y + R1.h / 2);
-  add(boxM(R1.w, 130, 6, white), cx, 65, R1.y + 3); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + 3, 65, R1.y + R1.h / 2); add(boxM(6, 130, R1.h, mat(0x2f5a2c)), R1.x + R1.w - 3, 65, R1.y + R1.h / 2);
+  const R1 = ROOMS[1], cx = R1.x + R1.w / 2, white = mat(0xf4f4f2), tx = (u, rx, ry) => { const t = new THREE.TextureLoader().load(u); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; }, stone = new THREE.MeshStandardMaterial({ map: tx("img/store/stone.jpg", R1.w / 130, 1), roughness: .7 }), green = new THREE.MeshStandardMaterial({ map: tx("img/store/green.jpg", R1.h / 65, 2), roughness: .9 }), add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R1.w, R1.h), new THREE.MeshStandardMaterial({ map: tx("img/store/floor.jpg", 3, 6), color: 0xf2efe9, roughness: .16, metalness: .05 })); /* polished stone that picks up the lights */ floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R1.y + R1.h / 2);
+  add(boxM(R1.w, 130, 6, stone), cx, 65, R1.y + 3); add(boxM(6, 130, R1.h, green), R1.x + 3, 65, R1.y + R1.h / 2); add(boxM(6, 130, R1.h, green), R1.x + R1.w - 3, 65, R1.y + R1.h / 2);
   add(boxM(R1.w - 12, 4, 40, mat(0xe9e6df)), cx, 62, R1.y + 26); add(boxM(R1.w - 12, 10, 1, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .3 })), cx, 69, R1.y + 46);
   // staircase on the right as you walk in, around the corner; glass elevator on the left
   for (let st = 0; st < 12; st++) add(boxM(36, 5, 4, mat(0xbdbab2)), R1.x + R1.w - 28, 2.5 + st * 5, R1.y + 96 - st * 4);
@@ -926,17 +944,17 @@ function skyTick() { const t = performance.now() / 1000, len = SKY.z1 - SKY.z0 -
   add(boxM(4, 128, 4, mat(0xb8bbbf)), R1.x + 13, 64, R1.y + 111); add(boxM(4, 128, 4, mat(0xb8bbbf)), R1.x + 43, 64, R1.y + 111);
   add(boxM(24, 24, 24, mat(0xc9ccd0)), R1.x + 28, 13, R1.y + 96);
   const sky = new THREE.Mesh(new THREE.PlaneGeometry(R1.w - 20, 40), new THREE.MeshBasicMaterial({ color: 0xffffff })); sky.rotation.x = Math.PI / 2; add(sky, cx, 128, R1.y + R1.h / 2);
-  for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 130, 2, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .16 })), cx + sx * (R1.w / 4 + 9), 65, R1.y + R1.h - 3);
-  const wall = new THREE.Mesh(new THREE.PlaneGeometry(150, 40), new THREE.MeshBasicMaterial({ color: 0x2a6fdb })); add(wall, cx, 92, R1.y + 6.5);
-  const wood = mat(0xc9a77c), screen = new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: .2, metalness: .3 });
+  for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 130, 2, new THREE.MeshStandardMaterial({ color: 0xdfe7ea, roughness: .35 })), cx + sx * (R1.w / 4 + 9), 65, R1.y + R1.h - 3); add(boxM(R1.w + 40, 130, 2, mat(0x2b2f35)), cx, 65, R1.y + R1.h + 10); { const dg = new THREE.MeshPhysicalMaterial({ color: 0xcfe3e8, roughness: .05, transparent: true, opacity: .35 }), fr = mat(0x8e9196), fz = new THREE.MeshStandardMaterial({ color: 0xdfe7ea, roughness: .35 }); STORE.doors = [-1, 1].map(sx => { const d = add(boxM(18, 100, 1.5, dg), cx + sx * 9, 50, R1.y + R1.h - 3); d.handle = add(boxM(1.2, 34, 2.4, fr), cx + sx * 2, 52, R1.y + R1.h - 3); d.sx = sx; d.o = 0; return d; }); add(boxM(42, 5, 4, fr), cx, 102, R1.y + R1.h - 3); for (const sx of [-1, 1]) add(boxM(3, 104, 4, fr), cx + sx * 19.5, 52, R1.y + R1.h - 3); add(boxM(36, 26, 2, fz), cx, 117, R1.y + R1.h - 3); } /* frosted storefront and a dark street behind the open door: the room sits off the map, so clear glass showed open water. Walking out teleports you to Georgia first */
+  for (const lx of [-60, -20, 20, 60]) { const w = new THREE.SpotLight(0xfff1dc, 900, 120, .5, .6, 2); w.position.set(cx + lx, 58, R1.y + 12); w.target.position.set(cx + lx, 20, R1.y + 4); scene.add(w, w.target); } /* wall washers on the limestone, as in the render */
+  const wood = new THREE.MeshStandardMaterial({ map: tx("img/store/oak.jpg", 1, 1), color: 0xf3e2c8, roughness: .55 }), screen = new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: .2, metalness: .3 });
   for (let row = 0; row < 2; row++) for (const sx of [-1, 1]) { const tx = cx + sx * 34, tz = R1.y + 64 + row * 34; add(boxM(70, 3, 20, wood), tx, 12, tz); for (const lx of [-28, 28]) add(boxM(3, 12, 3, mat(0x9a9a96)), tx + lx, 6, tz);
-    for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
+    for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); STORE.macs.push({ x: tx - 24 + k * 16, y: tz, mesh: lap, taken: false, kind: "book" }); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
   for (const lx of [-60, 0, 60]) { const l = new THREE.PointLight(0xffffff, 700, 180, 2); l.position.set(cx + lx, 60, R1.y + R1.h / 2); scene.add(l); }
   // six Mac minis on the table ends: walk up to one and it's in the bag (storeTick). The staff are peds (STORE.staff).
   const alu = new THREE.MeshStandardMaterial({ color: 0xd9dbde, roughness: .3, metalness: .7 });
   for (const [sx, row, end] of [[-1, 0, 1], [1, 0, 1], [-1, 1, 1], [1, 1, 1], [-1, 0, -1], [1, 0, -1]]) {
     const x = cx + sx * 34 + sx * end * 30, z = R1.y + 64 + row * 34, m = add(boxM(6, 2.2, 6, alu), x, 14.6, z);
-    STORE.macs.push({ x, y: z, mesh: m, taken: false });
+    STORE.macs.push({ x, y: z, mesh: m, taken: false, kind: "mac" });
   }
 }
 { // Dad's garage: concrete floor, block walls, a sectional door on its opener rail, workbench and pegboard, spare door panels, his work truck
@@ -1030,7 +1048,7 @@ function rigFor(n, color, c) {
   const h = new THREE.Box3().setFromObject(s).getSize(new THREE.Vector3()).y || 1; s.scale.multiplyScalar(24 / h); s.rotation.y = c.turn;
   s.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); if (c.shirt && o.material.color && c.shirt.test(o.material.name)) o.material.color.lerp(new THREE.Color(color), c.src.scene === undefined ? .7 : .45); o.castShadow = true; o.frustumCulled = false; n.body ??= o; } });
   const mixer = new THREE.AnimationMixer(s), acts = {}; for (const [k, name] of Object.entries(c.map)) { const stand = c.strip && k === "idle"; let clip = c.src.animations.find(a => a.name === (stand ? "walk" : name)) || c.src.animations[0]; if (!clip) continue; if (c.strip) { clip = clip.clone(); clip.tracks = clip.tracks.filter(t => !/^Bip01\.position$/.test(t.name)); } if (k === "jump") { clip = clip.clone(); const hp = clip.tracks.find(t => t.name === "Hips.position"); if (hp) { hp.values = hp.values.slice(); const y0 = hp.values[1]; for (let i = 1; i < hp.values.length; i += 3) hp.values[i] = Math.min(hp.values[i], y0); } } // the game lifts him; the clip only bends
-    acts[k] = mixer.clipAction(clip); if (stand) acts[k].stand = clip.duration * .125; if (/^(punch|jump|fall|getup|die)$/.test(k)) { acts[k].setLoop(THREE.LoopOnce); acts[k].clampWhenFinished = true; } } // the crowd's own idle clip is a bind pose, so standing is the walk held on its feet-together frame
+    acts[k] = mixer.clipAction(clip); if (stand) acts[k].stand = clip.duration * .125; if (/^(punch|grab|jump|fall|getup|die)$/.test(k)) { acts[k].setLoop(THREE.LoopOnce); acts[k].clampWhenFinished = true; } } // the crowd's own idle clip is a bind pose, so standing is the walk held on its feet-together frame
   n.mix = { mixer, acts, cur: "walk" }; acts.walk?.play(); mixer.setTime(Math.random() * 2); n.add(s); n.gl = s;
 }
 function soldierFor(n, color, src = SOLDIER) {
@@ -1039,6 +1057,8 @@ function soldierFor(n, color, src = SOLDIER) {
   const mixer = new THREE.AnimationMixer(s), acts = {}; for (const clip of src.animations) acts[clip.name.toLowerCase()] = mixer.clipAction(clip);
   n.mix = { mixer, acts, cur: "walk" }; acts.walk?.play(); n.mix.mixer.setTime(Math.random() * 2); n.add(s); n.gl = s;
 }
+const STAFF = []; ["staff_m", "staff_f"].forEach((n, i) => gltf.load(`models/characters/${n}.glb`, g => { STAFF[i] = g; for (const p of G.peds) if (p.staff && p.m && !p.m.real) { scene.remove(p.m); pedM.splice(pedM.indexOf(p.m), 1); p.m = null; } }, undefined, e => console.warn(n, e))); // swap the stand-ins once the real ones load
+function staffBody(src) { const n = new THREE.Group(); n.legs = [new THREE.Group(), new THREE.Group()]; n.arms = [new THREE.Group(), new THREE.Group()]; rigFor(n, 0xffffff, { src, turn: Math.PI / 2, map: { walk: "Casual_Walk", run: "Run_02", idle: "Idle", punch: "Right_Jab_from_Guard" } }); n.real = true; scene.add(n); return n; }
 function setAnim(n, name) { const m = n.mix; if (!m || m.cur === name || !m.acts[name]) return; m.acts[m.cur]?.fadeOut(.2); const a = m.acts[name].reset().fadeIn(.2).play(); if (a.stand != null) a.time = a.stand; m.cur = name; }
 function tint(n, hex) { if (!n.gl) return n.body?.material.color.setHex(hex); n.gl.traverse(o => { if (o.isMesh && o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(new THREE.Color(hex), .6); }); }
 // smooth torso from a lathe profile: hips, waist, chest, shoulders
@@ -1139,7 +1159,7 @@ function dressHero(name) {
   const key = HERO_BODY[name], src = key === "hero" ? JOSH : BODY[key]; if (!src) return;
   if (hero.gl) hero.remove(hero.gl); hero.children.forEach(ch => { if (ch !== gun) ch.visible = false; }); hero.body = null; hero.mix = null;
   const clip = (n, or) => (src.animations.find(a => a.name === n) || src.animations.find(a => a.name === or) || src.animations[0])?.name; // Joshua's own idle, walk and run (Higgsfield rig)
-  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk"), punch: clip("Right_Jab_from_Guard"), jump: clip("Regular_Jump"), fall: clip("falling_down"), getup: clip("Stand_Up1"), shoot: clip("Walk_Forward_While_Shooting_inplace"), die: clip("Shot_and_Fall_Backward"), idle2: clip("Idle_02") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
+  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk"), punch: clip("Right_Jab_from_Guard"), grab: clip("Male_Run_Forward_Pick_Up_Left", "Right_Jab_from_Guard"), jump: clip("Regular_Jump"), fall: clip("falling_down"), getup: clip("Stand_Up1"), shoot: clip("Walk_Forward_While_Shooting_inplace"), die: clip("Shot_and_Fall_Backward"), idle2: clip("Idle_02") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
   hero.mix.acts.run ??= hero.mix.acts.walk; heroReady = true;
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
   if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
@@ -1177,7 +1197,7 @@ function sync(now) {
   if (carM.length !== G.cars.length || carM.some((m, i) => m.car !== G.cars[i])) { const keep = new Map(carM.map(m => [m.car, m])), live = new Set(G.cars);
     carM.forEach(m => { if (!live.has(m.car)) scene.remove(m); }); carM = G.cars.map((c, i) => { const m = keep.get(c) || carMesh(c, i); m.car = c; return m; }); }
   const live = new Set(G.peds); pedM = pedM.filter(m => { if (live.has(m.ped)) return true; scene.remove(m); return false; });
-  G.peds.forEach(p => { if (!p.m) { const sh = (p.hood || HOODS.downtown).shirts; p.m = person(p.uniform ?? sh[Math.floor(Math.random() * sh.length)], p.sex); p.m.ped = p; pedM.push(p.m); if (p.uniform != null) wear(p.m, p.uniform, p.dress);
+  G.peds.forEach(p => { if (!p.m) { const sh = (p.hood || HOODS.downtown).shirts, real = p.staff && STAFF[p.sex === "f" ? 1 : 0]; p.m = real ? staffBody(real) : person(p.uniform ?? sh[Math.floor(Math.random() * sh.length)], p.sex); p.m.ped = p; pedM.push(p.m); if (p.uniform != null && !real) wear(p.m, p.uniform, p.dress);
       if (p.cart) { const cart = new THREE.Group(), basket = boxM(12, 8, 8, new THREE.MeshStandardMaterial({ color: 0x9aa0a6, metalness: .8, roughness: .35, wireframe: true })); basket.position.set(9, 10, 0); cart.add(basket); for (const [x, z] of [[4, 3], [4, -3], [14, 3], [14, -3]]) { const w = new THREE.Mesh(new THREE.TorusGeometry(1.2, .4, 12, 24), mat(0x222222)); w.position.set(x, 1.4, z); cart.add(w); } p.m.add(cart); }
       if (p.dog) { const dog = new THREE.Group(), bd = new THREE.Mesh(new THREE.CapsuleGeometry(1.6, 4, 12, 24), mat(0xc8a070)); bd.rotation.z = Math.PI / 2; bd.position.y = 3; const hd = new THREE.Mesh(new THREE.SphereGeometry(1.5, 24, 12), mat(0xc8a070)); hd.position.set(3.6, 4.4, 0); dog.add(bd, hd); dog.position.set(4, 0, 6); p.m.add(dog); }
       if (p.camera) { const cm = boxM(2.4, 1.6, 1.2, 0x111111); cm.position.set(2.2, 14, 0); p.m.add(cm); } } });
@@ -1189,29 +1209,31 @@ function sync(now) {
   const bm = booms[booms.length - 1]; if (bm && (bm.t += 1 / 60) < .6) { boomMesh.visible = true; boomMesh.position.set(bm.x, 20, bm.y); boomMesh.scale.setScalar(10 + bm.t * 140); boomMesh.material.opacity = 1 - bm.t / .6; } else boomMesh.visible = false;
   G.peds.forEach(p => { const m = p.m; m.position.set(p.p.x, 0, p.p.y);
     if (p.dead) { const f = Math.min(1, p.dead * 3); m.rotation.set(f * Math.PI / 2, -p.a, 0, "YXZ"); m.position.y = f * 3; return; }
-    if (m.mix && dist(p.p, G.player) < 320) { const st = p.scared > 0 || p.angry || p.walkUp ? "run" : p.dance ? "walk" : p.say || p.still ? "idle" : "walk"; setAnim(m, st); const sp = st === "run" ? (p.scared > 0 ? 90 : p.angry ? 80 : 45) : 30 * (p.hood?.slow || 1); if (m.mix.acts[st]) m.mix.acts[st].timeScale = st === "idle" ? (m.mix.acts.idle.stand != null ? 0 : 1) : sp / (st === "run" ? 50 : 19); m.mix.mixer.update(1 / 60); }
-    m.rotation.set(0, -p.a, 0); m.legs.forEach((l, j) => l.rotation.z = Math.sin(p.t + j * Math.PI) * .5); m.arms[1].rotation.z = p.punching > 0 ? 1.5 : 0; });
+    if (m.mix && dist(p.p, G.player) < 320) { const st = p.punching > 0 && m.mix.acts.punch ? "punch" : p.scared > 0 || p.angry || p.walkUp ? "run" : p.dance ? "walk" : p.say || p.still ? "idle" : "walk"; setAnim(m, st); const sp = st === "run" ? (p.walkUp ? 45 : 48) : 21 * (p.hood?.slow || 1), A = m.mix.acts, walkOnly = A.run?.getClip().name === A.walk?.getClip().name; if (A[st]) A[st].timeScale = st === "idle" ? (A.idle.stand != null ? 0 : 1) : st === "punch" ? 1.6 : st === "run" && !walkOnly ? sp / 50 : walkOnly ? Math.min(1.5, sp / 20.7) : Math.min(1.6, sp / 9.6); /* the crowd walk clip covers 20.7 units a second; past 1.5x the arms windmill */ m.mix.mixer.update(1 / 60); }
+    m.rotation.set(0, -p.a, 0); if (p.hitT > 0) { p.hitT -= 1 / 60; m.rotation.z = p.hitT * 1.4; } if (p.punching > 0) { m.position.x += Math.cos(p.a) * 5; m.position.z += Math.sin(p.a) * 5; m.rotation.z = -.4; } /* rocked back by a hit, lunging on a swing */ m.legs.forEach((l, j) => l.rotation.z = Math.sin(p.t + j * Math.PI) * .5); m.arms[1].rotation.z = p.punching > 0 ? 1.5 : 0; });
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
   const kd = G.knock ? Math.min(1, (G.knock.dur - G.knock.t) * 5, G.knock.t / .45) : 0; hero.rotation.z = hero.mix?.acts.fall ? 0 : kd * Math.PI / 2; // knocked flat, back up over the last half second
   hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
   const moving = G.keys.has("KeyW") || G.keys.has("KeyS") || !!G.carAnim, fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run, A = hero.mix.acts; if (A.idle && A.idle !== w) { // Joshua: idle standing, walk, run on Shift
       const bk = G.keys.has("KeyS") && !G.keys.has("KeyW"), sp = bk ? BACK : (fast ? SPRINT : JOG) * perk("run"), walking = bk || G.knock || A.run === w;
-      const one = G.dieAt && A.die ? "die" : G.weapon && performance.now() - G.shotAt < 500 && A.shoot ? "shoot" : G.knock && A.fall ? (G.knock.t > GETUP ? "fall" : "getup") : G.z > 0 && A.jump ? "jump" : performance.now() - (G.punchAt || 0) < 450 && A.punch ? "punch" : null;
-      if (one) { setAnim(hero, one); const c = A[one], D = c.getClip().duration; c.timeScale = one === "fall" ? D / (KNOCK - GETUP) : one === "getup" ? D / GETUP : one === "die" ? D / (DIE * .8) : one === "shoot" ? 1 : one === "jump" ? D / .75 : D / .45; } else
+      const one = G.dieAt && A.die ? "die" : G.weapon && performance.now() - G.shotAt < 500 && A.shoot ? "shoot" : G.knock && A.fall ? (G.knock.t > GETUP ? "fall" : "getup") : G.z > 0 && A.jump ? "jump" : performance.now() - (G.punchAt || 0) < 450 && A.punch ? "punch" : performance.now() - (G.grabAt || 0) < 700 && A.grab ? "grab" : null;
+      if (one) { setAnim(hero, one); const c = A[one], D = c.getClip().duration; c.timeScale = one === "fall" ? D / (KNOCK - GETUP) : one === "getup" ? D / GETUP : one === "die" ? D / (DIE * .8) : one === "shoot" ? 1 : one === "jump" ? D / .75 : one === "grab" ? D / .7 : D / .45; } else
       setAnim(hero, !moving || G.knock ? (A.idle2 && now % 24000 > 17000 ? "idle2" : "idle") : walking ? "walk" : "run"); /* every so often he shifts his weight */ if (A.run !== w) A.run.timeScale = sp / RUN_V; w.timeScale = (bk ? -1 : 1) * sp / (A.run === w ? RUN_V : WALK_V); }
     else if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? SPRINT : JOG) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } hero.mix.mixer.update(1 / 60); } // standing settles on a feet-together walk frame (the model has no idle clip); // run cycle covers ~50 units/s at 1x, match it to real speed
   hero.legs.forEach((l, j) => l.rotation.z = moving ? Math.sin(now / (fast ? 55 : 100) + j * Math.PI) * (fast ? .9 : .6) : 0);
   const back = G.driving === null ? 70 : 110, up = G.driving === null ? 38 : 48; let d = back;
   while (d > 12 && solid(G.player.x - Math.cos(a) * d, G.player.y - Math.sin(a) * d)) d -= 6;
+  const rmC = G.driving === null && inRoom(G.player); /* indoors the camera stays inside the walls instead of showing the street through them */
+  if (rmC) while (d > 12) { const cx = G.player.x - Math.cos(a) * d - Math.sin(a) * 4, cz = G.player.y - Math.sin(a) * d + Math.cos(a) * 4; if (cx > rmC.x + 8 && cx < rmC.x + rmC.w - 8 && cz > rmC.y + 8 && cz < rmC.y + rmC.h - 8) break; d -= 4; }
   if (SW.t >= 0) {
-    SW.t += 1 / 60; const H = 1700, base = { y: up }, T = SW.t, e = x => x < .5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2;
+    SW.t = (performance.now() - SW.t0) / 1000; /* wall-clock, so a slow frame rate never stretches the flight */ const H = 1700, base = { y: up }, T = SW.t, e = x => x < .5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2;
     let x, z, y; if (T < SW.up) { const k = e(T / SW.up); x = SW.from.x; z = SW.from.y; y = base.y + (H - base.y) * k; }
     else if (T < SW.up + SW.pan) { const k = e((T - SW.up) / SW.pan); x = SW.from.x + (SW.to.x - SW.from.x) * k; z = SW.from.y + (SW.to.y - SW.from.y) * k; y = H; }
     else { const k = e(Math.min(1, (T - SW.up - SW.pan) / SW.down)); x = SW.to.x; z = SW.to.y; y = H + (base.y - H) * k; if (k >= 1) SW.t = -1; }
     cam.position.set(x - (y < 200 ? Math.cos(a) * d : 0), y, z - (y < 200 ? Math.sin(a) * d : 0) + (y >= 200 ? 1 : 0)); cam.lookAt(x, 0, z); if (SW.t < 0) cam.rotation.order = "YXZ";
   } else {
-  const side = G.driving === null ? 14 : 0; cam.position.set(G.player.x - Math.cos(a) * d - Math.sin(a) * side, up, G.player.y - Math.sin(a) * d + Math.cos(a) * side); const pt = -.28 - (G.pitch || 0); cam.rotation.set(pt, -a - Math.PI / 2, 0, "YXZ"); cam.position.y = Math.max(8, up + (G.pitch || 0) * 60); }
+  const side = G.driving === null ? (rmC ? 4 : 14) : 0; cam.position.set(G.player.x - Math.cos(a) * d - Math.sin(a) * side, up, G.player.y - Math.sin(a) * d + Math.cos(a) * side); const pt = -.28 - (G.pitch || 0); cam.rotation.set(pt, -a - Math.PI / 2, 0, "YXZ"); cam.position.y = Math.max(8, up + (G.pitch || 0) * 60); }
   const tg = G.aimT && (G.aimT.kind === "ped" ? G.peds[G.aimT.i]?.p : G.cars[G.aimT.i]?.p); ring.visible = !!tg; if (tg) ring.position.set(tg.x, 1, tg.y);
   sun.position.set(G.player.x - 400, 900, G.player.y + 300); sun.target.position.set(G.player.x, 0, G.player.y);
   while (gooseMeshes.length < GEESE.length) gooseMeshes.push(gooseMesh()); gooseMeshes.forEach((m, i) => { const g = GEESE[i]; m.visible = !!g && g.hp > 0; if (g) { m.position.set(g.p.x, 0, g.p.y); m.rotation.y = -Math.atan2(G.player.y - g.p.y, G.player.x - g.p.x); } });
@@ -1281,7 +1303,7 @@ else showTitle();
 requestAnimationFrame(frame);
 
 // ---- title, settings, fast travel
-const $ = id => document.getElementById(id), WELCOME = () => card("Welcome to Vancouver", TOUCH ? "You're Joshua, inside the store on Georgia. Six Mac minis on the tables and nobody's looking yet. Grab them, run, and lose whoever follows.\n\nMOVE  Left stick. Hold Run to sprint, Jump to jump\nLOOK  Drag anywhere on the right\nFIGHT  Fire shoots, Punch punches, Gun switches weapons\nDRIVE  Walk up to a car and tap Car\nSWITCH  Tap Swap. The camera flies you to Ben in Kits, then Alexandre in Victoria\n\nThe line at the bottom tells you what to do next." : "You're Joshua, inside the store on Georgia. Six Mac minis on the tables and nobody's looking yet. Grab them, run, and lose whoever follows.\n\nMOVE  W A S D, Shift to run, Space to jump\nLOOK  Move the mouse (click once to lock it in)\nFIGHT  Click to shoot, F to punch, Q or 1-4 for weapons\nDRIVE  E to get in or out, R for the radio\nSWITCH  Tab. The camera flies you to Ben in Kits, then Alexandre in Victoria, GTA style\nMENU  Esc to pause, save or quit\n\nThe line at the bottom tells you what to do next.");
+const $ = id => document.getElementById(id), WELCOME = () => card("Welcome to Vancouver", TOUCH ? "You're Joshua, inside the store on Georgia. Tables full of MacBooks and Mac minis and nobody's looking yet. Grab them, run, and lose whoever follows.\n\nMOVE  Left stick. Hold Run to sprint, Jump to jump\nLOOK  Drag anywhere on the right\nFIGHT  Fire shoots, Punch punches, Gun switches weapons\nDRIVE  Walk up to a car and tap Car\nSWITCH  Tap Swap. The camera flies you to Ben in Kits, then Alexandre in Victoria\n\nThe line at the bottom tells you what to do next." : "You're Joshua, inside the store on Georgia. Tables full of MacBooks and Mac minis and nobody's looking yet. Grab them, run, and lose whoever follows.\n\nMOVE  W A S D, Shift to run, Space to jump\nLOOK  Move the mouse (click once to lock it in)\nFIGHT  Click to shoot, F to punch, Q or 1-4 for weapons\nDRIVE  E to get in or out, R for the radio\nSWITCH  Tab. The camera flies you to Ben in Kits, then Alexandre in Victoria, GTA style\nMENU  Esc to pause, save or quit\n\nThe line at the bottom tells you what to do next.");
 function showTitle() { G.paused = true; document.getElementById("title").style.display = "flex"; document.getElementById("tCont").style.display = save.game ? "" : "none"; }
 const hideTitle = () => { $("title").style.display = "none"; G.paused = false; G.keys.clear(); };
 // New game opens mid-heist: Joshua inside the store on Georgia, Mac minis on the tables
@@ -1291,7 +1313,7 @@ $("tCont").onclick = () => { hideTitle(); if (loadGame()) toast("Welcome back. G
 $("tQuit").onclick = () => { if (window.close && window.opener === null && history.length <= 1) window.close(); location.href = "./"; };
 let setFrom = null; const openPanel = (id, from) => { setFrom = from; $(from).style.display = "none"; $(id).style.display = "flex"; };
 const closePanel = id => { $(id).style.display = "none"; if (setFrom) $(setFrom).style.display = "flex"; setFrom = null; };
-$("tSet").onclick = () => openPanel("settings", "title"); $("setbtn").onclick = () => openPanel("settings", "pause");
+$("tSet").onclick = () => openPanel("settings", "title"); $("tRoam").onclick = () => location.href = "city.html?area=brookswood"; $("setbtn").onclick = () => openPanel("settings", "pause");
 $("sGfx").value = SET.gfx; $("sVol").value = SET.vol; $("sSens").value = SET.sens; $("sInv").checked = SET.invert;
 $("sGfx").onchange = e => { SET.gfx = e.target.value; persist(); applyGfx(); };
 $("sVol").oninput = e => { SET.vol = +e.target.value; persist(); if (MASTER) MASTER.gain.value = SET.vol; };
@@ -1311,7 +1333,7 @@ addEventListener("keydown", e => {
   const ov = overlay(); if (ov) { if (e.code === "Escape" && ov !== "title") closePanel(ov); if (ov === "title" && e.code === "Enter") $(save.game ? "tCont" : "tNew").click(); return; }
   if (e.code === "Escape") { setPause(!G.paused); return; }
   if (G.paused) return;
-  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { G.weapon = (G.weapon + 1) % 4; toast(WEAPONS[G.weapon].name); } if (/^Digit[1-4]$/.test(e.code)) { G.weapon = +e.code[5] - 1; toast(WEAPONS[G.weapon].name); } if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); if (e.code === "KeyT") openTravel(); }
+  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { do G.weapon = (G.weapon + 1) % WEAPONS.length; while (!G.owned.has(G.weapon)); toast(WEAPONS[G.weapon].name); } if (/^Digit[1-7]$/.test(e.code)) { const w = +e.code[5] - 1; if (G.owned.has(w)) { G.weapon = w; toast(WEAPONS[w].name); } else toast(`No ${WEAPONS[w].name} yet. Guns are hidden around the city`); } if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); if (e.code === "KeyT") openTravel(); }
   if (["Tab", "Space", "ArrowUp", "ArrowDown"].includes(e.code)) e.preventDefault();
   G.keys.add(e.code);
 });

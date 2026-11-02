@@ -6,7 +6,10 @@ Everything the web game loads, where it lives and where it came from. Paths are 
 
 | Path | What | Triangles | Size | Source |
 |---|---|---|---|---|
-| `characters/hero.glb` | Joshua's body with idle, second idle, walk, run, jab, jump, fall, get-up, shoot-while-walking and death clips (`Idle`, `Idle_02`, `Casual_Walk`, `Run_02`, `Right_Jab_from_Guard`, `Regular_Jump`, `falling_down`, `Stand_Up1`, `Walk_Forward_While_Shooting_inplace`, `Shot_and_Fall_Backward`) | 31k | 1.9 MB | Converted with Blender, clips from the Higgsfield rig, merged by bone name |
+| `characters/hero.glb` | Joshua's body with idle, second idle, walk, run, jab, jump, fall, get-up, shoot-while-walking and death clips (`Idle`, `Idle_02`, `Casual_Walk`, `Run_02`, `Right_Jab_from_Guard`, `Regular_Jump`, `falling_down`, `Stand_Up1`, `Walk_Forward_While_Shooting_inplace`, `Shot_and_Fall_Backward`, plus `Male_Run_Forward_Pick_Up_Left` for grabbing) | 31k | 1.8 MB | Converted with Blender, clips from the Higgsfield rig, merged by bone name |
+| `characters/staff_m.glb`, `characters/staff_f.glb` | The two store staff from the heist render: Higgsfield image, image to 3D with rig and idle, then Joshua's clips merged on by bone name | | 1.1 MB each | Higgsfield (`gpt_image_2_5`, `image_to_3d`) |
+| `img/store/*.jpg` | Store interior: living wall and limestone generated as tiles on Higgsfield, floor and oak cut from `docs/img/georgia-store-concept.jpg` | | | Higgsfield |
+| `materials/shop-*.jpg` | Nine storefronts (guns, clothes, barber, cafe, restaurant, pawn, pharmacy, convenience, pub), fictional names, no real brands | | | Higgsfield `gpt_image_2_5` |
 | `characters/people/*.glb` | The crowd: 6 men, 6 women, each with walk and idle | 7k to 9k | 2.4 MB each | Microsoft Rocketbox, MIT |
 | `vehicles/sedan.glb` | The everyday car, tinted per car | 12k | 1.2 MB | Higgsfield image to 3D |
 | `props/tree.glb` | Street tree, on the 60 nearest blocks' trees | 12k | 288 KB | Higgsfield image to 3D, decimated in Blender |

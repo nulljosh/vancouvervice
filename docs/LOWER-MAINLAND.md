@@ -24,11 +24,11 @@ We take one area to A+ before starting the next: real street names, every landma
 | 13 | North Vancouver, Lonsdale | 49.3140, -123.0800 | town centre | live: Lonsdale Quay, the Shipyards, the mountains close behind |
 | 14 | West Vancouver, Ambleside | 49.3290, -123.1560 | beach town | live: the beach, the mountains behind, Overture footprints |
 | 15 | Coquitlam, Port Moody, Port Coquitlam | 49.2790, -122.8450 | suburb | live: Port Moody (Murray Street, Rocky Point, the inlet); Coquitlam and PoCo still to do |
-| 16 | Delta: Ladner and Tsawwassen | 49.0890, -123.0820 | village | next |
-| 17 | Maple Ridge and Pitt Meadows | 49.2190, -122.6010 | town centre | |
-| 18 | Abbotsford | 49.0500, -122.3040 | town centre | |
-| 19 | Mission | 49.1330, -122.3090 | town centre | |
-| 20 | Chilliwack | 49.1580, -121.9510 | town centre | |
+| 16 | Delta: Ladner and Tsawwassen | 49.0890, -123.0820 | village | live |
+| 17 | Maple Ridge and Pitt Meadows | 49.2190, -122.6010 | town centre | live |
+| 18 | Abbotsford | 49.0500, -122.3040 | town centre | live |
+| 19 | Mission | 49.1330, -122.3090 | town centre | live |
+| 20 | Chilliwack | 49.1580, -121.9510 | town centre | live |
 | 21 | Harrison Hot Springs | 49.2972, -121.7850 | village | live |
 | 22 | Victoria (across the water) | 48.4250, -123.3650 | downtown | live |
 
