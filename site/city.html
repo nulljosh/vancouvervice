@@ -358,7 +358,7 @@ if (!SUBURB && !HIGHWAY) { const mp = treePts.filter(([x, z]) => !solid(x, z)).m
 { const pts = treePts.filter(([x, z]) => !solid(x, z)); const trunk = new THREE.InstancedMesh(new THREE.CylinderGeometry(.18, .26, 4, 12), new THREE.MeshStandardMaterial({ color: 0x5a4432, roughness: .9 }), pts.length);
   const crown = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(2.4, 3), new THREE.MeshStandardMaterial({ color: 0x3f6f35, roughness: .85 }), pts.length), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3();
   pts.forEach(([x, z], i) => { trunk.setMatrixAt(i, m4.makeTranslation(x, 2, z)); const k = .8 + ((x * 13.7 + z * 7.1) % 1 + 1) % 1 * .6; sc.set(k, k * 1.15, k); crown.setMatrixAt(i, m4.compose(new THREE.Vector3(x, 4.8 * k, z), q, sc)); }); trunk.castShadow = crown.castShadow = true; scene.add(trunk, crown); window.TREES = (window.TREES || 0) + pts.length; }
-if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ map: photo("concrete", 4), color: 0xe8e6e0, roughness: .7 }), deckL = [], cab = [];
+if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ color: 0xd9d6cf, roughness: .8 }), deckL = [], cab = [];
   const pm = D.roads.filter(r => /Port Mann/.test(r.n)); if (pm.length) { const a = pm[0].p[0], b = pm[0].p.at(-1), ax = b[0] - a[0], az = b[1] - a[1], L = Math.hypot(ax, az), ux = ax / L, uz = az / L, all = pm.flatMap(r => r.p), cx = all.reduce((q, v) => q + v[0], 0) / all.length, cz = all.reduce((q, v) => q + v[1], 0) / all.length;
     for (const t of [-.24, .24]) { const tx = cx + ux * L * t, tz = cz + uz * L * t, H = 110; // a single concrete mast in the median, tapering as it climbs
       const g = new THREE.CylinderGeometry(1.6, 3.2, H, 4, 1); g.rotateY(Math.PI / 4); const m = new THREE.Mesh(g, conc); m.position.set(tx, H / 2, tz); m.rotation.y = -Math.atan2(uz, ux); m.castShadow = true; scene.add(m);
@@ -371,7 +371,15 @@ if (HIGHWAY) { const conc = new THREE.MeshStandardMaterial({ map: photo("concret
         const km = Math.round(Math.hypot((lon + 123.1187) * 72800, (lat - 49.2833) * 110540) / 1000); if (km < 3) continue; const sg = signMesh(`1 West   Vancouver  ${km} km`, "#1f6b3a", 2.2);
         sg.position.set(x + nx * (r.w / 2 + 3), 6, z + nz * (r.w / 2 + 3)); sg.rotation.y = Math.atan2(ax - bx, az - bz); /* faces the drivers coming at it */ scene.add(sg); signs.push([x, z]);
         for (const o of [-1.6, 1.6]) { const post = new THREE.Mesh(poleGeo, poleMat); post.scale.y = 1.4; post.position.set(x + nx * (r.w / 2 + 3) + (bx - ax) / L * o, 2.4, z + nz * (r.w / 2 + 3) + (bz - az) / L * o); scene.add(post); } } } }
-  console.log("highway:", signs.length, "distance signs"); }
+  // sound walls: grey concrete panels on the outside of each freeway carriageway, open at every ramp, bridge and shore
+  const links = new Map(); for (const r of D.roads) if (/_link$/.test(r.k)) for (const [x, z] of r.p) { const k = key(Math.floor(x / 20), Math.floor(z / 20)); if (!links.has(k)) links.set(k, []); links.get(k).push([x, z]); }
+  const nearLink = (x, z) => { for (let i = -2; i <= 2; i++) for (let j = -2; j <= 2; j++) for (const [px, pz] of links.get(key(Math.floor(x / 20) + i, Math.floor(z / 20) + j)) || []) if (Math.hypot(px - x, pz - z) < 45) return true; return false; };
+  const wallG = []; for (const r of D.roads) { if (!(r.ow && r.k === "motorway") || /Port Mann/.test(r.n)) continue; const line = offsetLine(r.p, r.w / 2 + 2.2), pos = [], uv = []; let run = 0;
+    for (let i = 1; i < line.length; i++) { const [ax, az] = line[i - 1], [bx, bz] = line[i], L = Math.hypot(bx - ax, bz - az); if (L < .5) continue; const mx = (ax + bx) / 2, mz = (az + bz) / 2;
+      if (!nearLink(mx, mz) && !window.WET(mx, mz) && !nearLink(ax, az) && !nearLink(bx, bz)) { pos.push(ax, 0, az, bx, 0, bz, bx, 4, bz, ax, 0, az, bx, 4, bz, ax, 4, az); uv.push(run, 0, run + L, 0, run + L, 4, run, 0, run + L, 4, run, 4); } run += L; }
+    if (pos.length) { const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals(); wallG.push(g); } }
+  if (wallG.length) { const t = photo("soundwall", 4); t.repeat.set(1 / 7.15, 1 / 4); const m = new THREE.Mesh(mergeGeometries(wallG), new THREE.MeshStandardMaterial({ map: t, roughness: .9, side: THREE.DoubleSide })); m.castShadow = m.receiveShadow = true; scene.add(m); }
+  console.log("highway:", signs.length, "distance signs,", wallG.length, "sound walls"); }
 console.log("street furniture:", signs, "signs,", signals.length, "signals,", lampPts.length, "lamps");
 
 // interiors: every named place from OSM belongs to the building it sits in; E at a wall walks you inside a room built for that kind of place
