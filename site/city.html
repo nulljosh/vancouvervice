@@ -350,8 +350,8 @@ if (HIGHWAY) { const wcell = new Map(); D.water.forEach(w => { let x0 = 1e9, x1 
   const wet = (x, z) => (wcell.get(key(Math.floor(x / 200), Math.floor(z / 200))) || []).some(w => inside(w, x, z)); window.WET = wet;
   const fir = [], cedar = [], maple = []; for (const r of D.roads) { if (!/^(motorway|trunk|primary)$/.test(r.k) && r.n !== "200 Street") continue; let acc = 0;
     for (let i = 1; i < r.p.length; i++) { const [ax, az] = r.p[i - 1], [bx, bz] = r.p[i], L = Math.hypot(bx - ax, bz - az); if (!L) continue; const nx = -(bz - az) / L, nz = (bx - ax) / L;
-      for (acc += L; acc > 20; acc -= 20) { const t = 1 - (acc - 20) / L, x = ax + (bx - ax) * t, z = az + (bz - az) * t;
-        for (const sd of [1, -1]) { const h1 = hash(x * sd, z), off = r.w / 2 + 7 + h1 * 45, jx = x + nx * off * sd, jz = z + nz * off * sd, k = hash(jz, jx); if (h1 > .7 || nearRoad(jx, jz, 4) || wet(jx, jz)) continue;
+      for (acc += L; acc > 11; acc -= 11) { const t = 1 - (acc - 11) / L, x = ax + (bx - ax) * t, z = az + (bz - az) * t;
+        for (const sd of [1, -1]) { const h1 = hash(x * sd, z), off = r.w / 2 + 6 + h1 * h1 * 70, jx = x + nx * off * sd, jz = z + nz * off * sd, k = hash(jz, jx); if (h1 > .7 || nearRoad(jx, jz, 4) || wet(jx, jz)) continue;
           if (k < .45) { const H = 22 + k * 40; fir.push([jx, jz, H * .34, H, k]); } else if (k < .7) { const H = 18 + k * 20; cedar.push([jx, jz, H * .41, H, k]); } else { const H = 10 + k * 9; maple.push([jx, jz, H * .77, H, k]); } } } } }
   billboards("tree-fir", fir); billboards("tree-cedar", cedar); billboards("tree-maple", maple); console.log("highway:", fir.length + cedar.length + maple.length, "trees"); }
 if (!SUBURB && !HIGHWAY) { const mp = treePts.filter(([x, z]) => !solid(x, z)).map(([x, z]) => { const k = hash(x, z), H = 8 + k * 5; return [x, z, H * .77, H, k]; }); billboards("tree-maple", mp); window.TREES = mp.length; treePts.length = 0; }

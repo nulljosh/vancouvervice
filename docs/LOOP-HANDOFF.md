@@ -12,9 +12,11 @@ In the car: E beside any car in traffic pulls the driver out (one star). Sedans 
 
 Brookswood also has people on the sidewalks, a stucco church, and Joshua's own idle, jog and sprint clips. Do not label the duplex as Joshua's home or put his address in the repo.
 
+The QA video exists: `TS=3 node tests/drive.mjs <dir> 800` steals a car and arrives downtown in about 19 game minutes (6.5 real minutes at 3x). Brookswood holds 60 fps everywhere since the sign atlas and instanced traffic. Downtown is on photo facades (glass, concrete, brick, sandstone, storefronts). A 30-second trailer is cut from the drive footage with ffmpeg and ImageMagick captions (this ffmpeg has no drawtext).
+
 ## Next, in order
-1. Watch the drive video and fix what looks wrong: car orientation, lane position, interchanges, speed on 200 St.
-2. The corridor needs life: overpasses at the right height, the Port Mann Bridge, buildings along the highway, signs (exit signs with real names).
+1. The corridor still feels empty between interchanges: sound walls, overpasses that rise over the freeway, exit signs with real names, more buildings near the road.
+2. Trailer v2 with music and a better first shot.
 3. Vancouver on the Brookswood kit: Overture footprints for downtown, photo trees, landmarks checked against `docs/img`.
 4. Fort Langley, then down the list in `docs/LOWER-MAINLAND.md`.
 5. Toward 2.0: one menu that reaches every area, and the save that now crosses maps carried into play.html too.
