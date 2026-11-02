@@ -15,11 +15,11 @@ The web game is still live at vancouvervice.jaybulb.com. Tested and deployed as 
 Rules for this Mac (16 GB): one heavy thing at a time. No Playwright or WebKit runs while the editor is up. No MetaHuman builds (they crash the editor). `sh unreal/doctor.sh lean` after boot; restart the editor past about 15 GB footprint.
 
 ## Next, in order
-1. Editor up: `doctor.sh lean`, then `python3 unreal/qa.py` (walk) and `python3 unreal/qa.py drive`. Fix whatever fails (GameMode default pawn, PlayerStart, catch pad). Record a clip with `screencapture -V`, send it.
-2. Port the heist from the web game: the store interior, grab the Macs, the guard in the doorway, two stars and the chase.
-3. Guns, cops and stars from the web game's rules.
-4. City sharpness: our own Overture/OSM buildings as meshes (tools/hero_blender.py exports FBX) over or instead of the Google tiles. Best done once the SSD makes restarts cheap.
-5. Free roam beyond downtown, then the rest of the v2 list in roadmap.md.
+1. Done 2026-11-02: walk and drive tests pass (`python3 unreal/qa.py`, `qa.py drive`), our own downtown replaces the Google tiles, Joshua is his Higgsfield model on his own clips. Clip recording: Unreal to the front, close Message Log and the content drawer (ctrl+space), full-screen `screencapture -V`, crop.
+2. Joshua's new look (single cuff, grey dad runners, white socks): Higgsfield render 620d4af1 is approved; the 3D build (image_to_3d with rig, about 38 credits) waits on a credit top-up past the 450 floor. Then the same pipeline: unscale in Blender, `unreal/import_hero.py`, consolidate onto his clips.
+3. Street life: parked and moving cars on the real roads, people on the sidewalks, street trees and lights from the map data.
+4. Port the heist from the web game: the store interior, grab the Macs, the guard in the doorway, two stars and the chase. Then guns, cops and stars.
+5. Free roam beyond downtown (the other site/data maps through tools/ue_city.py), then the rest of the v2 list in roadmap.md.
 
 ## Restart prompt
 ```
