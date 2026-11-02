@@ -66,6 +66,8 @@ After the slice: fan out across graphics (street-level tile detail, lighting), s
 - [ ] Fast travel on Tab between Vancouver, Victoria, Seattle, Toronto, New York (unreal/fasttravel.dsl).
 - [ ] Cops and stars (docs/COPS.md): BP_Heat, pursuit cars, search circle.
 - [ ] Minimap top right: top-down scene capture of the Google tiles, stars beside it.
+- [ ] Apple Store opener: two employees chase you out, Mac minis line in the corner.
+- [ ] Pawn shop on Granville, cash counter.
 - [ ] Guns: rifle from the first-person template on a third-person aim.
 - [ ] Ben and Alexandre as switchable MetaHumans (face scans).
 - [ ] Brian (Dad), Christine (Mom) and Sarah (sister) as MetaHumans from iPhone face scans (/face-scan), for the garage, dinner and dock scenes.
@@ -106,6 +108,8 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 /loop Work through roadmap.md for Vancouver Vice, top to bottom. One item per round: build it, test it headless (node tests/web.mjs, node tests/city.mjs), deploy with npx wrangler deploy, commit, tag a release, update the landing page and README if it's user-facing, and check it off here. Keep usage lean: one Haiku subagent at most. Self-grade honestly against GTA 3 after each round.
 ```
 
+- [ ] Apple Store heist opener: Apple employees chase the player out the door (AI pawns that run at the player during mission one, no navmesh needed, AddMovementInput toward player), Mac mini props to grab
+- [ ] Glasses on Joshua (attach a glasses mesh to the head socket)
 - [ ] In-game graphics setting: a Low/Medium/High key that sets the tileset MaximumScreenSpaceError (12/6/3) at runtime, so nearby streets are sharp and far tiles stay cheap on 16 GB
 
 ## Queued 2026-10-01 (Joshua, in order)
@@ -127,5 +131,5 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Try VibeUE (https://github.com/kevinpbuckley/VibeUE, branch 5-8, MIT) as a faster interface than our laggy, slow Unreal MCP. Needs Epic's native Unreal MCP + Editor Tools plugins on. Compare latency on one task. Wiki: vancouvervice.md.
 
 ## Ingested 2026-10-25
-- [ ] Copy the Rockstar website for the landing.
+- [ ] Poster-style landing built from our own story renders (original, not a copy of Rockstar's site)
 - [ ] Rename to one word. (Probe Apple/store names first, one name everywhere.)
