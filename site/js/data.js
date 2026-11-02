@@ -32,7 +32,7 @@ export const BUMPS = ["Watch it, bud", "Hey! Eyes up", "Seriously?"];
 export const FIGHTS = ["You got a problem?", "Wanna go?", "Say that again"];
 export const STORY = [
   { title: "Joshua: Get Out of Here", kind: "evade", text: "You just burst out of the Apple Store on Georgia with a bag of Mac minis. Two guys in blue shirts are yelling behind you and one's already on the phone to the cops. Jack a car and lose them", pay: 300 },
-  { title: "Joshua: Pawn the Mac minis", kind: "deliver", text: "Six Mac minis, no receipts, no questions you want asked. Get them down to the pawn shop on Granville before Dmitri finds out they were never yours to sell", pay: 400 },
+  { title: "Joshua: Pawn the Mac minis", kind: "deliver", at: "pawn", text: "Six Mac minis, no receipts, no questions you want asked. Drive them to Granville Pawn (green on the map) before Dmitri finds out they were never yours to sell, then walk in and take the cash", pay: 400 },
   { title: "Joshua: Night Shift", kind: "taxi", text: "Cover a buddy's cab. Pick up the fare", pay: 350 },
   { title: "Alexandre: Island Business", kind: "hit", text: "Someone's been talking. Find the marked man and deal with him", pay: 500 },
   { title: "Joshua: Heat on Hastings", kind: "evade", text: "Get the cops' attention, three stars, then lose them", pay: 600 },
@@ -52,6 +52,9 @@ export const STORY = [
   { title: "Joshua: The Getaway", kind: "evade", text: "Every cop in the city is on you. Dad's boat is waiting under the bridge. Lose them and get to the water. He will ask about the hard drive", pay: 3000 },
   { title: "Joshua: Waterfront", kind: "deliver", text: "Dmitri is waiting at the Waterfront for his forty grand. Bring him the car with the money, or drive straight past him to family dinner. Either way, Dad gets his hard drive back", pay: 5000 },
 ];
+// Granville Pawn on Granville St between W Georgia and Robson; prices per item
+export const PAWN = { x: 8 * block + 40, y: 6 * block + 170, name: "Granville Pawn" };
+export const LOOT = { mac: ["Mac mini", 150], phone: ["phone", 40] };
 export const SKIN = [0xf1c9a5, 0xd9a680, 0xb67b53, 0x8d5a3b, 0x5c3a24];
 export const HAIR = [0x1c140f, 0x3b2616, 0x6b4a2b, 0xb58a4c, 0x8f8f8f];
 export const PANTS = [0x2b3440, 0x1f1f24, 0x4a3b2a, 0x3b4f6b, 0x5a5a5a];

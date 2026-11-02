@@ -14,3 +14,17 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;font:600 15px/1.4
 #btns .fire{background:#c0392bcc}
 #pause{position:fixed;inset:0;background:#000a;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
 #pause h1{font-size:44px;margin:0}#pause button{font:600 17px Helvetica,sans-serif;padding:10px 26px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer}
+#title{position:fixed;inset:0;z-index:6;display:none;flex-direction:column;justify-content:center;padding:0 8vw;background:#000b}
+#title .logo{font:900 italic clamp(56px,13vw,180px)/.86 -apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.04em;text-shadow:0 6px 30px #000}
+#title .logo b{color:#e0362c}
+#title .sub{font-size:clamp(15px,1.6vw,20px);opacity:.8;margin:18px 0 28px}
+#title nav{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+#title nav button{font:800 clamp(22px,2.4vw,30px) -apple-system,Helvetica,sans-serif;text-transform:uppercase;letter-spacing:.02em;background:none;border:0;color:#fff;opacity:.75;cursor:pointer;padding:4px 0}
+#title nav button:hover,#title nav button:focus{opacity:1;color:#e0362c;outline:none}
+.panel{position:fixed;inset:0;z-index:7;background:#000c;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.panel h2{font-size:36px;margin:0 0 6px}
+.panel label{display:flex;justify-content:space-between;align-items:center;gap:24px;width:min(340px,86vw);font-size:17px}
+.panel select,.panel input[type=range]{width:160px;font:600 15px -apple-system,Helvetica,sans-serif}
+.panel input[type=checkbox]{width:22px;height:22px}
+.panel button{font:600 17px Helvetica,sans-serif;padding:10px 26px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer;min-width:260px}
+.panel button#trX,.panel button#sDone{background:#333}

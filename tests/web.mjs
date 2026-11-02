@@ -10,7 +10,8 @@ let fails = 0; const check = (ok, what) => { console.log(ok ? "PASS" : "FAIL", w
 async function page(vp = { viewport: { width: 1200, height: 750 } }, pre) {
   const p = await b.newPage(vp); p.errs = []; p.on("pageerror", e => p.errs.push(e.message));
   if (pre) await p.addInitScript(pre);
-  await p.goto("http://localhost:8765/play.html"); await p.waitForFunction(() => window.G && window.GS, null, { timeout: 30000 }); await p.waitForTimeout(800); return p;
+  await p.goto("http://localhost:8765/play.html"); await p.waitForFunction(() => window.G && window.GS, null, { timeout: 30000 }); await p.waitForTimeout(800);
+  await p.evaluate(() => document.getElementById("title").style.display === "flex" && document.getElementById(GS.save.game ? "tCont" : "tNew").click()); return p;
 }
 const W = ms => new Promise(r => setTimeout(r, ms));
 // every edge case gets a hard limit so one hang can't freeze CI
@@ -19,6 +20,13 @@ const within = (ms, what, fn) => Promise.race([fn(), new Promise((_, rej) => set
 // landing page
 { const p = await b.newPage(); await p.goto("http://localhost:8765/"); check(await p.locator("text=Play in your browser").count() === 1, "landing links to the game"); check(await p.locator("img.shot").count() === 3, "landing shows the key art and the Unreal shots"); check(await p.evaluate(() => [...document.images].every(i => i.complete && i.naturalWidth)), "landing images load"); await p.close(); }
 
+// title screen: New Game, Continue only with a save, Settings, Quit
+{ const t = await b.newPage({ viewport: { width: 1200, height: 750 } }); await t.addInitScript(() => localStorage.clear()); await t.goto("http://localhost:8765/play.html"); await t.waitForFunction(() => window.G && window.GS, null, { timeout: 30000 });
+  check(await t.evaluate(() => document.getElementById("title").style.display === "flex" && G.paused && document.getElementById("tCont").style.display === "none"), "title screen first, no Continue without a save");
+  await t.evaluate(() => document.getElementById("tSet").click()); check(await t.evaluate(() => getComputedStyle(document.getElementById("settings")).display === "flex"), "Settings opens from the title");
+  await t.evaluate(() => { const s = document.getElementById("sGfx"); s.value = "low"; s.dispatchEvent(new Event("change")); }); check(await t.evaluate(() => GS.SET.gfx === "low" && JSON.parse(localStorage.gs).settings.gfx === "low"), "graphics setting saves");
+  await t.keyboard.press("Escape"); check(await t.evaluate(() => document.getElementById("title").style.display === "flex"), "Esc backs out to the title");
+  await t.close(); }
 // fresh player: welcome card, pause, menu
 let p = await page(undefined, () => localStorage.clear());
 check(await p.evaluate(() => document.getElementById("card").style.display === "flex" && G.paused), "first launch shows welcome card and pauses");
@@ -28,6 +36,9 @@ await p.keyboard.press("Escape"); await W(200);
 check(await p.evaluate(() => G.paused && getComputedStyle(document.getElementById("pause")).display === "flex"), "Esc opens the menu");
 await p.evaluate(() => document.getElementById("savebtn").click()); check(await p.evaluate(() => !!JSON.parse(localStorage.gs).game), "Save game writes a save");
 await p.keyboard.press("Escape"); await W(200); check(await p.evaluate(() => !G.paused), "Esc closes the menu");
+// pawn shop and fast travel
+check(await p.evaluate(() => { G.driving = null; G.loot = { mac: 6, phone: 1 }; const s = G.score; G.player = { ...GS.PAWN }; G.atPawn = false; GS.pawnTick(); const ok = G.score === s + 940 && G.loot.mac === 0 && document.getElementById("cardT").textContent === "Granville Pawn"; document.getElementById("cardGo").click(); return ok; }), "Granville Pawn buys 6 Mac minis and a phone for $940");
+check(await p.evaluate(async () => { G.wanted = 0; G.heat = 0; GS.fastTravel(2); for (let k = 0; k < 250 && window.GS_SW?.t >= 0; k++) await new Promise(r => setTimeout(r, 100)); return GS.hood(G.player.x, G.player.y).name === "Victoria"; }), "fast travel flies you to Victoria");
 
 // core loop
 const r = await p.evaluate(async () => { const w = ms => new Promise(r => setTimeout(r, ms)), o = {};

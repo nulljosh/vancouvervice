@@ -4,9 +4,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#111111"><link rel="apple-touch-icon" href="icon.png">
 <link rel="stylesheet" href="css/play.css"></head><body>
 <div id="hud"></div><div id="bubbles"></div><div id="tip"></div><div id="toast"></div><div id="card" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#000b;z-index:5"><div style="max-width:520px;padding:28px 30px;background:#15171c;border-radius:14px;border:1px solid #333"><h2 id="cardT" style="margin:0 0 10px;font-size:28px"></h2><div id="cardB" style="font-weight:500;line-height:1.6;white-space:pre-line;opacity:.9"></div><button id="cardGo" style="margin-top:18px;font:600 17px Helvetica,sans-serif;padding:10px 24px;border-radius:9px;border:0;background:#c0392b;color:#fff;cursor:pointer">Let's go</button></div></div><div id="hp"><i></i></div>
-<div id="touch"><div id="stick"><div id="knob"></div></div><div id="btns"><button data-k="KeyF">Punch</button><button data-k="Tab">Swap</button><button data-k="KeyQ">Gun</button><button data-k="Escape">II</button><button data-k="KeyE">Car</button><button data-k="Brake">Back</button><button data-k="Space">Jump</button><button data-k="ShiftLeft">Run</button><button class="fire" data-k="Fire">Fire</button></div></div><canvas id="map"></canvas><div id="cross">+</div>
-<div id="pause"><h1>PAUSED</h1><button id="resume">Resume</button><button id="savebtn">Save game</button><button id="fs">Full screen</button><button onclick="try{const s=JSON.parse(localStorage.gs||'{}');delete s.game;localStorage.gs=JSON.stringify(s)}catch{};location.reload()">New game</button><button onclick="location.href='city.html'">Real streets (new)</button><button onclick="location.href='real.html'">Real Vancouver (beta)</button><button id="exitbtn">Exit game</button>
-<p style="opacity:.6;font-size:12px">Car: Ferrari 458 Italia by vicent091036, CC-BY 4.0. Characters: Soldier from the three.js examples (Mixamo), HVGirl from the Babylon.js assets.</p><p style="opacity:.8">Joshua: +50% mission cash, cops cool off fast. Ben: fastest runner, two-punch knockouts. Alexandre: steady aim, faster cars, tougher.<br>W A S D move, mouse look (click to lock), click or Enter attack, Shift run, Space jump, F punch, Q or 1-4 weapons, R radio in a car, E car, Tab swap, Esc pause. On phones: stick, drag to look, buttons.</p></div>
+<div id="touch"><div id="stick"><div id="knob"></div></div><div id="btns"><button data-k="KeyF">Punch</button><button data-k="Tab">Swap</button><button data-k="KeyQ">Gun</button><button data-k="Escape">II</button><button data-k="KeyE">Car</button><button data-k="KeyT">Travel</button><button data-k="Brake">Back</button><button data-k="Space">Jump</button><button data-k="ShiftLeft">Run</button><button class="fire" data-k="Fire">Fire</button></div></div><canvas id="map"></canvas><div id="cross">+</div>
+<div id="title"><div class="logo">VANCOUVER<br><b>VICE</b></div><p class="sub">Gastown to Victoria. Three crooks, one rainy city.</p><nav><button id="tCont">Continue</button><button id="tNew">New Game</button><button id="tSet">Settings</button><button id="tQuit">Quit</button></nav></div>
+<div id="settings" class="panel"><h2>Settings</h2><label>Graphics<select id="sGfx"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><label>Volume<input id="sVol" type="range" min="0" max="1" step=".05"></label><label>Mouse speed<input id="sSens" type="range" min=".3" max="2.5" step=".1"></label><label>Invert look<input id="sInv" type="checkbox"></label><button id="sDone">Done</button></div>
+<div id="travel" class="panel"><h2>Fast travel</h2><button data-t="0">Gastown</button><button data-t="1">Kitsilano</button><button data-t="2">Victoria</button><button data-a="langley">Langley (real streets)</button><button data-a="harrison">Harrison Hot Springs (real streets)</button><button id="trX">Cancel</button></div>
+<div id="pause"><h1>PAUSED</h1><button id="resume">Resume</button><button id="savebtn">Save game</button><button id="setbtn">Settings</button><button id="trbtn">Fast travel</button><button id="fs">Full screen</button><button onclick="try{const s=JSON.parse(localStorage.gs||'{}');delete s.game;localStorage.gs=JSON.stringify(s)}catch{};location.reload()">New game</button><button onclick="location.href='city.html'">Real streets (new)</button><button onclick="location.href='real.html'">Real Vancouver (beta)</button><button id="exitbtn">Exit game</button>
+<p style="opacity:.6;font-size:12px">Car: Ferrari 458 Italia by vicent091036, CC-BY 4.0. Characters: Soldier from the three.js examples (Mixamo), HVGirl from the Babylon.js assets.</p><p style="opacity:.8">Joshua: +50% mission cash, cops cool off fast. Ben: fastest runner, two-punch knockouts. Alexandre: steady aim, faster cars, tougher.<br>W A S D move, mouse look (click to lock), click or Enter attack, Shift run, Space jump, F punch, Q or 1-4 weapons, R radio in a car, E car, T fast travel, Tab swap, Esc pause. On phones: stick, drag to look, buttons.</p></div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
 // claim every key so the Mac app (WKWebView) never plays the "unhandled key" beep
@@ -25,7 +28,7 @@ import { Sky } from "three/addons/objects/Sky.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
-import { block, road, vanMap, cols, rows, W, H, aves, streets, NAMES, HOODS, kinds, colors, PERKS, HERO_LOOK, STARS, WEAPONS, ACH, MISSIONS, STATIONS, WX, LINES, BUMPS, FIGHTS, STORY, SKIN, HAIR, PANTS, HERO_BODY } from "./js/data.js";
+import { block, road, vanMap, cols, rows, W, H, aves, streets, NAMES, HOODS, kinds, colors, PERKS, HERO_LOOK, STARS, WEAPONS, ACH, MISSIONS, STATIONS, WX, LINES, BUMPS, FIGHTS, STORY, PAWN, LOOT, SKIN, HAIR, PANTS, HERO_BODY } from "./js/data.js";
 const cell = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? null : vanMap[Math.floor(y / block)][Math.floor(x / block)];
 const solid = (x, y) => { const k = cell(x, y); if (!k || k === "W") return true; if (k === "P" || k === "R" || k === "Y") return false; return x % block > road && y % block > road; };
 function streetName(x, y) {
@@ -39,7 +42,7 @@ function streetName(x, y) {
   const ix = x % block <= road, iy = y % block <= road, a = aves[r] || "", s = streets[c] || "";
   return ([ix && iy ? [s, a].filter(Boolean).join(" & ") : ix ? s : a].filter(Boolean)[0] || "Waterfront") + (near ? `, by ${near.name}` : "") + ", Vancouver";
 }
-const LANDMARKS = []; vanMap.forEach((row, r) => [...row].forEach((k, c) => { if (NAMES[k]) LANDMARKS.push({ x: (c + .65) * block, y: (r + .65) * block, name: NAMES[k] }); }));
+const LANDMARKS = [{ ...PAWN }]; vanMap.forEach((row, r) => [...row].forEach((k, c) => { if (NAMES[k]) LANDMARKS.push({ x: (c + .65) * block, y: (r + .65) * block, name: NAMES[k] }); }));
 // neighbourhoods: who you meet and what they say depends on where you are
 function hood(x, y) {
   const c = Math.floor(x / block), r = Math.floor(y / block);
@@ -61,7 +64,7 @@ function sidewalkPed(p) {
 }
 
 // ---- game state
-const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 16, 120], shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0 };
+const G = { keys: new Set(), player: { x: 11 * block + 40, y: 3 * block + 40 }, pa: 0, cars: [], peds: [], driving: null, wanted: 0, score: 0, ammo: 60, ammoW: [0, 60, 16, 120], shotAt: 0, msg: "", flash: 0, hp: 100, z: 0, vz: 0, weapon: 1, heat: 0, xp: 0, aimT: null, hurtT: 0, paused: false, step: 0, cur: 0, mouseDX: 0, loot: { mac: 0, phone: 0 } };
 G.heroes = [{ name: "Joshua", p: { ...G.player }, a: 0, driving: null, ammo: 60 }, { name: "Alexandre", p: { x: 5 * block + 40, y: 15 * block + 40 }, a: 0, driving: null, ammo: 60 }];
 // Joshua runs Gastown, Ben hangs in Kitsilano, Alexandre is downtown Victoria
 G.heroes.splice(1, 0, { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 });
@@ -94,8 +97,11 @@ for (let i = 0; i < 55; i++) { const p = streetPoint(); G.cars.push({ p, a: (i %
 for (let i = 0; i < (TOUCH ? 35 : 60); i++) G.peds.push(sidewalkPed(roadPoint()));
 G.cars.forEach(c => c.ai && lane(c));
 
+// ---- settings (graphics, audio, controls), kept in the save
+save.settings ??= { gfx: TOUCH ? "low" : "high", vol: .8, sens: 1, invert: false }; const SET = save.settings;
+let MASTER; const OUT = () => { if (!MASTER) { MASTER = ac.createGain(); MASTER.gain.value = SET.vol; MASTER.connect(ac.destination); } return MASTER; };
 // ---- sound
-let ac; const bang = v => { ac ??= new AudioContext(); const n = ac.sampleRate * .25, b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4) * v; const s = ac.createBufferSource(); s.buffer = b; s.connect(ac.destination); s.start(); };
+let ac; const bang = v => { ac ??= new AudioContext(); const n = ac.sampleRate * .25, b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4) * v; const s = ac.createBufferSource(); s.buffer = b; s.connect(OUT()); s.start(); };
 
 function lane(c) {
   const e = Math.round(Math.cos(c.a)), n = Math.round(Math.sin(c.a)), q = { ...c.p };
@@ -138,7 +144,7 @@ function punch() {
   if (best < 0) return;
   const p = G.peds[best]; p.hp = (p.hp ?? 3) - perk("fists"); bang(.4); addHeat(12, 1); gainXP(2);
   const nx = p.p.x + Math.cos(G.pa) * 8, ny = p.p.y + Math.sin(G.pa) * 8; if (!solid(nx, ny)) p.p = { x: nx, y: ny };
-  if (p.hp <= 0) { killPed(best); return; }
+  if (p.hp <= 0) { if (Math.random() < .35) { G.loot.phone++; toast("Grabbed a phone. Granville Pawn will take it"); } killPed(best); return; }
   if (p.angry === undefined) p.angry = Math.random() < .45;
   if (!p.angry) { p.scared = 6; p.a = G.pa; }
 }
@@ -173,8 +179,8 @@ function radioTick() {
   if (!ac || G.driving === null || G.paused || !RADIO.st) return;
   const S = STATIONS[RADIO.st], spb = 60 / S.bpm / 2; if (RADIO.next < ac.currentTime) RADIO.next = ac.currentTime + .05;
   while (RADIO.next < ac.currentTime + .2) {
-    const t = RADIO.next, st = RADIO.step++ % 8, note = (m, d, v, type = "sine") => { const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.value = 440 * 2 ** ((m - 69) / 12); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g).connect(ac.destination); o.start(t); o.stop(t + d); };
-    if (S.beat[st]) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(40, t + .12); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .15); o.connect(g).connect(ac.destination); o.start(t); o.stop(t + .16); }
+    const t = RADIO.next, st = RADIO.step++ % 8, note = (m, d, v, type = "sine") => { const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.value = 440 * 2 ** ((m - 69) / 12); g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g).connect(OUT()); o.start(t); o.stop(t + d); };
+    if (S.beat[st]) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(40, t + .12); g.gain.setValueAtTime(.35, t); g.gain.exponentialRampToValueAtTime(.001, t + .15); o.connect(g).connect(OUT()); o.start(t); o.stop(t + .16); }
     if (S.hat && st % 2) note(100, .03, .02, "square");
     const prog = [0, 0, 5, 7][Math.floor(RADIO.step / 8) % 4];
     if (st % 2 === 0) note(S.root + prog + (st === 4 ? 12 : 0), spb * 1.6, .09, "sawtooth");
@@ -183,18 +189,18 @@ function radioTick() {
   }
 }
 // --- save: autosave progress every few seconds
-function saveGame() { if (DEMO) return; save.game = { score: G.score, step: G.step, mission: mission ? mission.n : 0, heroes: G.heroes.map((h, i) => i === G.cur ? { ...h, p: G.player, a: G.pa, driving: null } : { ...h, driving: null }), cur: G.cur, ammoW: G.ammoW }; persist(); }
-function loadGame() { const g = save.game; if (!g || !Array.isArray(g.heroes) || (g.heroes.length < 2 || g.heroes.length > 3) || !g.heroes.every(h => h?.p && isFinite(h.p.x) && isFinite(h.p.y)) || solid(g.heroes[g.cur ?? 0].p.x, g.heroes[g.cur ?? 0].p.y)) { if (g) { delete save.game; persist(); } return false; } Object.assign(G, { score: g.score, step: g.step, cur: g.cur, ammoW: g.ammoW }); G.heroes = g.heroes.length === 3 ? g.heroes : [g.heroes[0], { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 }, g.heroes[1]]; if (g.heroes.length === 2 && g.cur === 1) G.cur = 2; G.player = { ...G.heroes[G.cur].p }; G.pa = G.heroes[G.cur].a; tint(hero, HERO_LOOK[G.heroes[G.cur].name] ?? 0xe8b21a); hero.hood.visible = G.heroes[G.cur].name === "Joshua" && !hero.gl; if (cell(G.player.x, G.player.y) === "P") G.player = { ...[{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }][G.cur] };
+function saveGame() { if (DEMO) return; save.game = { score: G.score, step: G.step, mission: mission ? mission.n : 0, loot: G.loot, heroes: G.heroes.map((h, i) => i === G.cur ? { ...h, p: G.player, a: G.pa, driving: null } : { ...h, driving: null }), cur: G.cur, ammoW: G.ammoW }; persist(); }
+function loadGame() { const g = save.game; if (!g || !Array.isArray(g.heroes) || (g.heroes.length < 2 || g.heroes.length > 3) || !g.heroes.every(h => h?.p && isFinite(h.p.x) && isFinite(h.p.y)) || solid(g.heroes[g.cur ?? 0].p.x, g.heroes[g.cur ?? 0].p.y)) { if (g) { delete save.game; persist(); } return false; } Object.assign(G, { loot: g.loot ?? G.loot, score: g.score, step: g.step, cur: g.cur, ammoW: g.ammoW }); G.heroes = g.heroes.length === 3 ? g.heroes : [g.heroes[0], { name: "Ben", p: { x: 6 * block + 40, y: 10 * block + 40 }, a: 0, driving: null, ammo: 60 }, g.heroes[1]]; if (g.heroes.length === 2 && g.cur === 1) G.cur = 2; G.player = { ...G.heroes[G.cur].p }; G.pa = G.heroes[G.cur].a; tint(hero, HERO_LOOK[G.heroes[G.cur].name] ?? 0xe8b21a); hero.hood.visible = G.heroes[G.cur].name === "Joshua" && !hero.gl; if (cell(G.player.x, G.player.y) === "P") G.player = { ...[{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }][G.cur] };
   if (G.step >= 5) { restoring = true; startMission(g.mission); restoring = false; } return true; }
 setInterval(() => { if (!G.paused) saveGame(); }, 5000);
 const AMB = { on: false };
 function ambientStart() {
   if (AMB.on) return; ac ??= new AudioContext(); AMB.on = true;
   const n = ac.sampleRate * 2, b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
-  const loop = (freq, q) => { const s = ac.createBufferSource(); s.buffer = b; s.loop = true; const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q; const g = ac.createGain(); g.gain.value = 0; s.connect(f).connect(g).connect(ac.destination); s.start(); return { g, f }; };
+  const loop = (freq, q) => { const s = ac.createBufferSource(); s.buffer = b; s.loop = true; const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q; const g = ac.createGain(); g.gain.value = 0; s.connect(f).connect(g).connect(OUT()); s.start(); return { g, f }; };
   AMB.traffic = loop(420, .7); AMB.rain = loop(3200, .4); AMB.city = loop(250, .3); AMB.city.g.gain.value = .02;
 }
-function chirp(f0, f1, dur, vol, type = "sine") { const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f0, ac.currentTime); o.frequency.exponentialRampToValueAtTime(f1, ac.currentTime + dur); g.gain.setValueAtTime(vol, ac.currentTime); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + dur); o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + dur); }
+function chirp(f0, f1, dur, vol, type = "sine") { const o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.setValueAtTime(f0, ac.currentTime); o.frequency.exponentialRampToValueAtTime(f1, ac.currentTime + dur); g.gain.setValueAtTime(vol, ac.currentTime); g.gain.exponentialRampToValueAtTime(.0001, ac.currentTime + dur); o.connect(g).connect(OUT()); o.start(); o.stop(ac.currentTime + dur); }
 function ambient(dt, day) {
   if (!AMB.on) return;
   let t = 0, closest = 1e9; for (const c of G.cars) { if (G.cars.indexOf(c) === G.driving) continue; const d = dist(c.p, G.player); if (d < 300) { t += Math.abs(c.v) / 300 * (1 - d / 300); closest = Math.min(closest, d); } }
@@ -246,6 +252,24 @@ function geeseTick(dt) {
   if (performance.now() - (G.punchAt || 0) < 60) GEESE.forEach(g => { if (g.hp > 0 && dist(g.p, G.player) < 30) { g.hp = 0; g.p.y += 200; } });
   if (GEESE.length && GEESE.every(g => g.hp <= 0)) { GEESE.length = 0; geeseT = 40; G.score += 25; toast("You beat the geese. +$25 and your dignity"); gainXP(15); }
 }
+// Granville Pawn: walk in on foot and the counter buys everything you carry
+function pawnTick() {
+  if (G.driving !== null || dist(G.player, PAWN) > 40) { G.atPawn = false; return; } if (G.atPawn) return; G.atPawn = true;
+  const rows = Object.entries(G.loot).filter(([k, n]) => n > 0 && LOOT[k]); if (!rows.length) { toast("Granville Pawn: nothing to sell. Come back with something shiny"); return; }
+  let total = 0; const lines = rows.map(([k, n]) => { const [name, each] = LOOT[k]; total += n * each; return `${n} x ${name} at $${each}   $${n * each}`; });
+  G.score += total; G.loot = { mac: 0, phone: 0 }; gainXP(Math.round(total / 10)); bang(.3); saveGame(); card("Granville Pawn", lines.join("\n") + `\n\nCash on the counter: $${total}. No receipts, no questions.`);
+}
+// fast travel: the camera lifts off, flies over the city and drops you on the other side
+const TRAVEL = [{ x: 11 * block + 40, y: 3 * block + 40 }, { x: 6 * block + 40, y: 10 * block + 40 }, { x: 5 * block + 40, y: 15 * block + 40 }];
+function fastTravel(i) {
+  if (G.wanted > 0) { toast("Lose the cops first"); return false; }
+  if (SW.t >= 0) return false; SW.from = { ...G.player }; G.driving = null; G.player = { ...TRAVEL[i] }; SW.to = { ...G.player }; SW.t = 0; if (ac) chirp(220, 90, 1.2, .08, "sawtooth"); return true;
+}
+// mission one: two Apple Store employees come out after you
+function appleChase() {
+  G.loot.mac += 6; addHeat(STARS[0]);
+  for (let i = 0; i < 2; i++) { const p = sidewalkPed({ x: G.player.x + (i ? 40 : -40), y: G.player.y + 30 }); p.hood = { ...p.hood, shirts: [0x1e6fd9] }; p.angry = true; p.apple = true; G.peds.push(p); say(p, i ? "Hey! Those aren't paid for!" : "Stop! Security!"); }
+}
 function startMission(n) {
   // The story is done: the city opens up and random jobs keep coming.
   if (n === STORY.length && !restoring) card("Vancouver is yours", "Dmitri is handled, the hard drive is home and Dad stopped asking. Jobs keep coming: follow the beacon, or go find trouble.");
@@ -254,6 +278,8 @@ function startMission(n) {
   if (kind === "taxi") { G.target = roadPoint(); while (dist(G.target, G.player) < 500) G.target = roadPoint(); mission.text = "Taxi: pick up the fare at the beacon (in a car)"; }
   if (kind === "evade") { mission.text = "Get 3 stars, then lose the cops"; }
   if (kind === "hit") { const p = sidewalkPed(roadPoint()); p.mark = true; p.angry = false; G.peds.push(p); mission.victim = p; mission.text = "Take out the marked man (red ring on the map)"; }
+  if (story?.at === "pawn") G.target = { ...PAWN };
+  if (n === 0 && !restoring) appleChase();
   if (story) { mission.text = story.text; mission.pay = story.pay; if (!restoring) card(story.title, story.text + `\n\nPays $${story.pay}. Follow the ${story.kind === "hit" ? "red dot on the map" : story.kind === "evade" ? "sirens" : "yellow beacon"}.`); } else toast("Mission: " + mission.text);
   if (n === STORY.length) toast("Story complete. Vancouver is yours. Side jobs keep coming.");
 }
@@ -273,10 +299,10 @@ function tick(dt) {
   if (G.driving !== null) {
     const c = G.cars[G.driving];
     c.v += (fwd ? 500 : 0) * dt - (back ? 400 : 0) * dt; c.v *= .98; c.v = Math.max(-150, Math.min(kinds[c.kind][2] * perk("drive"), c.v));
-    c.a += ((right ? 1 : 0) - (left ? 1 : 0)) * 2.8 * dt * (c.v / 300) + G.mouseDX * .002; G.mouseDX = 0;
+    c.a += ((right ? 1 : 0) - (left ? 1 : 0)) * 2.8 * dt * (c.v / 300) + G.mouseDX * .002 * SET.sens; G.mouseDX = 0;
     move(c, dt); G.player = { ...c.p };
   } else {
-    G.pa += ((right ? 1 : 0) - (left ? 1 : 0)) * 3 * dt + G.mouseDX * .004; G.mouseDX = 0;
+    G.pa += ((right ? 1 : 0) - (left ? 1 : 0)) * 3 * dt + G.mouseDX * .004 * SET.sens; G.mouseDX = 0;
     const run = k("ShiftLeft") || k("ShiftRight"), s = (fwd ? (run ? 270 * perk("run") : 140 * perk("run")) : 0) - (back ? 80 : 0), nx = G.player.x + Math.cos(G.pa) * s * dt, ny = G.player.y + Math.sin(G.pa) * s * dt;
     if (!solid(nx, ny)) G.player = { x: nx, y: ny };
     if (G.z > 0 || G.vz > 0) { G.vz -= 600 * dt; G.z = Math.max(0, G.z + G.vz * dt); if (G.z === 0) G.vz = 0; }
@@ -320,7 +346,7 @@ function tick(dt) {
   if (G.hp < 100 && G.wanted === 0) G.hp = Math.min(100, G.hp + dt * 5);
   G.aimT = G.driving === null ? findTarget(G.weapon ? 600 : 28) : null; G.hurtT -= dt; toastT -= dt; if (toastT <= 0) document.getElementById("toast").style.display = "none";
   for (const c of [...G.cars]) if (c.burnT && (c.burnT -= dt) <= 0) explode(c);
-  streetLife(dt); geeseTick(dt);
+  streetLife(dt); geeseTick(dt); pawnTick();
   // tutorial then missions
   const s = G.step;
   if (s === 0 && dist(G.player, walkFrom) > 100) G.step = 1;
@@ -417,6 +443,7 @@ function gooseMesh() { const g = new THREE.Group(), body = new THREE.Mesh(new TH
 const ring = new THREE.Mesh(new THREE.RingGeometry(10, 13, 64), new THREE.MeshBasicMaterial({ color: 0xff3030, side: THREE.DoubleSide })); ring.rotation.x = -Math.PI / 2; scene.add(ring);
 for (const l of LANDMARKS) { const c = document.createElement("canvas"); c.width = 512; c.height = 96; const x = c.getContext("2d"); x.font = "bold 44px Helvetica"; x.textAlign = "center"; x.fillStyle = "#000a"; x.fillRect(0, 10, 512, 76); x.fillStyle = "#fff"; x.fillText(l.name, 256, 64);
   const t = new THREE.CanvasTexture(c); t.anisotropy = 8; t.colorSpace = THREE.SRGBColorSpace; const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, fog: false })); sp.scale.set(160, 30, 1); sp.position.set(l.x, l.name === "Harbour Centre" ? 540 : 150, l.y); scene.add(sp); }
+const pawnM = new THREE.Mesh(new THREE.CylinderGeometry(12, 12, 50, 32), new THREE.MeshBasicMaterial({ color: 0x2ecc71, transparent: true, opacity: .55 })); pawnM.position.set(PAWN.x, 25, PAWN.y); scene.add(pawnM);
 const beacon = new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 600, 48), new THREE.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: .4 })); scene.add(beacon);
 // real models: an animated rigged person and a real car. Shapes above are the fallback until these load (or if they fail).
 const MODELS = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r160/examples/models/gltf/";
@@ -497,11 +524,50 @@ function dressHero(name) {
   const key = HERO_BODY[name], src = key === "hero" ? JOSH : BODY[key]; if (!src) return;
   if (hero.gl) hero.remove(hero.gl); hero.children.forEach(ch => { if (ch !== gun) ch.visible = false; }); hero.body = null; hero.mix = null;
   rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: src.animations[0]?.name, run: src.animations[0]?.name, idle: src.animations[0]?.name } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
-  hero.mix.acts.run = hero.mix.acts.walk; heroReady = true;
+  hero.mix.acts.run = hero.mix.acts.walk; heroReady = true; if (key === "hero") lookLikeJoshua(hero.gl);
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
   if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
 }
 let JOSH = null;
+// Joshua's look, from his portrait: ginger curls, fair skin, black top, dark jeans, tortoiseshell glasses
+const JOSH_LOOK = { Hairmat: [0xf5c896, .75], Bodymat: [0xffffff, .6, 0x33221d], Topmat: [0x2a2a2c, .95], Bottommat: [0x5d6f94, .95] }, GL = { y: 1.48, z: 1.24, tilt: -.2, r: .29, sep: .37, calf: .92, ankle: .6, crewR: .085, crewDown: .14, crewUp: .006, collarH: .007, hairline: .74 };
+function lookLikeJoshua(s) {
+  s.traverse(o => { const L = o.isMesh && JOSH_LOOK[o.material.name]; if (!L) return; const m = o.material; m.color.setHex(L[0]); m.roughnessMap = null; if (m.name === "Hairmat") { m.transparent = false; m.alphaTest = .12; m.side = THREE.DoubleSide; m.depthWrite = true; } m.roughness = L[1]; if (L[2]) m.emissive.setHex(L[2]); m.needsUpdate = true; });
+  let head = null; s.traverse(o => { if (!head && o.isBone && /Head$/.test(o.name)) head = o; }); if (!head) return;
+  s.updateMatrixWorld(true); const k = 1 / head.getWorldScale(new THREE.Vector3()).x, m = new THREE.MeshStandardMaterial({ color: 0x5a3418, roughness: .3 }), g = new THREE.Group();
+  [-1, 1].forEach(d => { const r = new THREE.Mesh(new THREE.TorusGeometry(GL.r, .04, 10, 32), m); r.position.x = d * GL.sep; g.add(r); const arm = new THREE.Mesh(new THREE.BoxGeometry(.05, .06, 1.9), m); arm.position.set(d * (GL.sep + GL.r), .05, -.95); g.add(arm); });
+  const bridge = new THREE.Mesh(new THREE.BoxGeometry(GL.sep * 2 - GL.r * 2 + .1, .05, .05), m); bridge.position.y = .08; g.add(bridge);
+  g.scale.setScalar(k); g.position.set(0, GL.y * k, GL.z * k); g.rotation.x = GL.tilt; head.add(g); s.glasses = g;
+  // jeans to the ankle (the rig's shorts stop mid-calf), and the white collar under his crewneck
+  const bone = n => { let b = null; s.traverse(o => { if (!b && o.isBone && o.name.endsWith(n)) b = o; }); return b; }, wp = o => o.getWorldPosition(new THREE.Vector3());
+  const jeans = new THREE.MeshStandardMaterial({ color: 0x1d2638, roughness: .95 });
+  for (const side of ["Left", "Right"]) { const leg = bone(side + "Leg"), foot = bone(side + "Foot"); if (!leg || !foot) continue;
+    const len = wp(leg).distanceTo(wp(foot)), kl = 1 / leg.getWorldScale(new THREE.Vector3()).x, c = new THREE.Mesh(new THREE.CylinderGeometry(GL.calf, GL.ankle, len * 1.02, 20, 1, true), jeans);
+    c.material.side = THREE.DoubleSide; c.scale.setScalar(kl); c.position.y = len / 2 * kl; c.castShadow = true; leg.add(c); }
+  // crewneck: paint the skin the V-neck shows (and the base of the neck) black, a white collar line on top
+  const neck = bone("Neck"), headTop = bone("HeadTop_End"), body = (() => { let b = null; s.traverse(o => { if (!b && o.isSkinnedMesh && o.material.name === "Bodymat" && o.material.map) b = o; }); return b; })();
+  if (neck && headTop && body) {
+    const N = wp(neck), H = wp(headTop).y - s.getWorldPosition(new THREE.Vector3()).y, img = body.material.map.image, W = img.width, Hh = img.height;
+    const col = document.createElement("canvas"), emi = document.createElement("canvas"); col.width = emi.width = W; col.height = emi.height = Hh;
+    const cx = col.getContext("2d"), ex = emi.getContext("2d"); cx.drawImage(img, 0, 0); ex.fillStyle = "#fff"; ex.fillRect(0, 0, W, Hh);
+    const pos = body.geometry.attributes.position, uv = body.geometry.attributes.uv, idx = body.geometry.index, v = new THREE.Vector3(), tag = new Uint8Array(pos.count);
+    body.updateMatrixWorld(true); s.updateMatrixWorld(true);
+    // per texel: interpolate each vertex's height above the neck across the triangle, so the neckline is a clean line, not triangle steps
+    const dy = new Float32Array(pos.count), rr = new Float32Array(pos.count), hh = new Float32Array(pos.count), HY = wp(bone("Head")).y, HT = wp(headTop).y;
+    for (let k = 0; k < pos.count; k++) { body.getVertexPosition(k, v); v.applyMatrix4(body.matrixWorld); dy[k] = (v.y - N.y) / H; rr[k] = Math.hypot(v.x - N.x, v.z - N.z) / H; hh[k] = (v.y - HY) / (HT - HY); }
+    const C = cx.getImageData(0, 0, W, Hh), E = ex.getImageData(0, 0, W, Hh), T = idx ? idx.count : pos.count, at = n => idx ? idx.getX(n) : n, near = k => hh[k] > GL.hairline - .1 || (rr[k] < GL.crewR * 1.3 && dy[k] > -GL.crewDown - .03 && dy[k] < GL.crewUp + GL.collarH + .03);
+    for (let n = 0; n < T; n += 3) { const q = [at(n), at(n + 1), at(n + 2)]; if (!q.some(near)) continue;
+      const P = q.map(k => [uv.getX(k) * W, uv.getY(k) * Hh]), [[x0, y0], [x1, y1], [x2, y2]] = P, den = (y1 - y2) * (x0 - x2) + (x2 - x1) * (y0 - y2); if (Math.abs(den) < 1e-9) continue;
+      for (let y = Math.max(0, Math.floor(Math.min(y0, y1, y2))); y <= Math.min(Hh - 1, Math.ceil(Math.max(y0, y1, y2))); y++) for (let x = Math.max(0, Math.floor(Math.min(x0, x1, x2))); x <= Math.min(W - 1, Math.ceil(Math.max(x0, x1, x2))); x++) {
+        const a = ((y1 - y2) * (x + .5 - x2) + (x2 - x1) * (y + .5 - y2)) / den, b = ((y2 - y0) * (x + .5 - x2) + (x0 - x2) * (y + .5 - y2)) / den, c = 1 - a - b; if (a < -.02 || b < -.02 || c < -.02) continue;
+        const d = a * dy[q[0]] + b * dy[q[1]] + c * dy[q[2]], r = a * rr[q[0]] + b * rr[q[1]] + c * rr[q[2]], h = a * hh[q[0]] + b * hh[q[1]] + c * hh[q[2]], hair = h > GL.hairline;
+        if (!hair && (r > GL.crewR || d < -GL.crewDown || d > GL.crewUp + GL.collarH)) continue;
+        const o = (y * W + x) * 4, rgb = hair ? [176, 112, 62] : d > GL.crewUp ? [236, 235, 230] : [19, 19, 21]; C.data[o] = rgb[0]; C.data[o + 1] = rgb[1]; C.data[o + 2] = rgb[2]; E.data[o] = E.data[o + 1] = E.data[o + 2] = 0; } }
+    cx.putImageData(C, 0, 0); ex.putImageData(E, 0, 0);
+    const tex = (cv, srgb) => { const t = new THREE.CanvasTexture(cv); t.flipY = false; if (srgb) t.colorSpace = THREE.SRGBColorSpace; t.wrapS = body.material.map.wrapS; t.wrapT = body.material.map.wrapT; return t; };
+    body.material.map = tex(col, true); body.material.emissiveMap = tex(emi, true); body.material.needsUpdate = true;
+  }
+}
 if (false) gltf.load("https://assets.babylonjs.com/meshes/HVGirl.glb", g => {
   const names = [...new Set(g.scene.getObjectsByProperty("isMesh", true).map(m => m.material.name))]; console.log("HVGirl materials", names.join(","));
   CROWD.push({ src: g, turn: Math.PI / 2, shirt: /T-shirt|short/i, map: { walk: "Walking", run: "Walking", idle: "Idle" } }); reCrowd();
@@ -570,6 +636,7 @@ function drawHud() {
   vanMap.forEach((row, r) => [...row].forEach((k, c) => { mx.fillStyle = k === "W" ? "#2255aa" : k === "P" ? "#2e8b3a" : k === "Y" ? "#d8c79a" : NAMES[k] ? "#ddd" : "#888"; mx.fillRect(c * 10, r * 10, 10, 10); }));
   mx.fillStyle = "#f33"; G.cars.filter(c => c.cop).forEach(c => mx.fillRect(c.p.x / block * 10 - 2, c.p.y / block * 10 - 2, 4, 4));
   mx.fillStyle = mission?.kind === "hit" ? "#ff3030" : "#ffd23f"; mx.fillRect(G.target.x / block * 10 - 2, G.target.y / block * 10 - 2, 4, 4);
+  mx.fillStyle = "#2ecc71"; mx.fillRect(PAWN.x / block * 10 - 2, PAWN.y / block * 10 - 2, 4, 4);
   mx.fillStyle = "#fff"; mx.beginPath(); mx.arc(G.player.x / block * 10, G.player.y / block * 10, 3, 0, 7); mx.fill();
 }
 // ponytail: post stack off on phones (GPU), MSAA alone there
@@ -582,6 +649,12 @@ if (post) {
   composer.addPass(new OutputPass());
   composer.addPass(new SMAAPass(innerWidth * devicePixelRatio, innerHeight * devicePixelRatio));
 }
+function applyGfx() {
+  const q = SET.gfx; R.setPixelRatio(q === "low" ? 1 : q === "medium" ? Math.min(devicePixelRatio, 1.5) : devicePixelRatio); R.setSize(innerWidth, innerHeight);
+  composer?.setPixelRatio(R.getPixelRatio()); composer?.setSize(innerWidth, innerHeight);
+  const sh = q !== "low"; if (R.shadowMap.enabled !== sh) { R.shadowMap.enabled = sh; scene.traverse(o => o.material && [].concat(o.material).forEach(m => m.needsUpdate = true)); }
+}
+applyGfx();
 let last = performance.now();
 let lastErr = 0;
 function frame(now) {
@@ -589,24 +662,45 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 function step(now) {
-  if (G.weapon === 3 && (G.keys.has("Enter") || G.mouseHeld)) shoot(); radioTick(); const dt = Math.min((now - last) / 1000, .05); last = now; if (!G.paused) tick(dt); sync(now); drawHud(); composer ? composer.render() : R.render(scene, cam); }
+  if (G.weapon === 3 && (G.keys.has("Enter") || G.mouseHeld)) shoot(); radioTick(); const dt = Math.min((now - last) / 1000, .05); last = now; if (!G.paused) tick(dt); sync(now); window.GS_CAMHOOK?.(cam); drawHud(); composer && SET.gfx === "high" ? composer.render() : R.render(scene, cam); }
 if (DEMO && innerWidth < 700) { // tiny frame on a phone: clean view, one tap opens the full game
   ["hud", "map", "tip", "touch", "hp", "cross"].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = "none"; });
   const go = document.createElement("a"); go.href = "play.html"; go.target = "_top"; go.textContent = "Tap to play"; go.style.cssText = "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#c0392b;color:#fff;padding:12px 26px;border-radius:24px;font:700 17px Helvetica,sans-serif;text-decoration:none;z-index:9"; document.body.append(go);
   const tipEl = document.getElementById("tip"); Object.defineProperty(tipEl.style, "display", { set() {}, get() { return "none"; } });
 } else if (DEMO) toast("Live demo. Click in and play.");
-else if (loadGame()) toast("Welcome back. Game loaded.");
-else card("Welcome to Vancouver", TOUCH ? "You're Joshua, on the cobblestones in Gastown. Pistol, sixty rounds, no plan.\n\nMOVE  Left stick. Hold Run to sprint, Jump to jump\nLOOK  Drag anywhere on the right\nFIGHT  Fire shoots, Punch punches, Gun switches weapons\nDRIVE  Walk up to a car and tap Car\nSWITCH  Tap Swap. The camera flies you to Ben in Kits, then Alexandre in Victoria\n\nThe tip at the bottom walks you through your first minute." : "You're Joshua, on the cobblestones in Gastown. Pistol, sixty rounds, no plan.\n\nMOVE  W A S D, Shift to run, Space to jump\nLOOK  Move the mouse (click once to lock it in)\nFIGHT  Click to shoot, F to punch, Q or 1-4 for weapons\nDRIVE  E to get in or out, R for the radio\nSWITCH  Tab. The camera flies you to Ben in Kits, then Alexandre in Victoria, GTA style\nMENU  Esc to pause, save or quit\n\nThe tip at the bottom walks you through your first minute.");
+else showTitle();
 requestAnimationFrame(frame);
 
+// ---- title, settings, fast travel
+const $ = id => document.getElementById(id), WELCOME = () => card("Welcome to Vancouver", TOUCH ? "You're Joshua, on the cobblestones in Gastown. Pistol, sixty rounds, no plan.\n\nMOVE  Left stick. Hold Run to sprint, Jump to jump\nLOOK  Drag anywhere on the right\nFIGHT  Fire shoots, Punch punches, Gun switches weapons\nDRIVE  Walk up to a car and tap Car\nSWITCH  Tap Swap. The camera flies you to Ben in Kits, then Alexandre in Victoria\n\nThe tip at the bottom walks you through your first minute." : "You're Joshua, on the cobblestones in Gastown. Pistol, sixty rounds, no plan.\n\nMOVE  W A S D, Shift to run, Space to jump\nLOOK  Move the mouse (click once to lock it in)\nFIGHT  Click to shoot, F to punch, Q or 1-4 for weapons\nDRIVE  E to get in or out, R for the radio\nSWITCH  Tab. The camera flies you to Ben in Kits, then Alexandre in Victoria, GTA style\nMENU  Esc to pause, save or quit\n\nThe tip at the bottom walks you through your first minute.");
+function showTitle() { G.paused = true; document.getElementById("title").style.display = "flex"; document.getElementById("tCont").style.display = save.game ? "" : "none"; }
+const hideTitle = () => { $("title").style.display = "none"; G.paused = false; G.keys.clear(); };
+$("tNew").onclick = () => { hideTitle(); delete save.game; persist(); WELCOME(); };
+$("tCont").onclick = () => { hideTitle(); if (loadGame()) toast("Welcome back. Game loaded."); else WELCOME(); };
+$("tQuit").onclick = () => { if (window.close && window.opener === null && history.length <= 1) window.close(); location.href = "./"; };
+let setFrom = null; const openPanel = (id, from) => { setFrom = from; $(from).style.display = "none"; $(id).style.display = "flex"; };
+const closePanel = id => { $(id).style.display = "none"; if (setFrom) $(setFrom).style.display = "flex"; setFrom = null; };
+$("tSet").onclick = () => openPanel("settings", "title"); $("setbtn").onclick = () => openPanel("settings", "pause");
+$("sGfx").value = SET.gfx; $("sVol").value = SET.vol; $("sSens").value = SET.sens; $("sInv").checked = SET.invert;
+$("sGfx").onchange = e => { SET.gfx = e.target.value; persist(); applyGfx(); };
+$("sVol").oninput = e => { SET.vol = +e.target.value; persist(); if (MASTER) MASTER.gain.value = SET.vol; };
+$("sSens").oninput = e => { SET.sens = +e.target.value; persist(); };
+$("sInv").onchange = e => { SET.invert = e.target.checked; persist(); };
+$("sDone").onclick = () => closePanel("settings");
+const openTravel = () => { setPause(true); openPanel("travel", "pause"); };
+$("trbtn").onclick = () => openPanel("travel", "pause"); $("trX").onclick = () => closePanel("travel");
+document.querySelectorAll("#travel [data-t]").forEach(b => b.onclick = () => { closePanel("travel"); setPause(false); fastTravel(+b.dataset.t); });
+document.querySelectorAll("#travel [data-a]").forEach(b => b.onclick = () => { saveGame(); location.href = "city.html?area=" + b.dataset.a; });
+const overlay = () => ["title", "settings", "travel"].find(id => $(id).style.display === "flex");
 // ---- input
 const pauseEl = document.getElementById("pause");
 const setPause = p => { G.paused = p; pauseEl.style.display = p ? "flex" : "none"; G.keys.clear(); if (p && document.pointerLockElement) document.exitPointerLock(); };
 addEventListener("keydown", e => {
   if (document.getElementById("card").style.display === "flex") { if (e.code === "Enter" || e.code === "Escape" || e.code === "Space") document.getElementById("cardGo").click(); return; }
+  const ov = overlay(); if (ov) { if (e.code === "Escape" && ov !== "title") closePanel(ov); if (ov === "title" && e.code === "Enter") $(save.game ? "tCont" : "tNew").click(); return; }
   if (e.code === "Escape") { setPause(!G.paused); return; }
   if (G.paused) return;
-  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { G.weapon = (G.weapon + 1) % 4; toast(WEAPONS[G.weapon].name); } if (/^Digit[1-4]$/.test(e.code)) { G.weapon = +e.code[5] - 1; toast(WEAPONS[G.weapon].name); } if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); }
+  if (!e.repeat) { if (e.code === "KeyE") toggleCar(); if (e.code === "KeyQ") { G.weapon = (G.weapon + 1) % 4; toast(WEAPONS[G.weapon].name); } if (/^Digit[1-4]$/.test(e.code)) { G.weapon = +e.code[5] - 1; toast(WEAPONS[G.weapon].name); } if (e.code === "KeyR" && G.driving !== null) { RADIO.st = (RADIO.st + 1) % STATIONS.length; toast("Radio: " + STATIONS[RADIO.st].name); } if (e.code === "Tab") swapHero(); if (e.code === "Space" && G.driving === null && G.z === 0) G.vz = 180 * perk("jump"); if (e.code === "Enter" || e.code === "Fire") shoot(); if (e.code === "KeyF") punch(); if (e.code === "KeyT") openTravel(); }
   if (["Tab", "Space", "ArrowUp", "ArrowDown"].includes(e.code)) e.preventDefault();
   G.keys.add(e.code);
 });
@@ -617,8 +711,8 @@ R.domElement.addEventListener("mousedown", () => { G.mouseHeld = !!document.poin
 // mouse always steers the camera; click locks it for endless turning
 // the Mac app (WKWebView, no "Safari/" in its UA) sends raw deltas through GS_mouse instead
 const IN_MAC_APP = /Vancouver ViceApp/.test(navigator.userAgent);
-window.GS_mouse = (dx, dy) => { if (G.paused) return; G.mouseDX += dx; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + dy * .003)); G.mouseHeld = false; };
-addEventListener("mousemove", e => { if (G.paused || IN_MAC_APP) return; G.mouseDX += e.movementX; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + e.movementY * .003)); });
+window.GS_mouse = (dx, dy) => { if (G.paused) return; G.mouseDX += dx; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + dy * .003 * (SET.invert ? -1 : 1))); G.mouseHeld = false; };
+addEventListener("mousemove", e => { if (G.paused || IN_MAC_APP) return; G.mouseDX += e.movementX; G.pitch = Math.max(-.6, Math.min(.5, (G.pitch || 0) + e.movementY * .003 * (SET.invert ? -1 : 1))); });
 document.addEventListener("pointerlockchange", () => { if (!document.pointerLockElement && !G.paused && G.step > 0) setPause(true); });
 document.getElementById("cardGo").onclick = () => { document.getElementById("card").style.display = "none"; G.paused = false; G.keys.clear(); };
 document.getElementById("savebtn").onclick = () => { saveGame(); document.getElementById("savebtn").textContent = "Saved"; setTimeout(() => document.getElementById("savebtn").textContent = "Save game", 1200); };
@@ -639,5 +733,5 @@ R.domElement.addEventListener("touchstart", e => { const t = e.changedTouches[0]
 document.querySelectorAll("#btns button").forEach(b => { b.addEventListener("touchstart", e => { e.preventDefault(); const k = b.dataset.k;
   if (k === "Brake") { G.keys.add("KeyS"); return; } if (k === "ShiftLeft") { G.keys.add(k); return; } dispatchEvent(new KeyboardEvent("keydown", { code: k })); }, { passive: false });
   b.addEventListener("touchend", () => { if (b.dataset.k === "Brake") G.keys.delete("KeyS"); if (b.dataset.k === "ShiftLeft") G.keys.delete("ShiftLeft"); dispatchEvent(new KeyboardEvent("keyup", { code: b.dataset.k })); }); });
-window.G = G; window.GS = { hood, solid, cell, streetName, lane, sidewalkPed, living, roadPoint, tick, frame: null, STARS, explode, damageCar, saveGame, loadGame, STORY, RADIO, WEAPONS, say, streetLife, RAIN, punch, startMission, addHeat, shoot, findTarget, killPed, unlock, save };
+window.G = G; window.GS = { hood, solid, cell, streetName, lane, sidewalkPed, living, roadPoint, tick, frame: null, STARS, explode, damageCar, saveGame, loadGame, STORY, RADIO, WEAPONS, say, streetLife, RAIN, punch, startMission, fastTravel, pawnTick, PAWN, SET, applyGfx, addHeat, shoot, findTarget, killPed, unlock, save };
 </script></body></html>
