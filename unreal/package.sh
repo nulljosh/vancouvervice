@@ -64,12 +64,16 @@ echo "log: $LOG"
 # keeps the log readable. -unattended avoids any interactive prompt blocking an unattended run.
 # Redirect (not `| tee`) so $? below is RunUAT's real exit status, not sh(1)'s pipefail-less
 # pipeline status; tail the log from another terminal to watch it live.
+# Speed: -iterate re-cooks only changed packages (the shader and cook caches stay in Saved/ and DerivedDataCache/);
+# FAST=1 also skips the C++ build and reuses the last binaries when nothing native changed. The first build of a
+# machine is slow (shaders from scratch, off the LaCie); after that a rebuild takes minutes.
+BUILD="-build"; [ "${FAST:-0}" = 1 ] && BUILD="-skipbuild"
 set +e
 "$RUNUAT" BuildCookRun \
   -project="$PROJECT" \
   -platform=Mac \
   -clientconfig=Development \
-  -build -cook -stage -pak -archive \
+  $BUILD -cook -iterate -stage -pak -archive \
   -archivedirectory="$ARCHDIR" \
   -nop4 -utf8output -unattended \
   > "$LOG" 2>&1
