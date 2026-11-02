@@ -31,11 +31,16 @@ import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import { block, road, vanMap, cols, rows, W, H, aves, streets, NAMES, HOODS, kinds, colors, PERKS, HERO_LOOK, STARS, WEAPONS, ACH, MISSIONS, STATIONS, WX, LINES, BUMPS, FIGHTS, STORY, PAWN, LOOT, SKIN, HAIR, PANTS, HERO_BODY } from "./js/data.js";
 const cell = (x, y) => (x < 0 || y < 0 || x >= W || y >= H) ? null : vanMap[Math.floor(y / block)][Math.floor(x / block)];
 // Granville Pawn's inside: a room off the map edge you walk into through the shop door
-const ROOM = { x: -1400, y: 300, w: 170, h: 130 }, inRoom = p => p.x >= ROOM.x && p.x <= ROOM.x + ROOM.w && p.y >= ROOM.y && p.y <= ROOM.y + ROOM.h;
-const roomWall = (x, y) => x < ROOM.x + 10 || x > ROOM.x + ROOM.w - 10 || y < ROOM.y + 34 || (y > ROOM.y + ROOM.h - 6 && Math.abs(x - ROOM.x - ROOM.w / 2) > 18);
-const solid = (x, y) => { if (inRoom({ x, y })) return roomWall(x, y); const k = cell(x, y); if (!k || k === "W") return true; if (k === "P" || k === "R" || k === "Y") return false; return x % block > road && y % block > road; };
+// interiors: rooms off the map edge, each with a street door, an exit spot and a greeting
+const ROOMS = [
+  { name: "Granville Pawn", door: PAWN, out: { x: PAWN.x, y: PAWN.y - 70 }, x: -1400, y: 300, w: 170, h: 130, hello: "Granville Pawn. The counter's at the back" },
+  { name: "the store on Georgia", door: { x: 7 * block + 170, y: 5 * block + 40 }, out: { x: 7 * block + 230, y: 5 * block + 40 }, x: -1400, y: 700, w: 220, h: 150, hello: "Georgia St. Every laptop on display, every employee watching" },
+];
+const ROOM = ROOMS[0], inRoom = p => ROOMS.find(r => p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h);
+const roomWall = (r, x, y) => x < r.x + 10 || x > r.x + r.w - 10 || y < r.y + 34 || (y > r.y + r.h - 6 && Math.abs(x - r.x - r.w / 2) > 18);
+const solid = (x, y) => { const rm = inRoom({ x, y }); if (rm) return roomWall(rm, x, y); const k = cell(x, y); if (!k || k === "W") return true; if (k === "P" || k === "R" || k === "Y") return false; return x % block > road && y % block > road; };
 function streetName(x, y) {
-  if (inRoom({ x, y })) return "Inside Granville Pawn, Granville St";
+  const rm = inRoom({ x, y }); if (rm) return "Inside " + rm.name;
   const c = Math.floor(x / block), r = Math.floor(y / block), k = cell(x, y);
   if (k === "P") return "Stanley Park";
   if (k === "Y") return r >= 10 ? "Kits Beach" : "English Bay Beach";
@@ -260,8 +265,10 @@ function geeseTick(dt) {
 const COUNTER = { x: ROOM.x + ROOM.w / 2, y: ROOM.y + 44 };
 function pawnTick() {
   if (G.driving !== null) return;
-  if (!inRoom(G.player)) { if (dist(G.player, PAWN) < 30) { G.player = { x: COUNTER.x, y: ROOM.y + ROOM.h - 22 }; G.pa = -Math.PI / 2; G.atPawn = false; toast("Granville Pawn. The counter's at the back"); } return; }
-  if (G.player.y > ROOM.y + ROOM.h - 9) { G.player = { x: PAWN.x, y: PAWN.y - 70 }; G.pa = -Math.PI / 2; G.atPawn = false; return; }
+  const rm = inRoom(G.player);
+  if (!rm) { const r = ROOMS.find(r => dist(G.player, r.door) < 30); if (r) { G.player = { x: r.x + r.w / 2, y: r.y + r.h - 22 }; G.pa = -Math.PI / 2; G.atPawn = false; toast(r.hello); } return; }
+  if (G.player.y > rm.y + rm.h - 9) { G.player = { ...rm.out }; G.pa = -Math.PI / 2; G.atPawn = false; return; }
+  if (rm !== ROOM) return; // only the pawn shop has a counter
   if (dist(G.player, COUNTER) > 30) { G.atPawn = false; return; } if (G.atPawn) return; G.atPawn = true;
   const rows = Object.entries(G.loot).filter(([k, n]) => n > 0 && LOOT[k]); if (!rows.length) { toast("Granville Pawn: nothing to sell. Come back with something shiny"); return; }
   let total = 0; const lines = rows.map(([k, n]) => { const [name, each] = LOOT[k]; total += n * each; return `${n} x ${name} at $${each}   $${n * each}`; });
@@ -523,6 +530,18 @@ vanMap.forEach((row, by) => [...row].forEach((k, bx) => {
   setTimeout(() => { const clerk = person(0x3a5a40); clerk.position.set(cx, 0, R0.y + 18); clerk.rotation.y = -Math.PI / 2; scene.add(clerk); }); // person() needs the crowd set up first
   for (const lx of [-40, 40]) { const l = new THREE.PointLight(0xffd9a0, 900, 160, 2); l.position.set(cx + lx, 40, R0.y + R0.h / 2); scene.add(l); }
 }
+{ // the store on Georgia: white room, long wooden tables of laptops and phones, a video wall, staff in blue. No logos.
+  const R1 = ROOMS[1], cx = R1.x + R1.w / 2, white = mat(0xf4f4f2), add = (m, x, y, z) => { m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; scene.add(m); return m; };
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(R1.w, R1.h), mat(0xd9d6cf)); floor.rotation.x = -Math.PI / 2; add(floor, cx, .4, R1.y + R1.h / 2);
+  add(boxM(R1.w, 90, 6, white), cx, 45, R1.y + 3); add(boxM(6, 90, R1.h, white), R1.x + 3, 45, R1.y + R1.h / 2); add(boxM(6, 90, R1.h, white), R1.x + R1.w - 3, 45, R1.y + R1.h / 2);
+  for (const sx of [-1, 1]) add(boxM(R1.w / 2 - 18, 90, 2, new THREE.MeshPhysicalMaterial({ color: 0xe6f2f4, roughness: .04, transparent: true, opacity: .16 })), cx + sx * (R1.w / 4 + 9), 45, R1.y + R1.h - 3);
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(150, 40), new THREE.MeshBasicMaterial({ color: 0x2a6fdb })); add(wall, cx, 34, R1.y + 6.5);
+  const wood = mat(0xc9a77c), screen = new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: .2, metalness: .3 });
+  for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) { const tx = cx + sx * 50, tz = R1.y + 52 + row * 30; add(boxM(70, 3, 18, wood), tx, 12, tz); for (const lx of [-28, 28]) add(boxM(3, 12, 3, mat(0x9a9a96)), tx + lx, 6, tz);
+    for (let k = 0; k < 4; k++) { const lap = add(boxM(10, .6, 7, mat(0xc8cacc)), tx - 24 + k * 16, 13.8, tz); const scr = boxM(10, 6.5, .5, screen); scr.position.set(0, 3.2, -3.4); scr.rotation.x = -.2; lap.add(scr); } }
+  for (const lx of [-60, 0, 60]) { const l = new THREE.PointLight(0xffffff, 700, 180, 2); l.position.set(cx + lx, 60, R1.y + R1.h / 2); scene.add(l); }
+  setTimeout(() => { for (const [dx, dz] of [[-80, 40], [70, 90]]) { const st = person(0x1e6fd9); st.position.set(cx + dx, 0, R1.y + dz); st.rotation.y = -Math.PI / 2; scene.add(st); } });
+}
 const rainGeo = new THREE.BufferGeometry(), rainN = 2500, rp = new Float32Array(rainN * 3); for (let i = 0; i < rainN * 3; i++) rp[i] = (Math.random() - .5) * 800; rainGeo.setAttribute("position", new THREE.BufferAttribute(rp, 3));
 const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xaabbcc, size: 1.6, transparent: true, opacity: .6 })); rain.visible = false; scene.add(rain);
 const gooseMeshes = [];
@@ -643,7 +662,7 @@ function sync(now) {
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
   hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
-  const moving = G.keys.has("KeyW") || G.keys.has("KeyS"), fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run; if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? 270 : 140) * perk("run") / 19 : 0; } hero.mix.mixer.update(1 / 60); } // run cycle covers ~50 units/s at 1x, match it to real speed
+  const moving = G.keys.has("KeyW") || G.keys.has("KeyS"), fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run; if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? 270 : 140) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } // standing: settle on a feet-together frame of the walk (the model has no idle clip) hero.mix.mixer.update(1 / 60); } // run cycle covers ~50 units/s at 1x, match it to real speed
   hero.legs.forEach((l, j) => l.rotation.z = moving ? Math.sin(now / (fast ? 55 : 100) + j * Math.PI) * (fast ? .9 : .6) : 0);
   const back = G.driving === null ? 70 : 110, up = G.driving === null ? 38 : 48; let d = back;
   while (d > 12 && solid(G.player.x - Math.cos(a) * d, G.player.y - Math.sin(a) * d)) d -= 6;
@@ -781,5 +800,5 @@ R.domElement.addEventListener("touchstart", e => { const t = e.changedTouches[0]
 document.querySelectorAll("#btns button").forEach(b => { b.addEventListener("touchstart", e => { e.preventDefault(); const k = b.dataset.k;
   if (k === "Brake") { G.keys.add("KeyS"); return; } if (k === "ShiftLeft") { G.keys.add(k); return; } dispatchEvent(new KeyboardEvent("keydown", { code: k })); }, { passive: false });
   b.addEventListener("touchend", () => { if (b.dataset.k === "Brake") G.keys.delete("KeyS"); if (b.dataset.k === "ShiftLeft") G.keys.delete("ShiftLeft"); dispatchEvent(new KeyboardEvent("keyup", { code: b.dataset.k })); }); });
-window.G = G; window.GS = { hood, solid, cell, streetName, lane, sidewalkPed, living, roadPoint, tick, frame: null, STARS, explode, damageCar, saveGame, loadGame, STORY, RADIO, WEAPONS, say, streetLife, RAIN, punch, startMission, fastTravel, pawnTick, PAWN, COUNTER, inRoom, SET, applyGfx, addHeat, shoot, findTarget, killPed, unlock, save };
+window.G = G; window.GS = { hood, solid, cell, streetName, lane, sidewalkPed, living, roadPoint, tick, frame: null, STARS, explode, damageCar, saveGame, loadGame, STORY, RADIO, WEAPONS, say, streetLife, RAIN, punch, startMission, fastTravel, pawnTick, PAWN, COUNTER, inRoom, ROOMS, SET, applyGfx, addHeat, shoot, findTarget, killPed, unlock, save };
 </script></body></html>

@@ -38,6 +38,7 @@ await p.evaluate(() => document.getElementById("savebtn").click()); check(await 
 await p.keyboard.press("Escape"); await W(200); check(await p.evaluate(() => !G.paused), "Esc closes the menu");
 // pawn shop and fast travel
 check(await p.evaluate(() => { G.driving = null; G.player = { ...GS.PAWN }; GS.pawnTick(); return GS.inRoom(G.player); }), "walking into Granville Pawn puts you inside");
+check(await p.evaluate(() => { G.driving = null; G.player = { ...GS.ROOMS[1].door }; GS.pawnTick(); const inside = GS.inRoom(G.player)?.name === "the store on Georgia"; G.player.y = GS.ROOMS[1].y + GS.ROOMS[1].h - 5; GS.pawnTick(); return inside && !GS.inRoom(G.player); }), "walk into the store on Georgia and back out");
 check(await p.evaluate(() => { G.driving = null; G.loot = { mac: 6, phone: 1 }; const s = G.score; G.player = { ...GS.COUNTER }; G.atPawn = false; GS.pawnTick(); const ok = G.score === s + 940 && G.loot.mac === 0 && document.getElementById("cardT").textContent === "Granville Pawn"; document.getElementById("cardGo").click(); return ok; }), "Granville Pawn buys 6 Mac minis and a phone for $940");
 check(await p.evaluate(async () => { G.wanted = 0; G.heat = 0; GS.fastTravel(2); for (let k = 0; k < 250 && window.GS_SW?.t >= 0; k++) await new Promise(r => setTimeout(r, 100)); return GS.hood(G.player.x, G.player.y).name === "Victoria"; }), "fast travel flies you to Victoria");
 
