@@ -9,6 +9,7 @@ Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump
 Joshua draws and fires his pistol on the move, and on WASTED he takes the hit and falls where he stood before waking up at the hospital. Standing around, he shifts his weight now and then.
 Brookswood, south Langley, on real streets (fast travel): every real building footprint (Overture Maps), houses with photo siding, shingled roofs, garages, front doors and driveways, photo Douglas firs, red cedars and bigleaf maples, photo lawns and asphalt, the Brookswood Village strip mall with its parking lots and real shop signs, Mount Baker and Golden Ears at their true bearings.
 Brookswood landmarks built by hand from aerial photos: a 40 Avenue duplex row, the Apostolic Faith Church on 207 Street, the Chevron at 208 Street and 40 Avenue, and Brookswood Secondary with its tennis courts.
+Port Moody on real streets (fast travel): Murray Street, Rocky Point and the head of the inlet.
 Ambleside, West Vancouver on real streets (fast travel): the beach on the inlet and the mountains straight behind.
 Lonsdale, North Vancouver on real streets (fast travel): the Quay, the Shipyards, the inlet in front and the mountains close behind.
 Steveston on real streets (fast travel): heritage storefronts down Moncton Street, the Gulf of Georgia Cannery and Britannia Shipyard as long gabled halls, the river and its beach. Far-off water no longer flickers with stripes of grass.
