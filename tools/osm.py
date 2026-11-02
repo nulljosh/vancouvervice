@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown|newwest|steveston|lonsdale. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown|newwest|steveston|lonsdale|ambleside. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -23,6 +23,7 @@ AREAS = {
     "newwest": ((49.2010, -122.9120), (49.1930, -122.9260, 49.2090, -122.8980)),  # Columbia Street at 8th Street, New Westminster, on the Fraser
     "steveston": ((49.1255, -123.1840), (49.1175, -123.1980, 49.1335, -123.1700)),  # Moncton Street and the wharf, Steveston, Richmond
     "lonsdale": ((49.3140, -123.0800), (49.3060, -123.0940, 49.3220, -123.0660)),  # Lonsdale Avenue above the Quay, North Vancouver
+    "ambleside": ((49.3290, -123.1560), (49.3210, -123.1700, 49.3370, -123.1420)),  # Marine Drive at 14th Street, Ambleside, West Vancouver
 }
 
 

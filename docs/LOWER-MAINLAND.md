@@ -22,8 +22,8 @@ We take one area to A+ before starting the next: real street names, every landma
 | 11 | New Westminster | 49.2010, -122.9120 | town centre | live: the Fraser waterfront, Pier West towers, Overture footprints |
 | 12 | Richmond Centre and Steveston | 49.1255, -123.1840 | suburb and village | live: Steveston, heritage Moncton Street, the cannery and shipyard halls; Richmond Centre still to do |
 | 13 | North Vancouver, Lonsdale | 49.3140, -123.0800 | town centre | live: Lonsdale Quay, the Shipyards, the mountains close behind |
-| 14 | West Vancouver, Ambleside | 49.3270, -123.1550 | beach town | next |
-| 15 | Coquitlam, Port Moody, Port Coquitlam | 49.2840, -122.7930 | suburb | |
+| 14 | West Vancouver, Ambleside | 49.3290, -123.1560 | beach town | live: the beach, the mountains behind, Overture footprints |
+| 15 | Coquitlam, Port Moody, Port Coquitlam | 49.2840, -122.7930 | suburb | next |
 | 16 | Delta: Ladner and Tsawwassen | 49.0890, -123.0820 | village | |
 | 17 | Maple Ridge and Pitt Meadows | 49.2190, -122.6010 | town centre | |
 | 18 | Abbotsford | 49.0500, -122.3040 | town centre | |
