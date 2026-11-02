@@ -19,7 +19,8 @@ Rules for this Mac (16 GB): one heavy thing at a time. No Playwright or WebKit r
 2. Joshua's new look (single cuff, grey dad runners, white socks): Higgsfield render 620d4af1 is approved; the 3D build (image_to_3d with rig, about 38 credits) waits on a credit top-up past the 450 floor. Then the same pipeline: unscale in Blender, `unreal/import_hero.py`, consolidate onto his clips.
 3. Street life: done for cars, lights and trees (tools/ue_props.py + unreal/street_props.py; tools/ue_traffic.py + unreal/traffic.py + BP_TrafficCar from unreal/traffic.dsl). Still to do: people on the sidewalks, wheels not tinted by the paint, the white wireframe mission dome replaced by a proper marker, traffic stopping for the player.
 4. Port the heist from the web game: the store interior, grab the Macs, the guard in the doorway, two stars and the chase. Then guns, cops and stars.
-5. Free roam beyond downtown (the other site/data maps through tools/ue_city.py), then the rest of the v2 list in roadmap.md.
+5. The whole Lower Mainland in Unreal (Joshua: "it shouldn't be web"). `sh tools/ue_region.sh` builds 18 towns plus the corridor between them into /Volumes/LaCie/Unreal/dl/region/*.glb on one world (origin downtown). Next: import each to /Game/City/<Area>, place at z -6840 with complex-as-simple double-sided collision (same as downtown), then street props and traffic per town, then the rest of the v2 list in roadmap.md.
+6. First packaged Mac build for Joshua to play: `sh unreal/package.sh` (editor closed) into /Volumes/LaCie/Unreal/Builds/<date>/. Sidewalk people are held out until their M_Default materials render (they import with the right size now via tools/rig_to_metres.py).
 
 ## Restart prompt
 ```

@@ -1,8 +1,11 @@
 """Builds a real-streets map (site/data/<area>.json) as sharp, textured city chunks for Unreal, in headless Blender.
 Same rules as city.html: storefront band on the ground floor, glass towers over 45 m, concrete or glass mid-rise,
 brick or stone low-rise, tar roofs, asphalt roads on concrete sidewalks, grass parks, water.
-Run: Blender -b --factory-startup --python tools/ue_city.py -- <area> <out.glb> [chunk_m]
-Coordinates: data is metres, +x east, +y south. Blender gets +X east, +Y north, so y flips."""
+Run: Blender -b --factory-startup --python tools/ue_city.py -- <area> <out.glb> [chunk_m] [base] [exclude.json]
+base is the ground under each chunk: walk (paved, downtown) or grass (suburbs, the corridor).
+exclude.json lists [x0, y0, x1, y1] boxes (world metres) to leave out, so the corridor does not double the towns.
+Coordinates: data is metres, +x east, +y south, moved onto one world whose origin is downtown (49.2833, -123.1187),
+the Cesium georeference origin. Blender gets +X east, +Y north, so y flips."""
 import bpy, json, math, os, sys
 from mathutils.geometry import tessellate_polygon
 from mathutils import Vector
@@ -10,8 +13,20 @@ from mathutils import Vector
 argv = sys.argv[sys.argv.index("--") + 1:]
 AREA, OUT = argv[0], argv[1]
 CHUNK = float(argv[2]) if len(argv) > 2 else 800.0
+BASE = argv[3] if len(argv) > 3 else "walk"
+EXCL = json.load(open(argv[4])) if len(argv) > 4 else []
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "site")
 D = json.load(open(os.path.join(ROOT, "data", AREA + ".json")))
+LAT0, LON0 = 49.2833, -123.1187; la, lo = D["origin"]
+OX, OY = (lo - LON0) * math.cos(math.radians(LAT0)) * 111320, -(la - LAT0) * 110540
+def shift(pts): return [[x + OX, y + OY] for x, y, *_ in pts]
+def kept(pts): return not any(all(b[0] <= x <= b[2] and b[1] <= y <= b[3] for x, y in pts[:1]) for b in EXCL)
+for b in D["buildings"]: b["p"] = shift(b["p"])
+D["buildings"] = [b for b in D["buildings"] if kept(b["p"])]
+for r in D["roads"]: r["p"] = shift(r["p"])
+D["roads"] = [r for r in D["roads"] if kept(r["p"])]
+for k in ("parks", "water"): D[k] = [q for q in (shift(p) for p in D.get(k, [])) if kept(q) or k == "water"]
+D["pois"] = [[x + OX, y + OY, *rest] for x, y, *rest in D.get("pois", [])]
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
@@ -116,7 +131,8 @@ xs = [p[0] for b in D["buildings"] for p in b["p"]]; ys = [p[1] for b in D["buil
 for gx in range(math.floor(min(xs) / CHUNK), math.floor(max(xs) / CHUNK) + 1):
     for gy in range(math.floor(min(ys) / CHUNK), math.floor(max(ys) / CHUNK) + 1):
         x0, y0 = gx * CHUNK, gy * CHUNK
-        flat([(x0, y0), (x0 + CHUNK, y0), (x0 + CHUNK, y0 + CHUNK), (x0, y0 + CHUNK)], 0, "walk", x0 + 1, y0 + 1)
+        if not kept([(x0 + CHUNK / 2, y0 + CHUNK / 2)]): continue
+        flat([(x0, y0), (x0 + CHUNK, y0), (x0 + CHUNK, y0 + CHUNK), (x0, y0 + CHUNK)], -0.01 if BASE == "grass" else 0, BASE, x0 + 1, y0 + 1)
 
 tris = 0
 for (gx, gy), mats in chunks.items():
