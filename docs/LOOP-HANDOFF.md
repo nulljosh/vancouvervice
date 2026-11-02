@@ -14,6 +14,9 @@ The web game is still live at vancouvervice.jaybulb.com. Tested and deployed as 
 
 Rules for this Mac (16 GB): one heavy thing at a time. No Playwright or WebKit runs while the editor is up. No MetaHuman builds (they crash the editor). `sh unreal/doctor.sh lean` after boot; restart the editor past about 15 GB footprint.
 
+## In flight (2026-11-02, 16:50)
+The first packaged Mac build is running with the editor closed (started 16:38, `sh unreal/package.sh`, log /Volumes/LaCie/Unreal/Builds/2026-11-02/package.log, result line in the session scratchpad package.txt). Expected done about 17:30 to 17:45. When it finishes: launch the .app from /Volumes/LaCie/Unreal/Builds/2026-11-02/Mac, test walking and the car yourself (no audio), screenshot it, tell Joshua where it is. If it failed, read the tail of the log and fix. Then reopen the editor (`sh unreal/open.sh`), delete the Cesium actors and disable the CesiumForUnreal plugin (unused now, and it is most of the compile time), import the region (item 5), and package again with FAST=1 when no native code changed.
+
 ## Next, in order
 1. Done 2026-11-02: walk and drive tests pass (`python3 unreal/qa.py`, `qa.py drive`), our own downtown replaces the Google tiles, Joshua is his Higgsfield model on his own clips. Clip recording: Unreal to the front, close Message Log and the content drawer (ctrl+space), full-screen `screencapture -V`, crop.
 2. Joshua's new look (single cuff, grey dad runners, white socks): Higgsfield render 620d4af1 is approved; the 3D build (image_to_3d with rig, about 38 credits) waits on a credit top-up past the 450 floor. Then the same pipeline: unscale in Blender, `unreal/import_hero.py`, consolidate onto his clips.
