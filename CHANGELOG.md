@@ -3,6 +3,10 @@
 All the releases, newest first. Every version is tagged on GitHub with builds attached.
 
 ## 1.27 (unreleased)
+Joshua moves like a person: a real idle when standing, a jog on W and a sprint on Shift, each timed to his stride so the feet stay planted.
+Physics: a car at speed knocks you flat and you get back up; your car stops on other cars instead of driving through them.
+Traffic thinks: cars brake and honk for you and for pedestrians, queue behind each other, pick a way at every intersection, turn through it smoothly and hold the right-hand lane.
+People think: gunfire and explosions send the street running away from you, walkers wait at the curb for a gap and dodge a car coming at them, and cops chase you down the streets instead of through buildings.
 The landmarks look like themselves. A real Gastown Steam Clock with four faces and steam, brick warehouses on Water Street, the Art Gallery's portico and dome, Rogers Arena in glass with its red ring, BC Place with masts, Granville Island's tin sheds and silos, Canada Place with taller sails, the BC Legislature with its green dome.
 Real models from Higgsfield: the Gastown Steam Clock, Douglas firs through Stanley Park, and full street trees on the blocks around you (smooth leafy crowns farther out).
 Photo facades: glass towers, concrete offices, a row of real shopfronts with awnings, Gastown brick, Victoria sandstone, Kits siding, real asphalt and sidewalk slabs.

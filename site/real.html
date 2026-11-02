@@ -52,7 +52,7 @@ function person() {
 const hero = person();
 // Joshua's own rigged model (1.83 m tall), the capsule stands in until it loads
 let heroMix = null;
-new GLTFLoader().load("models/hero.glb", g => { const m = g.scene; m.updateMatrixWorld(true); const h = new THREE.Box3().setFromObject(m).getSize(new THREE.Vector3()).y || 1; m.scale.multiplyScalar(1.83 / h); m.rotation.y = Math.PI / 2; m.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
+new GLTFLoader().load("models/characters/hero.glb", g => { const m = g.scene; m.updateMatrixWorld(true); const h = new THREE.Box3().setFromObject(m).getSize(new THREE.Vector3()).y || 1; m.scale.multiplyScalar(1.83 / h); m.rotation.y = Math.PI / 2; m.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
   hero.clear(); hero.add(m); hero.legs = []; if (g.animations[0]) { heroMix = new THREE.AnimationMixer(m); heroMix.clipAction(g.animations[0]).play(); } });
 const car = new THREE.Group(); { const b = new THREE.Mesh(new THREE.BoxGeometry(4.4, 1, 1.9), new THREE.MeshPhysicalMaterial({ color: 0xd33, roughness: .25, metalness: .4, clearcoat: 1 })); b.position.y = .7; const c = new THREE.Mesh(new THREE.BoxGeometry(2.2, .7, 1.7), mat(0x111418)); c.position.set(-.3, 1.5, 0); car.add(b, c); } scene.add(car);
 

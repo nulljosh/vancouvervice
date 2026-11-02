@@ -133,14 +133,16 @@ function lane(c) {
 function damageCar(c, n) { c.dmg = (c.dmg || 0) + n; if (c.dmg >= 100 && !c.burnT) { c.burnT = 3; toast(c === G.cars[G.driving] ? "Your car's on fire! Get out!" : ""); } }
 const booms = [];
 function explode(c) {
-  bang(1); booms.push({ x: c.p.x, y: c.p.y, t: 0 });
+  bang(1); booms.push({ x: c.p.x, y: c.p.y, t: 0 }); panic(c.p, 520);
   G.peds.forEach((p, i) => { if (!p.dead && dist(p.p, c.p) < 70) killPed(i); });
   if (dist(G.player, c.p) < 70) { G.hp -= 60; G.hurtT = .5; if (G.driving === G.cars.indexOf(c)) G.hp = 0; }
   if (c.cop) { G.score += 100; addHeat(50, 3); gainXP(40); save.cops = (save.cops || 0) + 1; persist(); if (save.cops >= 5) unlock("copkill"); } else addHeat(10, 2);
   const i = G.cars.indexOf(c); if (G.driving === i) G.driving = null; G.cars.splice(i, 1); if (G.driving !== null && G.driving > i) G.driving--;
   if (G.hp <= 0) wasted();
 }
-function move(c, dt) { const nx = c.p.x + Math.cos(c.a) * c.v * dt, ny = c.p.y + Math.sin(c.a) * c.v * dt; if (c === G.cars[G.driving] ? solid(nx, ny) : carBlocked(nx, ny)) { if (Math.abs(c.v) > 200) { bang(.4); damageCar(c, Math.abs(c.v) / 14); } c.v *= -.3; } else { c.p.x = nx; c.p.y = ny; } }
+function move(c, dt) { const nx = c.p.x + Math.cos(c.a) * c.v * dt, ny = c.p.y + Math.sin(c.a) * c.v * dt, mine = c === G.cars[G.driving], o = mine && G.cars.find(o => o !== c && Math.hypot(o.p.x - nx, o.p.y - ny) < 30 && Math.hypot(o.p.x - nx, o.p.y - ny) < Math.hypot(o.p.x - c.p.x, o.p.y - c.p.y));
+  if (o) { if (Math.abs(c.v) > 80) { bang(.35); damageCar(c, Math.abs(c.v) / 20); damageCar(o, Math.abs(c.v) / 20); o.v = 0; } c.v *= -.25; return; }
+  if (mine ? solid(nx, ny) : carBlocked(nx, ny)) { if (Math.abs(c.v) > 200) { bang(.4); damageCar(c, Math.abs(c.v) / 14); } c.v *= -.3; } else { c.p.x = nx; c.p.y = ny; } }
 // Getting in and out takes a beat, GTA style: walk to the driver's door, it thunks, you slide in.
 // A car with someone in it gets its driver thrown onto the street. Out: you step clear of the door.
 function toggleCar() {
@@ -198,7 +200,7 @@ function shoot() {
   if (G.weapon === 0) { punch(); return; }
   const W = WEAPONS[G.weapon], now = performance.now(); if (now - G.shotAt < W.rate) return;
   if (G.ammoW[G.weapon] <= 0) { G.msg = `Out of ${W.name} ammo, Q to switch`; msgT = 2; return; }
-  G.shotAt = now; G.ammoW[G.weapon]--; G.ammo = G.ammoW[1]; G.flash = .08; bang(G.weapon === 2 ? 1 : .7);
+  G.shotAt = now; panic(G.player, 420); G.ammoW[G.weapon]--; G.ammo = G.ammoW[1]; G.flash = .08; bang(G.weapon === 2 ? 1 : .7);
   const hits = new Set(); for (let k = 0; k < (W.pellets || 1); k++) { const pa = G.pa; G.pa += (k - ((W.pellets || 1) - 1) / 2) * .12; const t = findTarget(W.range * perk("aim")); G.pa = pa; if (t) hits.add(t.kind + t.i); }
   [...hits].map(h => ({ kind: h.startsWith("ped") ? "ped" : "car", i: +h.replace(/\D/g, "") })).sort((a, b) => b.i - a.i).forEach(t => {
     if (t.kind === "ped") return killPed(t.i);
@@ -430,6 +432,25 @@ function runMission(dt) {
   }
   if (m.kind === "evade") { if (m.stage === 0 && G.wanted >= 3) { m.stage = 1; m.text = "Lose the cops"; toast(m.text); } else if (m.stage === 1 && G.wanted === 0) done(500); }
 }
+// Clip ground speeds, measured from the planted foot (hero-local units per second). Jog on W, sprint on Shift.
+const WALK_V = 9.6, RUN_V = 50.3, JOG = 75, SPRINT = 115, BACK = 15;
+// a car's footprint in its own frame: [along, across] for a point, so hits match the body, not a circle
+const carLocal = (c, q) => { const dx = q.x - c.p.x, dy = q.y - c.p.y, ca = Math.cos(c.a), sa = Math.sin(c.a); return [dx * ca + dy * sa, -dx * sa + dy * ca]; };
+// ---- street smarts
+// roadway: the driving lanes of a street band, not its sidewalk edges
+const inLane = v => v > 13 && v < road - 13, roadway = (x, y) => { const ix = x % block, iy = y % block; return (ix < road && inLane(ix)) || (iy < road && inLane(iy)); };
+// panic: gunfire or a blast sends everyone nearby running away from it, a few duck and scream
+function panic(at, r) { for (const p of G.peds) { if (p.dead || p.angry || p.still || dist(p.p, at) > r) continue; p.scared = 4 + Math.random() * 4; p.from = { ...at }; if (!p.say && Math.random() < .15) say(p, ["Gun! He's got a gun!", "Run!", "Oh my god!", "Call 911!"][Math.floor(Math.random() * 4)]); } }
+// cops route along the street grid: breadth-first over intersections to the one nearest you, then straight at you once in sight
+function copRoute(from, to) {
+  const node = q => [Math.max(0, Math.min(cols - 1, Math.round((q.x - road / 2) / block))), Math.max(0, Math.min(rows - 1, Math.round((q.y - road / 2) / block)))], at = (x, y) => ({ x: x * block + road / 2, y: y * block + road / 2 });
+  const [sx, sy] = node(from), [tx, ty] = node(to), prev = new Map([[sx + "," + sy, null]]), Q = [[sx, sy]];
+  while (Q.length) { const [x, y] = Q.shift(); if (x === tx && y === ty) break;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const nx = x + dx, ny = y + dy, k = nx + "," + ny, a = at(x, y), b = at(nx, ny);
+      if (nx < 0 || ny < 0 || nx >= cols || ny >= rows || prev.has(k) || carBlocked(b.x, b.y) || carBlocked((a.x + b.x) / 2, (a.y + b.y) / 2)) continue; prev.set(k, [x, y]); Q.push([nx, ny]); } }
+  let k = tx + "," + ty; if (!prev.has(k)) return null; const path = []; for (let c = [tx, ty]; c; c = prev.get(c[0] + "," + c[1])) path.unshift(at(c[0], c[1]));
+  return path[1] || path[0];
+}
 function tick(dt) {
   if (SW.t >= 0) return;
   const k = c => G.keys.has(c), fwd = k("KeyW") || k("ArrowUp"), back = k("KeyS") || k("ArrowDown"), left = k("KeyA") || k("ArrowLeft"), right = k("KeyD") || k("ArrowRight");
@@ -439,9 +460,12 @@ function tick(dt) {
     c.v += (fwd ? 500 : 0) * dt - (back ? 400 : 0) * dt; c.v *= .98; c.v = Math.max(-150, Math.min(kinds[c.kind][2] * perk("drive"), c.v));
     c.a += ((right ? 1 : 0) - (left ? 1 : 0)) * 2.8 * dt * (c.v / 300) + G.mouseDX * .002 * SET.sens; G.mouseDX = 0;
     move(c, dt); G.player = { ...c.p };
+  } else if (G.knock) {
+    const K = G.knock, f = Math.max(0, 1 - (K.dur - K.t) * 2.2); K.t -= dt; const nx = G.player.x + K.vx * f * dt, ny = G.player.y + K.vy * f * dt;
+    if (!solid(nx, ny)) G.player = { x: nx, y: ny }; if (K.t <= 0) G.knock = null;
   } else {
     G.pa += ((right ? 1 : 0) - (left ? 1 : 0)) * 3 * dt + G.mouseDX * .004 * SET.sens; G.mouseDX = 0;
-    const run = k("ShiftLeft") || k("ShiftRight"), s = (fwd ? (run ? 270 * perk("run") : 140 * perk("run")) : 0) - (back ? 80 : 0), nx = G.player.x + Math.cos(G.pa) * s * dt, ny = G.player.y + Math.sin(G.pa) * s * dt;
+    const run = k("ShiftLeft") || k("ShiftRight"), s = (fwd ? (run ? SPRINT : JOG) * perk("run") : 0) - (back && !fwd ? BACK : 0), nx = G.player.x + Math.cos(G.pa) * s * dt, ny = G.player.y + Math.sin(G.pa) * s * dt;
     if (!solid(nx, ny)) G.player = { x: nx, y: ny }; else if (!solid(nx, G.player.y)) G.player = { x: nx, y: G.player.y }; else if (!solid(G.player.x, ny)) G.player = { x: G.player.x, y: ny };
     if (G.z > 0 || G.vz > 0) { G.vz -= 600 * dt; G.z = Math.max(0, G.z + G.vz * dt); if (G.z === 0) G.vz = 0; }
   }
@@ -454,25 +478,43 @@ function tick(dt) {
     }
     if (p.dance) p.a += p.dance * dt * .9; // dancers turn on the spot to the beat
     if (p.still) continue; // staff, Colin, dancers: they hold their spot until something sets them off
-    const sp = p.scared > 0 ? 90 : 30 * (p.hood?.slow || 1); p.scared = (p.scared || 0) - dt; p.t += dt * sp / 4; const nx = p.p.x + Math.cos(p.a) * sp * dt, ny = p.p.y + Math.sin(p.a) * sp * dt;
-    if (solid(nx, ny)) { const d = [0, 1, 2, 3].map(i => i * Math.PI / 2).filter(a => !solid(p.p.x + Math.cos(a) * 8, p.p.y + Math.sin(a) * 8)); p.a = d.length ? d[Math.floor(Math.random() * d.length)] : p.a + Math.PI; } else { p.p.x = nx; p.p.y = ny; }
+    if (p.scared > 0 && p.from && (p.steerT = (p.steerT || 0) - dt) <= 0) { p.steerT = .4; p.a = Math.atan2(p.p.y - p.from.y, p.p.x - p.from.x) + (Math.random() - .5) * .6; }
+    if (roadway(p.p.x, p.p.y)) { const car = G.cars.find(c => Math.abs(c.v) > 60 && dist(c.p, p.p) < 70 && (([lx, ly]) => lx > 0 && Math.abs(ly) < 16)(carLocal(c, p.p))); if (car) { const [, ly] = carLocal(car, p.p); p.a = car.a + Math.sign(ly || 1) * Math.PI / 2; p.scared = Math.max(p.scared || 0, 1); } }
+    const sp = p.scared > 0 ? 90 : 30 * (p.hood?.slow || 1); p.scared = (p.scared || 0) - dt; const nx = p.p.x + Math.cos(p.a) * sp * dt, ny = p.p.y + Math.sin(p.a) * sp * dt;
+    if (!(p.scared > 0) && roadway(nx, ny) && !roadway(p.p.x, p.p.y) && G.cars.some(c => Math.abs(c.v) > 20 && dist(c.p, { x: nx, y: ny }) < 170 && (([lx, ly]) => lx > 0 && Math.abs(ly) < 22)(carLocal(c, { x: nx, y: ny })))) { p.waitT = .3; continue; } // wait at the curb
+    p.t += dt * sp / 4;
+    if (solid(nx, ny)) { const d = [0, 1, 2, 3].map(i => i * Math.PI / 2).filter(a => !solid(p.p.x + Math.cos(a) * 8, p.p.y + Math.sin(a) * 8)), walk = d.filter(a => !roadway(p.p.x + Math.cos(a) * 16, p.p.y + Math.sin(a) * 16)); // turn the corner along the sidewalk, not out into the lanes
+      const pool = walk.length && !(p.scared > 0) ? walk : d; p.a = pool.length ? pool[Math.floor(Math.random() * pool.length)] : p.a + Math.PI; } else { p.p.x = nx; p.p.y = ny; }
   }
   G.cars.forEach((c, i) => {
-    if (!c.ai || i === G.driving) return; c.v = 150;
+    if (!c.ai || i === G.driving) return;
+    // traffic: brake for people and the car in front, pick a way at each intersection, turn through it, hold the right-hand lane
+    const ahead = (q, far = 70) => { const [lx, ly] = carLocal(c, q); return lx > 0 && lx < far && Math.abs(ly) < 15; }, me = G.driving === null && ahead(G.player);
+    const stop = me || G.peds.some(p => !p.dead && dist(p.p, c.p) < 75 && ahead(p.p)) || G.cars.some((o, j) => j !== i && dist(o.p, c.p) < 60 && ahead(o.p, 55));
+    c.v = stop ? Math.max(0, c.v - 520 * dt) : Math.min(150, c.v + 160 * dt);
+    if (me && c.v === 0 && (c.hornT = (c.hornT || 0) - dt) <= 0) { c.hornT = 4; if (ac) chirp(330, 330, .25, .04, "square"); }
+    const bx = Math.floor(c.p.x / block), by = Math.floor(c.p.y / block), key = bx + "," + by, inX = c.p.x - bx * block < road && c.p.y - by * block < road;
+    if (inX && c.ix !== key && c.turnTo == null) { c.ix = key; const cx = bx * block + road / 2, cy = by * block + road / 2, Q = Math.PI / 2, a0 = Math.round(c.a / Q) * Q;
+      const opts = [0, -1, 1].map(t => a0 + t * Q).filter(a => !carBlocked(cx + Math.cos(a) * 130, cy + Math.sin(a) * 130));
+      c.turnTo = opts.length ? (opts[0] === a0 && Math.random() < .6 ? a0 : opts[Math.floor(Math.random() * opts.length)]) : a0 + Math.PI; if (c.turnTo === a0) c.turnTo = null; }
+    if (c.turnTo != null) { const d = Math.atan2(Math.sin(c.turnTo - c.a), Math.cos(c.turnTo - c.a)); c.a += Math.sign(d) * Math.min(Math.abs(d), 2.4 * dt); c.v = Math.min(c.v, 95); if (Math.abs(d) < .01) { c.a = c.turnTo; c.turnTo = null; } }
+    else { const e = Math.round(Math.cos(c.a)), n = Math.round(Math.sin(c.a)), k = 45 * dt; // ease into the right-hand lane
+      if (e) { const t = Math.floor(c.p.y / block) * block + (e > 0 ? 58 : 22); c.p.y += Math.max(-k, Math.min(k, t - c.p.y)); } else if (n) { const t = Math.floor(c.p.x / block) * block + (n > 0 ? 22 : 58); c.p.x += Math.max(-k, Math.min(k, t - c.p.x)); } }
     const ax = c.p.x + Math.cos(c.a) * 45, ay = c.p.y + Math.sin(c.a) * 45;
-    if (carBlocked(ax, ay) || G.cars.some((o, j) => j !== i && Math.hypot(o.p.x - ax, o.p.y - ay) < 25)) {
-      const d = [0, 1, 2, 3].map(i => i * Math.PI / 2).filter(a => !carBlocked(c.p.x + Math.cos(a) * 45, c.p.y + Math.sin(a) * 45));
-      c.a = d.length ? d[Math.floor(Math.random() * d.length)] : c.a + Math.PI; c.v = 0; lane(c);
-    }
+    if (c.turnTo == null && carBlocked(ax, ay)) { const d = [0, 1, 2, 3].map(i => i * Math.PI / 2).filter(a => !carBlocked(c.p.x + Math.cos(a) * 45, c.p.y + Math.sin(a) * 45)); c.turnTo = d.length ? d[Math.floor(Math.random() * d.length)] : c.a + Math.PI; }
     move(c, dt);
   });
+  if (G.driving === null && !G.knock && !G.carAnim) for (const c of G.cars) { const v = Math.abs(c.v), [lx, ly] = carLocal(c, G.player);
+    if (v > 40 && Math.abs(lx) < 23 && Math.abs(ly) < 13) { const dir = c.v >= 0 ? c.a : c.a + Math.PI, push = Math.min(v, 300) * .8; G.knock = { vx: Math.cos(dir) * push + Math.cos(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, vy: Math.sin(dir) * push + Math.sin(dir + Math.PI / 2) * Math.sign(ly || 1) * push * .4, t: 1.6, dur: 1.6 };
+      c.v *= .25; bang(.5); hurt(Math.min(70, v / 5)); G.z = 0; G.vz = 0; if (G.hp <= 0) { wasted(); return; } break; } }
   if (G.driving !== null) { const c = G.cars[G.driving]; if (Math.abs(c.v) > 120) G.peds.forEach((p, i) => { if (!p.dead && dist(p.p, c.p) < 20) { killPed(i); G.score -= 10; } }); }
   if (living().length < (TOUCH ? 30 : 55)) G.peds.push(sidewalkPed(roadPoint()));
   G.peds = G.peds.filter(p => !p.dead || (p.dead += dt) < 30);
   if (G.cars.filter(c => c.cop).length < [0, 1, 2, 4, 6, 8][G.wanted]) { let p = roadPoint(); while (dist(p, G.player) < 500) p = roadPoint(); G.cars.push({ p, a: 0, v: 0, color: 0x2244cc, cop: true, ai: false, kind: 0, hp: 3 }); }
   for (const c of G.cars) {
     if (!c.cop) continue;
-    const want = Math.atan2(G.player.y - c.p.y, G.player.x - c.p.x), diff = Math.atan2(Math.sin(want - c.a), Math.cos(want - c.a));
+    if ((c.routeT = (c.routeT || 0) - dt) <= 0) { c.routeT = .5; c.wp = dist(c.p, G.player) < 260 && losClear(c.p, G.player) ? null : copRoute(c.p, G.player); if (c.wp && dist(c.p, c.wp) < 30) c.wp = null; }
+    const goal = c.wp || G.player, want = Math.atan2(goal.y - c.p.y, goal.x - c.p.x), diff = Math.atan2(Math.sin(want - c.a), Math.cos(want - c.a));
     c.a += Math.max(-3 * dt, Math.min(3 * dt, diff)); c.v = Math.min(c.v + 300 * dt, 280 + G.wanted * 40); move(c, dt);
     c.gunT = (c.gunT || 0) - dt;
     if (G.wanted >= 2 && c.gunT <= 0 && dist(c.p, G.player) < 260 && losClear(c.p, G.player)) { c.gunT = 1.4 - G.wanted * .15; bang(.35); if (Math.random() < .55) { hurt(G.driving !== null ? 4 : 9); if (G.hp <= 0) { wasted(); return; } } }
@@ -523,11 +565,11 @@ const sunDir = new THREE.Vector3();
 for (let i = 0; i < 9; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(500 + i % 3 * 150, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x405c4d)); m.scale.y = (600 + i % 4 * 180) / (500 + i % 3 * 150); m.position.set(i * 520 - 400, 0, -1500 - i % 2 * 300); scene.add(m); }
 // facades, cached per style: storey grid, a few lit windows. glass = Vancouver's teal condo towers, brick = Gastown and Yaletown, concrete = offices, shop = podium storefronts
 const FACADE = {};
-// photo facades and ground (Higgsfield, img/tex): swapped in over the drawn canvases once each loads; plain white
+// photo facades and ground (Higgsfield, site/materials): swapped in over the drawn canvases once each loads; plain white
 // materials get one of three tints so a street of the same photo still varies. dispose() first: the GPU copy was sized for the 256 px canvas
 const PHOTO = {}, FACE_TEX = {}, FACE_MATS = [], TINT = [0xffffff, 0xece6dc, 0xf6efe6];
 function usePhoto(kind, t) { (FACE_TEX[kind] ||= []).push(t); if (PHOTO[kind]) { t.image = PHOTO[kind]; t.needsUpdate = true; } }
-for (const k of ["glass", "brick", "concrete", "shop", "siding", "stone", "asphalt", "sidewalk"]) new THREE.ImageLoader().load(`img/tex/${k}.jpg`, img => {
+for (const k of ["glass", "brick", "concrete", "shop", "siding", "stone", "asphalt", "sidewalk"]) new THREE.ImageLoader().load(`materials/${k}.jpg`, img => {
   PHOTO[k] = img; (FACE_TEX[k] || []).forEach(t => { t.dispose(); t.image = img; t.needsUpdate = true; }); FACE_MATS.forEach(([kk, v, m]) => { if (kk === k && m.color.getHex() === 0xffffff) m.color.setHex(TINT[v % 3]); }); });
 function facade(kind, v) {
   const key = kind + v; if (FACADE[key]) return FACADE[key];
@@ -1076,18 +1118,19 @@ function carMesh(c, i = 0) {
 let carM = [], pedM = [];
 // ponytail: soldier rig retired, the hero waits for his real body (hero.glb) instead of flashing armour
 const reCrowd = () => { pedM.forEach(m => scene.remove(m)); pedM = []; G.peds.forEach(p => p.m = null); };
-gltf.load("models/hero.glb", g => { JOSH = g; if (G.heroes[G.cur].name === "Joshua") dressHero("Joshua"); }, undefined, e => console.warn("hero body failed", e));
+gltf.load("models/characters/hero.glb", g => { JOSH = g; if (G.heroes[G.cur].name === "Joshua") dressHero("Joshua"); }, undefined, e => console.warn("hero body failed", e));
 // crowd: 12 realistic people (Microsoft Rocketbox, MIT), each with its own walk and idle
 const PEOPLE = ["male_adult_01", "female_adult_01", "male_adult_03", "female_adult_03", "male_adult_05", "female_adult_05", "male_adult_07", "female_adult_07", "male_adult_09", "female_adult_09", "male_adult_11", "female_adult_11"].slice(0, navigator.webdriver ? 2 : TOUCH ? 6 : 12); // automated tests: 2 bodies keep CI fast on GPU-less runners
 const BODY = {}; let peopleReady = false;
-PEOPLE.forEach(n => gltf.load(`models/people/${n}.glb`, g => { BODY[n] = g; CROWD.splice(0, CROWD.length, ...Object.entries(BODY).map(([name, src]) => ({ src, female: name.startsWith("female"), turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "idle" } }))); if (!peopleReady && Object.keys(BODY).length >= Math.min(4, PEOPLE.length)) { peopleReady = true; reCrowd(); } }, undefined, e => console.warn("person failed", n, e)));
+PEOPLE.forEach(n => gltf.load(`models/characters/people/${n}.glb`, g => { BODY[n] = g; CROWD.splice(0, CROWD.length, ...Object.entries(BODY).map(([name, src]) => ({ src, female: name.startsWith("female"), turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "idle" } }))); if (!peopleReady && Object.keys(BODY).length >= Math.min(4, PEOPLE.length)) { peopleReady = true; reCrowd(); } }, undefined, e => console.warn("person failed", n, e)));
 // each hero has a body; Tab swaps it
 let heroReady = false;
 function dressHero(name) {
   const key = HERO_BODY[name], src = key === "hero" ? JOSH : BODY[key]; if (!src) return;
   if (hero.gl) hero.remove(hero.gl); hero.children.forEach(ch => { if (ch !== gun) ch.visible = false; }); hero.body = null; hero.mix = null;
-  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: src.animations[0]?.name, run: src.animations[0]?.name, idle: src.animations[0]?.name } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
-  hero.mix.acts.run = hero.mix.acts.walk; heroReady = true;
+  const clip = (n, or) => (src.animations.find(a => a.name === n) || src.animations.find(a => a.name === or) || src.animations[0])?.name; // Joshua's own idle, walk and run (Higgsfield rig)
+  rigFor(hero, 0xffffff, key === "hero" ? { src, turn: Math.PI / 2, map: { walk: clip("Casual_Walk"), run: clip("Run_02", "Casual_Walk"), idle: clip("Idle", "Casual_Walk") } } : { src, turn: Math.PI / 2, strip: true, map: { walk: "walk", run: "walk", idle: "walk" } });
+  hero.mix.acts.run ??= hero.mix.acts.walk; heroReady = true;
   let hand = null; hero.gl.traverse(o => { if (!hand && o.isBone && /right.?hand$|r.?hand$|R_Hand/i.test(o.name)) hand = o; });
   if (hand) { hand.add(gun); const k = 1 / hero.gl.scale.x; gun.scale.setScalar(k); gun.position.set(0, 4 * k, 1.2 * k); gun.rotation.set(0, 0, -Math.PI / 2); } else { hero.add(gun); gun.scale.setScalar(1); gun.position.set(6, 13.5, 3); }
 }
@@ -1113,9 +1156,9 @@ function plant(url, height, kind, near = 0) {
       ims.forEach(im => { idx.forEach(([, i], j) => put(im, j, P.at[i])); im.count = idx.length; im.instanceMatrix.needsUpdate = true; }); };
   }, undefined, e => console.warn(url + " failed, keeping shapes", e));
 }
-plant("models/tree.glb", 54, "street", 60); plant("models/fir.glb", 100, "firs");
-gltf.load("models/clock.glb", g => { const c = PROPS.clock; if (!c) return; c.children.filter(o => o.isMesh).forEach(o => c.remove(o)); for (const [geo, mt] of glbParts(g.scene, 62)) { mt.metalness = .25; mt.roughness = .6; const m = new THREE.Mesh(geo, mt); m.castShadow = true; c.add(m); } c.children.forEach(o => { if (o.isSprite) o.position.y += 14; }); }, undefined, e => console.warn("clock model failed, keeping shapes", e));
-gltf.load("models/sedan.glb", g => { SEDAN_GLB = g.scene; carM.forEach(m => scene.remove(m)); carM = []; }, undefined, e => console.warn("sedan model failed, keeping shapes", e));
+plant("models/props/tree.glb", 54, "street", 60); plant("models/props/fir.glb", 100, "firs");
+gltf.load("models/props/clock.glb", g => { const c = PROPS.clock; if (!c) return; c.children.filter(o => o.isMesh).forEach(o => c.remove(o)); for (const [geo, mt] of glbParts(g.scene, 62)) { mt.metalness = .25; mt.roughness = .6; const m = new THREE.Mesh(geo, mt); m.castShadow = true; c.add(m); } c.children.forEach(o => { if (o.isSprite) o.position.y += 14; }); }, undefined, e => console.warn("clock model failed, keeping shapes", e));
+gltf.load("models/vehicles/sedan.glb", g => { SEDAN_GLB = g.scene; carM.forEach(m => scene.remove(m)); carM = []; }, undefined, e => console.warn("sedan model failed, keeping shapes", e));
 gltf.load(MODELS + "ferrari.glb", g => { FERRARI = g.scene; carM.forEach(m => scene.remove(m)); carM = []; }, undefined, e => console.warn("car model failed, keeping shapes", e));
 const puffMat = new THREE.SpriteMaterial({ color: 0x555555, transparent: true, opacity: .55, depthWrite: false }), fireMat = new THREE.SpriteMaterial({ color: 0xff7a1a, transparent: true, opacity: .9, depthWrite: false, blending: THREE.AdditiveBlending });
 const boomMesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), new THREE.MeshBasicMaterial({ color: 0xffa040, transparent: true })); boomMesh.visible = false; scene.add(boomMesh);
@@ -1140,8 +1183,12 @@ function sync(now) {
     m.rotation.set(0, -p.a, 0); m.legs.forEach((l, j) => l.rotation.z = Math.sin(p.t + j * Math.PI) * .5); m.arms[1].rotation.z = p.punching > 0 ? 1.5 : 0; });
   const a = G.driving !== null ? G.cars[G.driving].a : G.pa;
   hero.visible = heroReady && G.driving === null; hero.position.set(G.player.x, G.z, G.player.y); hero.rotation.y = -a;
+  const kd = G.knock ? Math.min(1, (G.knock.dur - G.knock.t) * 5, G.knock.t / .45) : 0; hero.rotation.z = kd * Math.PI / 2; // knocked flat, back up over the last half second
   hero.arms[1].rotation.z = performance.now() - (G.punchAt || 0) < 200 ? 1.6 : 0; hero.arms[0].rotation.z = G.weapon ? .9 : 0; gun.visible = !!G.weapon;
-  const moving = G.keys.has("KeyW") || G.keys.has("KeyS") || !!G.carAnim, fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run; if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? 270 : 140) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } hero.mix.mixer.update(1 / 60); } // standing settles on a feet-together walk frame (the model has no idle clip); // run cycle covers ~50 units/s at 1x, match it to real speed
+  const moving = G.keys.has("KeyW") || G.keys.has("KeyS") || !!G.carAnim, fast = G.keys.has("ShiftLeft") || G.keys.has("ShiftRight"); if (hero.mix) { const w = hero.mix.acts.walk || hero.mix.acts.run, A = hero.mix.acts; if (A.idle && A.idle !== w) { // Joshua: idle standing, walk, run on Shift
+      const bk = G.keys.has("KeyS") && !G.keys.has("KeyW"), sp = bk ? BACK : (fast ? SPRINT : JOG) * perk("run"), walking = bk || G.knock || A.run === w;
+      setAnim(hero, !moving || G.knock ? "idle" : walking ? "walk" : "run"); if (A.run !== w) A.run.timeScale = sp / RUN_V; w.timeScale = (bk ? -1 : 1) * sp / (A.run === w ? RUN_V : WALK_V); }
+    else if (hero.mix.acts.run !== w) { setAnim(hero, moving ? "run" : "idle"); const a = hero.mix.acts.run; if (a) a.timeScale = (fast ? 270 : 140) * perk("run") / 50; } else if (w) { w.timeScale = moving ? (fast ? SPRINT : JOG) * perk("run") / 19 : 0; if (!moving) { const D = w.getClip().duration, t = (w.time / D) % 1; w.time = D * (Math.abs(t - .125) < Math.abs(t - .625) ? .125 : .625); } } hero.mix.mixer.update(1 / 60); } // standing settles on a feet-together walk frame (the model has no idle clip); // run cycle covers ~50 units/s at 1x, match it to real speed
   hero.legs.forEach((l, j) => l.rotation.z = moving ? Math.sin(now / (fast ? 55 : 100) + j * Math.PI) * (fast ? .9 : .6) : 0);
   const back = G.driving === null ? 70 : 110, up = G.driving === null ? 38 : 48; let d = back;
   while (d > 12 && solid(G.player.x - Math.cos(a) * d, G.player.y - Math.sin(a) * d)) d -= 6;
