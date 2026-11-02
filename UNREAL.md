@@ -123,3 +123,9 @@ Boot to playable takes a minute or two while tiles stream. Expected.
 - Pants carved from the body mesh in Blender (height band waist 100 to ankle -5, offset 3 cm), imported with Interchange FBX off onto the polo skeleton. Fits badly: needs refit in mission one.
 - Mission one DSL drafts: two chasing Apple employees, gun tutorial.
 - Known gap: city.mjs CI test times out on swiftshader. Body still needs the 6 ft slim rebuild. Polo fits badly. Player visible in Play but pawn spawn broken in packaged build (check GameMode default pawn and PlayerStart).
+
+## Own city and the real Joshua (2026-11-02)
+- The Google tiles are hidden in game. Downtown is our own geometry: `tools/ue_city.py` (headless Blender) builds site/data/downtown.json into 103 textured chunks (storefront band from the business at each address, glass towers, brick, stone, roads, sidewalks, parks, water), imported to /Game/City/Downtown and placed at z -6840, the street height under the Apple Store spawn. Collision is complex-as-simple and double-sided (one-sided walls let the pawn walk through).
+- Joshua is the Higgsfield model from the web game. hero.glb hides a 0.01 armature scale and webp textures; Blender applies the scale (and scales every location key), PNG textures, then `unreal/import_hero.py` imports it and retargets ABP_Unarmed from Manny. The retargeted clips stretched his sweater into a tunic, so the blendspace now points at his own clips (Idle, Casual_Walk, Run_02, Regular_Jump) via consolidate_assets.
+- The construction script (`unreal/character.dsl`) sets Mesh to JoshuaHero_m and the anim class. The MetaHuman pieces are hidden in game.
+- /Game/Characters is mounted from the engine's Templates folder (`/Volumes/LaCie/UE_5.8/Templates/TemplateResources/High/Characters/Content`), so Joshua2 and Retarget assets live there. Copy UE_5.8 whole when moving to the SSD, or move them into /Game/VancouverVice first.
