@@ -1,25 +1,29 @@
-# Vancouver Vice loop handoff (2026-11-01, late night)
+# Vancouver Vice loop handoff (2026-11-01, near midnight)
 
 ## What the loop is
-One self-paced loop with two stages. First, Vancouver Vice (Joshua's model and the city) until A+: each pass screenshots or films the game, fixes the worst thing, tests, commits and deploys. Then the fleet GitHub issues, easiest real fixes first, skipping joshuatree (another session owns it).
+Build the whole Vancouver map out to A+ while QAing free roam: walk and drive every neighbourhood, screenshot it, fix the worst thing, test, commit, deploy, send Joshua the screenshots. Every landmark has a Higgsfield reference render; QA each one in game against its render until it holds up. "0 polygons" from Joshua means nothing should look blocky or faceted: smooth, sharp, real models where shapes fall short. Fleet GitHub issues come after (skip joshuatree).
 
 ## Where things stand
-A new game opens mid-heist inside the store on Georgia: grab six Mac minis, the staff in blue shirts chase you out, one star, jack a car. The whole story is in `site/js/data.js` and `docs/STORY.md`: twenty jobs in three acts, tied together by Dmitri's forty grand. Colin, a fictional McDonald's manager, launders Dmitri's cash through the night deposit, leaves Club Velvet with your girl, and turns out to own Dad's hard drive. Between jobs the city is free roam with yellow job markers (Joshua at the Steam Clock, Ben at Dad's garage, Alexandre in Victoria, all three at the garage). Scene jobs (`kind: "meet"`) play a card when you reach the place.
+Shipped tonight: the heist opening, free roam with job markers, the full twenty-job story (Dmitri, Colin, Dad's hard drive), car entry and exit animations, solid furniture, the dark Club Velvet, city pass 1 (Kits houses, Victoria masonry, Stanley Park firs on grass, no centre lines or crosswalks in residential streets).
 
-Walk-in rooms (ROOMS in play.html, furniture footprints in BLOCKS): Granville Pawn, the store on Georgia, Dad's garage, the McDonald's on Granville, Club Velvet. Furniture is solid and movement slides along walls. Getting in a car walks you to the driver's door first; a jacked driver lands on the sidewalk. Staff and Colin wear uniforms on the crowd bodies through a shader shell (`wear()`); standing people hold the walk clip on a feet-together frame because the crowd's idle clip is a bind pose.
+Testing then shipping (commit "Real cars, bridges, the seawall, the SkyTrain and Waterfront Station"): the Higgsfield sedan model (`site/models/sedan.glb`, 1.2 MB, tinted per car; the procedural extruded sedan is the fallback), Lions Gate towers and cables, Burrard pylons and truss, the Stanley Park seawall, the Expo Line guideway on Main Street with a station and two trains, Waterfront Station, `docs/LANDMARKS.md`.
 
-Key art from Higgsfield (gpt_image_2_5, 0.25 credits each, on the brand: night, rain, near-black, one red accent) is in `docs/img/render-*.jpg`. Joshua's face reference is media 3758a544. A QA film script lives in the session scratchpad (film.mjs); playwright's ffmpeg is installed.
+Written, not applied yet: `lm2.py` in the session scratchpad rebuilds the weak landmarks (Canada Place sails plus a cruise ship, a real Steam Clock with steam, the Art Gallery portico and dome, Rogers Arena glass drum with the red ring, Granville Island tin sheds and silos, the BC Legislature with its dome and lit outline). Apply it after the current test run lands, then QA with the landmark shot script (`lm.mjs` in the scratchpad: one camera per landmark, copy it into tests/ to run it so playwright resolves). If the scratchpad is gone, rebuild those landmarks from `docs/LANDMARKS.md` and the renders.
 
-Colin stays fictional: no disability angle and no likeness from real photos (Joshua asked; declined under the satire rule in CLAUDE.md).
+Landmark map and status: `docs/LANDMARKS.md`. Reference renders: `docs/img/landmark-*.jpg` (13) and story art `docs/img/render-*.jpg`.
+
+Higgsfield, from Joshua tonight: renders are fine to make (0.25 credits each, gpt_image_2_5, on the brand: night, rain, near-black, one red #e0362c accent). He said use Higgsfield "a little" for 3D models: image_to_3d is 30 credits textured; one was spent on the sedan. Ask before more 3D models. Shrink every GLB's textures with the PIL script approach (1024 JPEG) before shipping. Joshua's face reference is media 3758a544.
+
+Rules learned: never edit play.html while a background test-and-commit of it is running; syntax check the module script with `node --check` before every run; a module-level const used in the block loop must be declared before line ~650 (puffMat is not); camera shots inside buildings are framing errors, not game bugs.
 
 ## Next, in order
-1. Ship check: the commit for story, car animations, solid furniture and the dark club runs after `node tests/web.mjs` passes.
-2. Film a fresh QA video and fix what looks worst: the Harbour Centre and Gastown street shots clipped into buildings, the store staff can get stuck behind tables when chasing.
-3. Story jobs that are still generic (taxi and deliver stand-ins for Kits Beach, the Ferry, the Score): give each its own place and beat like the heist and the club.
-4. Dad and Mom models once Joshua sends photos (ask before any Higgsfield spend).
-5. Fleet issues: Nimble 37 (13 accessibility audit findings), Talli 91 needs a human translator, then Noema and Nimble long range.
+1. Land the current test run, apply `lm2.py`, QA every landmark again, send shots, ship.
+2. Remaining landmark gaps from LANDMARKS.md: BC Place red glow and roof cables, Harbour Centre lifts lit, SeaBus at Waterfront, Brockton Point totems, Kits Pool.
+3. Downtown streets still look the same everywhere: vary the podium towers, add street furniture (bus shelters, lamp posts, hydro poles in Kits), and the street trees are lollipops (icosahedron crowns), make them round and leafy.
+4. More 3D models only with Joshua's yes (a SkyTrain car, a bus).
+5. Fleet issues: Nimble 37 (13 accessibility audit findings), Talli 91 needs a human translator.
 
 ## Restart prompt
 ```
-/loop until Vancouver Vice (Joshua's model and the city) is A+, then until all fleet GitHub issues are resolved by code fix and closed (skip joshuatree, the other session owns it). Make every decision; Joshua is only needed for 2FA codes. Ask before any Higgsfield spend.
+/loop qa free roam until entire Vancouver map built out a+quality etcetera. Every landmark against its Higgsfield render in docs/img until it holds up; read docs/LOOP-HANDOFF.md first. Send screenshots as you go. Ask before any Higgsfield 3D model.
 ```

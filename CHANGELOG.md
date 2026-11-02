@@ -3,6 +3,12 @@
 All the releases, newest first. Every version is tagged on GitHub with builds attached.
 
 ## 1.27 (unreleased)
+The landmarks look like themselves. A real Gastown Steam Clock with four faces and steam, brick warehouses on Water Street, the Art Gallery's portico and dome, Rogers Arena in glass with its red ring, BC Place with masts, Granville Island's tin sheds and silos, Canada Place with taller sails, the BC Legislature with its green dome.
+Real models from Higgsfield: the Gastown Steam Clock, Douglas firs through Stanley Park, and full street trees on the blocks around you (smooth leafy crowns farther out).
+Photo facades: glass towers, concrete offices, a row of real shopfronts with awnings, Gastown brick, Victoria sandstone, Kits siding, real asphalt and sidewalk slabs.
+Street furniture: lamp posts over every road, yellow hydrants on the corners, bus shelters with benches.
+Fixes: getting busted or wasted mid car entry no longer drags you back into the car; reloading can't pay the night deposit twice; a swap or fast travel with Macs in the bag no longer sets off the heist; the McDonald's door no longer drops you in the pawn shop; Colin's car can't be stolen mid-tail; staff, Colin and dancers stay at their posts; the next job no longer starts under your feet; cars are no longer all rebuilt every time a cop spawns.
+Real cars and bridges: the everyday car is a real 3D sedan, Lions Gate and Burrard have their towers, cables and trusses, the seawall rings Stanley Park, the Expo Line runs above Main Street, and Waterfront Station has its colonnade.
 The whole story, start to finish: twenty jobs in three acts. Dmitri's forty grand ties it together, Colin launders Dmitri's cash through the McDonald's night deposit, and the running joke pays off: Joshua pawned his dad's hard drive years ago and gets it back from Colin. New scene jobs play when you reach the place (Dmitri's co-working space, Colin's place, the plan in Dad's garage), and the all-three jobs start at the garage with any hero.
 Getting in and out of cars takes a beat: walk to the driver's door, thunk, slide in. Jack a car with someone in it and the driver ends up on the sidewalk yelling. You step clear of the door on the way out.
 No more walking through tables, counters, bars or Dad's truck, and you slide along walls instead of stopping dead.
