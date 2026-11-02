@@ -9,6 +9,9 @@ Joshua fights and falls like a person: a real jab on F, a crouch-and-spring jump
 Joshua draws and fires his pistol on the move, and on WASTED he takes the hit and falls where he stood before waking up at the hospital. Standing around, he shifts his weight now and then.
 Brookswood, south Langley, on real streets (fast travel): every real building footprint (Overture Maps), houses with photo siding, shingled roofs, garages, front doors and driveways, photo Douglas firs, red cedars and bigleaf maples, photo lawns and asphalt, the Brookswood Village strip mall with its parking lots and real shop signs, Mount Baker and Golden Ears at their true bearings.
 Brookswood landmarks built by hand from aerial photos: a 40 Avenue duplex row, the Apostolic Faith Church on 207 Street, the Chevron at 208 Street and 40 Avenue, and Brookswood Secondary with its tennis courts.
+On the real streets Joshua stands in his own idle, jogs on W and sprints on Shift at the pace of his stride, instead of a sped-up walk.
+People walk the sidewalks of Brookswood: scanned bodies at their natural pace, hips bobbing, arms at their sides. Everyday sedans in real car colours drive whole streets end to end, four times as many on 200 Street and 40 Avenue as on a side street.
+The Apostolic Faith Church is cream stucco with tall bronze windows under a narrower raised sanctuary, matched to the aerial photo.
 BC Place wears its red LED band and roof cables; Harbour Centre's two lit glass lifts ride up and down the tower.
 Physics: a car at speed knocks you flat and you get back up; your car stops on other cars instead of driving through them.
 Traffic thinks: cars brake and honk for you and for pedestrians, queue behind each other, pick a way at every intersection, turn through it smoothly and hold the right-hand lane.

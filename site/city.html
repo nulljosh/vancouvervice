@@ -23,6 +23,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
 import { Sky } from "three/addons/objects/Sky.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
@@ -120,7 +121,7 @@ if (SUBURB) {
     if (cx > L.box[0] && cx < L.box[2] && cz > L.box[1] && cz < L.box[3]) { b.school = true; delete b.house; } }
   for (const L of LANDMARKS.filter(L => L.W)) { const clear = [rect(L.x, L.z, 0, L.W + 2, L.D + 2), ...(L.store ? [rect(L.store[0], L.store[1], 0, L.store[2] + 2, L.store[3] + 2)] : [])].map(p => ({ p }));
     D.buildings = D.buildings.filter(b => !clear.some(f => b.p.some(([x, z]) => inside(f, x, z)) || (b.p.length >= 3 && inside(b, f.p[0][0] / 2 + f.p[2][0] / 2, f.p[0][1] / 2 + f.p[2][1] / 2))));
-    if (L.kind === "church") { D.buildings.push({ p: rect(L.x, L.z, 0, L.W, L.D), h: 4.2, hall: true }); D.buildings.push({ p: [], h: 6.6, house: { cx: L.x, cz: L.z, a: Math.PI / 2, W: 17, D: 12, rise: 3.8, color: 0xece6da }, unit: "nave", bare: true }); }
+    if (L.kind === "church") { D.buildings.push({ p: rect(L.x, L.z, 0, L.W, L.D), h: 4.2, hall: true }); D.buildings.push({ p: [], h: 6.6, house: { cx: L.x, cz: L.z, a: Math.PI / 2, W: 14, D: 10, rise: 3.4, color: 0xece6da }, unit: "nave", bare: true }); }
     if (L.kind === "gas") { const [sx, sz, sw, sd] = L.store, c = 5; D.buildings.push({ p: [[sx - sw / 2, sz - sd / 2], [sx + sw / 2, sz - sd / 2], [sx + sw / 2, sz + sd / 2 - c], [sx + sw / 2 - c, sz + sd / 2], [sx - sw / 2, sz + sd / 2]], h: 5.5, store: true }); D.buildings.push({ p: rect(L.x, L.z, 0, L.W, L.D), h: 0, canopy: true }); } }
   for (const [cx, cz, a, W, Dp, h, units] of BUILT) { const foot = { p: rect(cx, cz, a, W, Dp) }; D.buildings = D.buildings.filter(b => !b.p.some(([x, z]) => inside(foot, x, z)) && !inside(b, cx, cz));
     D.buildings.push({ p: foot.p, h, house: { cx, cz, a, W, D: Dp, hip: true, porch: true, rise: 5.2, color: 0xd4d0c8 }, bare: true });
@@ -140,7 +141,7 @@ if (SUBURB) {
   console.log("suburb:", D.buildings.length - n0, "houses filled in on empty lots,", D.buildings.filter(b => b.house).length, "houses in all");
 }
 // a house: sided walls with windows, gable ends, a shingled roof with eaves; one merged mesh each for every wall and every roof
-const schoolG = [], houseWalls = [], houseRoofs = [], garageG = [], doorG = [], drivewayG = [], stuccoG = [], stripG = [], condoG = [], capG = [];
+const schoolG = [], churchG = [], houseWalls = [], houseRoofs = [], garageG = [], doorG = [], drivewayG = [], stuccoG = [], stripG = [], condoG = [], capG = [];
 function stripWalls(b, n, into) { // walls as quads with UVs in metres along the wall and up it, plus a flat roof
   const h = b.hall ? b.h : b.school ? (b.h !== 9 ? b.h : 7.5) : b.h <= 9 ? 5.5 : b.h === 18 ? 11.2 : b.h, /* OSM guesses 18 m for any untagged apartment; out here they are three storeys */ pos = [], uv = []; let run = 0;
   for (let i = 0; i < b.p.length; i++) { const [ax, az] = b.p[i], [bx, bz] = b.p[(i + 1) % b.p.length], L = Math.hypot(bx - ax, bz - az); if (L < .01) continue;
@@ -179,7 +180,7 @@ function houseGeo(b, n) {
 D.buildings.forEach((b, n) => {
   if (b.unit) { houseGeo(b, n); return; }
   if (b.canopy || b.p.length < 3) return;
-  if (b.hall) stripWalls(b, n, condoG); else if (b.school) stripWalls(b, n, schoolG); else if (b.house) houseGeo(b, n); else if (SUBURB) stripWalls(b, n); else {
+  if (b.hall) stripWalls(b, n, churchG); else if (b.school) stripWalls(b, n, schoolG); else if (b.house) houseGeo(b, n); else if (SUBURB) stripWalls(b, n); else {
   const shape = new THREE.Shape(b.p.map(([x, z]) => new THREE.Vector2(x, -z)));
   const band = Math.min(4.2, b.h);
   if (!heroSkip.has(n)) { const g0 = new THREE.ExtrudeGeometry(shape, { depth: band, bevelEnabled: false }); g0.rotateX(-Math.PI / 2); shopG.push(g0); }
@@ -208,6 +209,8 @@ if (houseWalls.length) { // lap siding with a window every 6 m, shingles; vertex
 if (stripG.length) { const mk = (gs, mat) => { const m = new THREE.Mesh(mergeGeometries(gs), mat); m.castShadow = m.receiveShadow = true; scene.add(m); };
   const strip = photo("stripmall", 1); strip.repeat.set(1 / 17.3, 1 / 5.5); const condo = photo("siding", 1); condo.repeat.set(1 / 6, 1 / 5.6);
   mk(stripG, new THREE.MeshStandardMaterial({ map: strip, roughness: .6, side: THREE.DoubleSide })); if (condoG.length) mk(condoG, new THREE.MeshStandardMaterial({ map: condo, color: 0xe6dccb, roughness: .8, side: THREE.DoubleSide }));
+  const wallTex = (f, h) => new THREE.TextureLoader().load(`materials/${f}.jpg`, t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.repeat.set(1 / (h * t.image.width / t.image.height), 1 / h); t.needsUpdate = true; });
+  if (churchG.length) mk(churchG, new THREE.MeshStandardMaterial({ map: wallTex("churchwall", 4.2), roughness: .9, side: THREE.DoubleSide })); // cream stucco, tall bronze windows, wood fascia
   if (schoolG.length) mk(schoolG, new THREE.MeshStandardMaterial({ map: new THREE.TextureLoader().load("materials/school.jpg", t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.repeat.set(1 / (7.5 * t.image.width / t.image.height), 1 / 7.5); t.needsUpdate = true; }), roughness: .8, side: THREE.DoubleSide }));
   mk(capG, new THREE.MeshStandardMaterial({ color: 0x8d8a84, roughness: 1 })); }
 if (stuccoG.length) { const m = new THREE.Mesh(mergeGeometries(stuccoG), new THREE.MeshStandardMaterial({ color: 0xd9cdb6, roughness: .9 })); m.castShadow = m.receiveShadow = true; scene.add(m); }
@@ -463,19 +466,48 @@ const hero = new THREE.Group(); scene.add(hero); let mixer = null, acts = {}, cu
 gl.load("models/characters/hero.glb", g => {
   const s = g.scene; s.updateMatrixWorld(true); const h = new THREE.Box3().setFromObject(s).getSize(new THREE.Vector3()).y || 1; s.scale.multiplyScalar(1.8 / h); s.rotation.y = Math.PI / 2;
   s.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } }); hero.add(s);
-  mixer = new THREE.AnimationMixer(s); const walk = mixer.clipAction(g.animations[0]); acts = { walk, run: walk, idle: walk }; walk.play();
+  mixer = new THREE.AnimationMixer(s); const clip = (...n) => g.animations.find(a => n.includes(a.name)) || g.animations[0];
+  acts = { walk: mixer.clipAction(clip("Casual_Walk")), run: mixer.clipAction(clip("Run_02", "Casual_Walk")), idle: mixer.clipAction(clip("Idle")), idle2: mixer.clipAction(clip("Idle_02", "Idle")) }; acts.idle.play(); cur = "idle";
 }, undefined, e => console.warn("hero model failed", e));
 const carG = new THREE.Group(); scene.add(carG);
 // traffic: cars drive the real road centre lines, keeping right, turning around at the ends
-const traffic = [], CAR_COLORS = [0xc0392b, 0x1f3a5f, 0xeeeeee, 0x222222, 0xf2c21b, 0x7f8c8d, 0x2e7d32];
-const lanes = D.roads.filter(r => r.w >= 8 && r.k !== "footway" && r.k !== "pedestrian" && r.p.length >= 2).map(r => { let L = 0; const seg = []; for (let i = 1; i < r.p.length; i++) { const l = Math.hypot(r.p[i][0] - r.p[i - 1][0], r.p[i][1] - r.p[i - 1][1]); seg.push(l); L += l; } return { r, seg, L }; }).filter(l => l.L > 120);
-function laneAt(l, d, dir) { let i = 0; while (i < l.seg.length - 1 && d > l.seg[i]) { d -= l.seg[i]; i++; } const a = l.r.p[i], b = l.r.p[i + 1], t = Math.min(1, d / l.seg[i]), dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz) || 1, off = l.r.w / 4 * dir; return { x: a[0] + dx * t - dz / len * off, z: a[1] + dz * t + dx / len * off, a: Math.atan2(dz, dx) + (dir < 0 ? Math.PI : 0) }; }
-gl.load(MODELS + "ferrari.glb", g => {
-  const near = lanes.filter(l => Math.hypot(l.r.p[0][0], l.r.p[0][1]) < 700); for (let i = 0; i < Math.min(140, near.length * 3); i++) { const l = near[Math.floor(Math.random() * near.length)], c = g.scene.clone(true); c.rotation.y = Math.PI / 2; const col = CAR_COLORS[i % CAR_COLORS.length]; c.traverse(o => { if (o.isMesh) { o.castShadow = true; if (o.name === "body") o.material = new THREE.MeshPhysicalMaterial({ color: col, metalness: .5, roughness: .25, clearcoat: 1 }); } }); const bd = c.getObjectByName("body"); if (bd) bd.material = new THREE.MeshPhysicalMaterial({ color: col, metalness: .5, roughness: .25, clearcoat: 1 }); const grp = new THREE.Group(); grp.add(c); scene.add(grp); traffic.push({ g: grp, l, d: Math.random() * l.L, dir: Math.random() < .5 ? 1 : -1, v: 8 + Math.random() * 6 }); }
+const traffic = [], CAR_COLORS = [0xf2f2f2, 0x1c1c1e, 0xa8adb3, 0x5c6066, 0x1f3a5f, 0x8e1b1b, 0xe8e4da, 0x2f4a3a]; // what a BC street actually parks: white, black, silver, grey, navy, red
+// OSM cuts a street at every crossing; join the pieces of each named street end to end so a car drives the whole of 200 St, not one block
+const chains = (() => { const rs = D.roads.filter(r => r.w >= 8 && r.k !== "footway" && r.k !== "pedestrian" && r.p.length >= 2).map(r => ({ ...r, p: r.p.slice() })), out = [], near = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) < 1.5;
+  while (rs.length) { const c = rs.pop(); let grown = true; while (grown && c.n) { grown = false; for (let i = 0; i < rs.length; i++) { const r = rs[i]; if (r.n !== c.n) continue; const a = c.p, b = r.p;
+      if (near(a.at(-1), b[0])) c.p = a.concat(b.slice(1)); else if (near(a.at(-1), b.at(-1))) c.p = a.concat(b.slice(0, -1).reverse()); else if (near(a[0], b.at(-1))) c.p = b.concat(a.slice(1)); else if (near(a[0], b[0])) c.p = b.slice().reverse().concat(a.slice(1)); else continue;
+      rs.splice(i, 1); grown = true; break; } } out.push(c); } return out; })();
+const lanes = chains.map(r => { let L = 0; const seg = []; for (let i = 1; i < r.p.length; i++) { const l = Math.hypot(r.p[i][0] - r.p[i - 1][0], r.p[i][1] - r.p[i - 1][1]); seg.push(l); L += l; } return { r, seg, L }; }).filter(l => l.L > 120);
+function laneAt(l, d, dir, side) { let i = 0; while (i < l.seg.length - 1 && d > l.seg[i]) { d -= l.seg[i]; i++; } const a = l.r.p[i], b = l.r.p[i + 1], t = Math.min(1, d / l.seg[i]), dx = b[0] - a[0], dz = b[1] - a[1], len = Math.hypot(dx, dz) || 1, off = (side ?? l.r.w / 4) * dir; return { x: a[0] + dx * t - dz / len * off, z: a[1] + dz * t + dx / len * off, a: Math.atan2(dz, dx) + (dir < 0 ? Math.PI : 0) }; }
+// arterials (200 St, 40 Ave) get four times the cars of a side street
+const busy = () => { const near = lanes.filter(l => l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 900)); return near.flatMap(l => l.r.w >= 12 ? [l, l, l, l] : [l]); };
+gl.load("models/vehicles/sedan.glb", g => {
+  const src = g.scene; src.updateMatrixWorld(true); const bb = new THREE.Box3().setFromObject(src), sz = bb.getSize(new THREE.Vector3()), k = 4.8 / Math.max(sz.x, sz.z), long = sz.x >= sz.z; // nose along +x, 4.8 m long, wheels on the road
+  const pool = busy(); for (let i = 0; i < Math.min(90, pool.length * 2); i++) { const l = pool[Math.floor(Math.random() * pool.length)], c = src.clone(true), col = new THREE.Color(CAR_COLORS[i % CAR_COLORS.length]);
+    c.scale.setScalar(k); c.rotation.y = long ? 0 : Math.PI / 2; c.position.y = -bb.min.y * k; c.traverse(o => { if (o.isMesh) { o.castShadow = true; o.material = o.material.clone(); if (o.material.color) o.material.color = new THREE.Color(0xffffff).lerp(col, .75); } });
+    const grp = new THREE.Group(); grp.add(c); scene.add(grp); traffic.push({ g: grp, l, d: Math.random() * l.L, dir: Math.random() < .5 ? 1 : -1, v: l.r.w >= 12 ? 13 + Math.random() * 4 : 8 + Math.random() * 4 }); }
 });
+// people on the sidewalks: scanned Rocketbox bodies walking the real streets, each on its own side, turning back at the ends
+const walkers = [], PEOPLE = ["male_adult_01", "female_adult_01", "male_adult_03", "female_adult_03", "male_adult_05", "female_adult_05", "male_adult_07", "female_adult_07"].slice(0, navigator.webdriver ? 2 : 8);
+function placeWalker(w) { const near = lanes.filter(l => l.r.p.some(([x, z]) => Math.hypot(x - S.p.x, z - S.p.y) < 220)), l = near[Math.floor(Math.random() * near.length)]; if (!l) return; w.l = l; w.d = Math.random() * l.L; w.dir = Math.random() < .5 ? 1 : -1; w.side = (l.r.w / 2 + (SUBURB && l.r.k === "residential" ? .8 : 1.6)) * (Math.random() < .5 ? 1 : -1); }
+PEOPLE.forEach(n => gl.load(`models/characters/people/${n}.glb`, g => { for (let i = 0; i < 4; i++) { const s = SkeletonUtils.clone(g.scene); s.updateMatrixWorld(true); const h = new THREE.Box3().setFromObject(s).getSize(new THREE.Vector3()).y || 1;
+  s.scale.multiplyScalar((1.62 + Math.random() * .22) / h); s.rotation.y = Math.PI / 2; s.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+  let clip = g.animations.find(a => a.name === "walk") || g.animations[0]; if (!clip) return; clip = clip.clone(); const root = clip.tracks.find(t => t.name === "Bip01.position"); let stride = 1.3;
+  if (root) { root.values = root.values.slice(); const n = root.values.length / 3, scale = s.scale.y / (g.scene.scale.y || 1); stride = (root.values[(n - 1) * 3 + 2] - root.values[2]) / clip.duration * scale; for (let i = 0; i < n; i++) root.values[i * 3 + 2] = root.values[2]; } // walk in place but keep the hip bob; the game moves them at the clip's own pace
+  const m = new THREE.AnimationMixer(s); m.clipAction(clip).play(); m.setTime(Math.random() * 2); const grp = new THREE.Group(); grp.add(s); scene.add(grp); const w = { g: grp, m, stride, v: stride * (.92 + Math.random() * .14), arms: ["L", "R"].map(k => [s.getObjectByName(`Bip01_${k}_UpperArm`), s.getObjectByName(`Bip01_${k}_Forearm`)]).filter(([a, b]) => a && b) }; placeWalker(w); walkers.push(w); } }, undefined, e => console.warn("person failed", n, e)));
+// the scanned walk holds the arms out in an A pose: after each step, swing each upper arm (in the plane across the body) back down to hang by the hip; the forward swing stays
+const AV = [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()], AQ = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()], DOWN = new THREE.Vector3(0, -1, 0);
+function dropArms(w) { w.g.updateMatrixWorld(true); const [f, a, b, out] = AV, [q, qb, qp] = AQ; f.set(1, 0, 0).applyQuaternion(w.g.quaternion);
+  for (const [up, fore] of w.arms) { up.getWorldPosition(a); fore.getWorldPosition(b); b.sub(a); b.addScaledVector(f, -b.dot(f)).normalize();
+    out.subVectors(a, w.g.position); out.addScaledVector(f, -out.dot(f)); out.y = 0; out.normalize().multiplyScalar(.14).add(DOWN).normalize();
+    q.setFromUnitVectors(b, out); up.getWorldQuaternion(qb); up.parent.getWorldQuaternion(qp); up.quaternion.copy(qp.invert().multiply(q.multiply(qb))); } }
+function walkTick(dt) { for (const w of walkers) { if (!w.l) continue; w.d += w.v * dt * w.dir; if (w.d > w.l.L || w.d < 0) w.dir *= -1; w.d = Math.max(0, Math.min(w.l.L, w.d)); const q = laneAt(w.l, w.d, 1, w.side);
+  if (Math.hypot(q.x - S.p.x, q.z - S.p.y) > 260) { placeWalker(w); continue; } w.g.position.set(q.x, inRoom ? -100 : 0, q.z); w.g.rotation.y = -(q.a + (w.dir < 0 ? Math.PI : 0)); w.m.update(dt * w.v / w.stride); if (Math.hypot(q.x - cam.position.x, q.z - cam.position.z) < 90) dropArms(w); } }
 gl.load(MODELS + "ferrari.glb", g => { const c = g.scene; c.rotation.y = Math.PI / 2; c.traverse(o => { if (o.isMesh) o.castShadow = true; }); const b = c.getObjectByName("body"); if (b) b.material = new THREE.MeshPhysicalMaterial({ color: 0xc0392b, metalness: .5, roughness: .25, clearcoat: 1 }); carG.add(c); });
 window.PERSON = (tintHex) => { const g = new THREE.Group(); const src = hero.children[0]; if (src) { const c = src.clone(true); if (tintHex) c.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color = new THREE.Color(0xffffff).lerp(new THREE.Color(tintHex), .7); } }); g.add(c); } return g; };
-function play(n, speed = 0) { if (!mixer || !acts.walk) return; acts.walk.timeScale = n === "idle" ? 0 : Math.abs(speed) / 1.45 * Math.sign(speed || 1); if (n === "idle" && cur !== "idle") acts.walk.time = .2; cur = n; } // Mixamo walk covers ~1.45 m per cycle-second: feet match the ground
+// his own clips at the speed his feet cover: the jog (Run_02) covers 3.8 m/s at 1x, the casual walk 0.72 m/s; standing is his idle, with a weight shift now and then
+function play(n, speed = 0) { if (!mixer || !acts.idle) return; if (n === "idle" && performance.now() % 24000 > 17000) n = "idle2"; if (n !== cur) { acts[cur]?.fadeOut(.25); acts[n].reset().fadeIn(.25).play(); cur = n; }
+  if (n === "run") acts.run.timeScale = speed / 3.8; if (n === "walk") acts.walk.timeScale = speed / .72; }
 
 // start on Granville at Georgia, facing north toward the harbour; nudge onto open ground if the survey puts us in a lobby
 const S = { p: new THREE.Vector2(0, 0), a: -Math.PI / 2, driving: false, car: { p: new THREE.Vector2(6, 4), a: -Math.PI / 2, v: 0 }, keys: new Set(), dx: 0 };
@@ -498,11 +530,11 @@ function frame(now) {
     S.p.copy(c.p); S.a = c.a;
   } else {
     S.a += ((r ? 1 : 0) - (l ? 1 : 0)) * 2.2 * dt + S.dx * .004; S.dx = 0;
-    const sp = (f ? (k("ShiftLeft") ? 7 : 3.2) : 0) - (b ? 1.6 : 0), nx = S.p.x + Math.cos(S.a) * sp * dt, nz = S.p.y + Math.sin(S.a) * sp * dt;
-    if (!solidAny(nx, nz)) S.p.set(nx, nz); play(sp ? "walk" : "idle", sp);
+    const sp = (f ? (k("ShiftLeft") ? 6.4 : 3.8) : 0) - (b ? 1.1 : 0), nx = S.p.x + Math.cos(S.a) * sp * dt, nz = S.p.y + Math.sin(S.a) * sp * dt;
+    if (!solidAny(nx, nz)) S.p.set(nx, nz); play(sp > 0 ? "run" : sp < 0 ? "walk" : "idle", sp);
   }
   if (window.SIG) { const ph = Math.floor(now / 1000) % 12, on = ph < 5 ? 2 : ph < 7 ? 1 : 0; SIG.forEach((l, k) => l.material.color.setHex(k === on ? [0xff3b30, 0xffc400, 0x34c759][k] : 0x222222)); }
-  netTick(); copTick(dt, now); trainTick(dt); jobTick();
+  netTick(); copTick(dt, now); trainTick(dt); jobTick(); walkTick(dt);
   for (const c of traffic) { c.d += c.v * dt * c.dir; if (c.d > c.l.L) { c.d = c.l.L; c.dir = -1; } if (c.d < 0) { c.d = 0; c.dir = 1; } const q = laneAt(c.l, c.d, c.dir); c.g.position.set(q.x, inRoom ? -100 : 0, q.z); c.g.rotation.y = -q.a;
     if (S.driving && Math.abs(S.car.v) > 12 && Math.hypot(q.x - S.p.x, q.z - S.p.y) < 3) { S.car.v *= -.3; c.v = 0; P.stars = Math.max(P.stars, 1); P.starT = 20; toast("Crash! One star"); }
     if (!S.driving && !inRoom && Math.hypot(q.x - S.p.x, q.z - S.p.y) < 1.6) { P.hp -= 25; S.p.x -= Math.sin(q.a) * 2; S.p.y += Math.cos(q.a) * 2; toast("Hit by a car. Look both ways"); if (P.hp <= 0) { P.hp = 100; toast("Wasted"); } } }
@@ -594,5 +626,5 @@ function copTick(dt, now) {
   }
   if (P.stars && seen) P.starT = Math.max(P.starT, 20);
 }
-window.S = S; window.GL = { R, scene, cam }; window.solid = solid; window.others = others; window.traffic = traffic; window.cops = cops; window.enter = enter; window.punch = punch; window.rob = rob; window.P = P; window.actorsNow = () => actors; window.leave = leave; window.poisIn = poisIn; window.inRoomState = () => inRoom;
+window.S = S; window.GL = { R, scene, cam }; window.solid = solid; window.others = others; window.traffic = traffic; window.walkers = walkers; window.cops = cops; window.enter = enter; window.punch = punch; window.rob = rob; window.P = P; window.actorsNow = () => actors; window.leave = leave; window.poisIn = poisIn; window.inRoomState = () => inRoom;
 </script></body></html>
