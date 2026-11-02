@@ -20,8 +20,8 @@ We take one area to A+ before starting the next: real street names, every landma
 | 9 | White Rock and South Surrey | 49.0200, -122.8020 | beach town | live: the pier, the White Rock, a sand beach, Overture footprints |
 | 10 | Burnaby, Metrotown | 49.2260, -123.0030 | downtown | live: towers on photo facades, SkyTrain guideway, Overture footprints |
 | 11 | New Westminster | 49.2010, -122.9120 | town centre | live: the Fraser waterfront, Pier West towers, Overture footprints |
-| 12 | Richmond Centre and Steveston | 49.1255, -123.1840 | suburb and village | next: Steveston first |
-| 13 | North Vancouver, Lonsdale | 49.3200, -123.0730 | town centre | |
+| 12 | Richmond Centre and Steveston | 49.1255, -123.1840 | suburb and village | live: Steveston, heritage Moncton Street, the cannery and shipyard halls; Richmond Centre still to do |
+| 13 | North Vancouver, Lonsdale | 49.3200, -123.0730 | town centre | next |
 | 14 | West Vancouver, Ambleside | 49.3270, -123.1550 | beach town | |
 | 15 | Coquitlam, Port Moody, Port Coquitlam | 49.2840, -122.7930 | suburb | |
 | 16 | Delta: Ladner and Tsawwassen | 49.0890, -123.0820 | village | |

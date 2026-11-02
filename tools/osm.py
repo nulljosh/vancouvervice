@@ -1,6 +1,6 @@
 """Export OSM buildings, roads, parks, POIs and coastal water in local metres.
 
-Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown. +x east, +y south.
+Run: python3 tools/osm.py --area downtown|kits|victoria|langley|harrison|brookswood|fortlangley|walnutgrove|surrey|cloverdale|whiterock|metrotown|newwest|steveston. +x east, +y south.
 Downtown also writes vancouver.json for the existing city page.
 """
 import argparse, json, math, urllib.request, urllib.parse, pathlib
@@ -20,6 +20,8 @@ AREAS = {
     "cloverdale": ((49.1060, -122.7330), (49.0980, -122.7470, 49.1140, -122.7190)),  # 176 Street at 57 Avenue, old Cloverdale
     "whiterock": ((49.0200, -122.8020), (49.0120, -122.8160, 49.0280, -122.7880)),  # Marine Drive above the pier, White Rock
     "metrotown": ((49.2260, -123.0030), (49.2180, -123.0170, 49.2340, -122.9890)),  # Kingsborough at Metrotown station, Burnaby
+    "newwest": ((49.2010, -122.9120), (49.1930, -122.9260, 49.2090, -122.8980)),  # Columbia Street at 8th Street, New Westminster, on the Fraser
+    "steveston": ((49.1255, -123.1840), (49.1175, -123.1980, 49.1335, -123.1700)),  # Moncton Street and the wharf, Steveston, Richmond
 }
 
 
