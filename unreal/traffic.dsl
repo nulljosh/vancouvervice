@@ -12,8 +12,10 @@
     (bind rot (Math|Interpolation|RInterpTo (Transformation|GetActorRotation) (Math|Rotator|MakeRotator :Roll 0.0 :Pitch 0.0 :Yaw (.yaw look)) DeltaSeconds 4.0))
     (Transformation|SetActorLocationAndRotation :NewLocation next :NewRotation rot)
     (bind walker (Utilities|Casting|CastToCharacter (Game|GetPlayerPawn 0)))
-    (if (and (Utilities|IsValid walker) (< (Math|Vector|Distance(Vector) next (Transformation|GetActorLocation walker)) 280.0))
-      (bind m (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/BP_Missions.BP_Missions_C"))
+    ; hit Joshua on foot: the car's pivot is on the ground at its centre, so measure flat (Distance2D) and allow half a car
+    ; length plus his capsule. 280 cm in 3D never fired (the capsule centre sits 90 cm up). Not before Story Mode starts.
+    (bind m (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/BP_Missions.BP_Missions_C"))
+    (if (and (and (Utilities|IsValid walker) (Class|BPMissions|GetStarted m)) (< (Math|Vector|Distance2D(Vector) next (Transformation|GetActorLocation walker)) 320.0))
       (Class|BPMissions|SetHealth :self m :Health (- (Class|BPMissions|GetHealth m) (* 400.0 DeltaSeconds)))
       (bind fwd (Transformation|GetActorForwardVector))
       (Character|LaunchCharacter :self walker :LaunchVelocity (Math|Vector|MakeVector (* 1400.0 (.x fwd)) (* 1400.0 (.y fwd)) 500.0) :bXYOverride true :bZOverride true))

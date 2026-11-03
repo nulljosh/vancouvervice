@@ -5,35 +5,86 @@
 ; the player went. 10 s more than 150 m from the cop loses them (Calm goes to -1, which also completes mission two).
 ; The cop within 4.5 m while the player is slower than 4 m/s is BUSTED: 3 s on the HUD, then back to the Apple Store
 ; on foot, mission two again.
+; Front end (drawn by BP_VVHud): Started false = startup art; Enter opens the three save slots (BP_VVSave in Slot1..3,
+; Index + Pos, autosaved on every MISSION PASSED). A new game starts mission one with the tutorial: Tut walks the player
+; through moving, punching, following the marker, stealing a car, driving and losing the cops, one GTA V-style help box
+; at a time (Help, top-left), never a popup. After mission two the help says the Lower Mainland is open (free roam).
+; Messages that used to be PrintStrings are Msg/MsgT subtitles; mission completes are Passed/PassedName bands.
 (event EventBeginPlay
   (Class|PlayerCameraManager|SetViewPitchMin :self (Game|GetPlayerCameraManager 0) :ViewPitchMin -40.0)
   (Class|PlayerCameraManager|SetViewPitchMax :self (Game|GetPlayerCameraManager 0) :ViewPitchMax 25.0)
   (HUD|ClientSetHUD :self (Game|GetPlayerController 0) :NewHUDClass "/Game/VancouverVice/HUD/BP_VVHud.BP_VVHud_C")
   (Variables|Default|SetHealth 100.0)
   (Variables|Default|SetMenu true)
+  (Variables|Default|SetStarted false)
+  (Variables|Default|SetTitleStep 0)
+  (Variables|Default|SetTut 99)
+  (Development|ExecuteConsoleCommand :Command "DisableAllScreenMessages")
   (Input|DisableInput :self (Game|GetPlayerPawn 0) :PlayerController (Game|GetPlayerController 0)))
 
 (event Collision|EventActorBeginOverlap (OtherActor))
 
 (event EventTick (DeltaSeconds)
-  ; Title screen (drawn by BP_VVHud): W/S or the arrows move, Enter or Space picks. Story Mode hands control back, Quit
-  ; quits. Escape in game brings it back as the pause menu.
   (bind mpc (Game|GetPlayerController 0))
-  (if (Variables|Default|GetMenu)
-    (if (or (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "W") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Up"))
-            (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "S") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Down")))
-      (Variables|Default|SetMenuSel (- 1 (Variables|Default|GetMenuSel))))
-    (if (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "Enter") (Game|Player|WasInputKeyJustPressed :self mpc :Key "SpaceBar"))
-      (if (== (Variables|Default|GetMenuSel) 0)
-        (Variables|Default|SetMenu false)
-        (Input|EnableInput :self (Game|GetPlayerPawn 0) :PlayerController mpc)
-        (else
-          (Game|QuitGame :SpecificPlayer mpc))))
-    (else
-      (if (Game|Player|WasInputKeyJustPressed :self mpc :Key "Escape")
-        (Variables|Default|SetMenu true)
+  (bind sel (Variables|Default|GetMenuSel))
+  (bind tab (Variables|Default|GetMenuTab))
+  (bind up (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "W") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Up")))
+  (bind down (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "S") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Down")))
+  (bind ok (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "Enter") (Game|Player|WasInputKeyJustPressed :self mpc :Key "SpaceBar")))
+  (bind esc (Game|Player|WasInputKeyJustPressed :self mpc :Key "Escape"))
+  (Variables|Default|SetMenuT (+ (Variables|Default|GetMenuT) DeltaSeconds))
+  (if (> (Variables|Default|GetMenuT) 6.0)
+    (Variables|Default|SetMenuT 0.0)
+    (Variables|Default|SetMenuPanel (select (>= (Variables|Default|GetMenuPanel) 4) 0 (+ (Variables|Default|GetMenuPanel) 1))))
+  (Variables|Default|SetMsgT (- (Variables|Default|GetMsgT) DeltaSeconds))
+  (Variables|Default|SetPassed (- (Variables|Default|GetPassed) DeltaSeconds))
+  (if (not (Variables|Default|GetStarted))
+    (if (== (Variables|Default|GetTitleStep) 0)
+      (if ok
+        (Variables|Default|SetSlot0 (select (SaveGame|DoesSaveGameExist :SlotName "Slot1" :UserIndex 0) (Class|BPVVSave|GetIndex :self (Utilities|Casting|CastToBP_VVSave (SaveGame|LoadGamefromSlot :SlotName "Slot1" :UserIndex 0))) -1))
+        (Variables|Default|SetSlot1 (select (SaveGame|DoesSaveGameExist :SlotName "Slot2" :UserIndex 0) (Class|BPVVSave|GetIndex :self (Utilities|Casting|CastToBP_VVSave (SaveGame|LoadGamefromSlot :SlotName "Slot2" :UserIndex 0))) -1))
+        (Variables|Default|SetSlot2 (select (SaveGame|DoesSaveGameExist :SlotName "Slot3" :UserIndex 0) (Class|BPVVSave|GetIndex :self (Utilities|Casting|CastToBP_VVSave (SaveGame|LoadGamefromSlot :SlotName "Slot3" :UserIndex 0))) -1))
         (Variables|Default|SetMenuSel 0)
-        (Input|DisableInput :self (Game|GetPlayerPawn 0) :PlayerController mpc))))
+        (Variables|Default|SetTitleStep 1))
+      (if esc
+        (Game|QuitGame :SpecificPlayer mpc))
+      (else
+        (if up (Variables|Default|SetMenuSel (select (<= sel 0) 2 (- sel 1))))
+        (if down (Variables|Default|SetMenuSel (select (>= sel 2) 0 (+ sel 1))))
+        (if esc (Variables|Default|SetTitleStep 0))
+        (if ok
+          (bind slotname (select (== sel 0) "Slot1" (select (== sel 1) "Slot2" "Slot3")))
+          (bind info (select (== sel 0) (Variables|Default|GetSlot0) (select (== sel 1) (Variables|Default|GetSlot1) (Variables|Default|GetSlot2))))
+          (Variables|Default|SetSlotName slotname)
+          (if (>= info 0)
+            (bind sv (Utilities|Casting|CastToBP_VVSave (SaveGame|LoadGamefromSlot :SlotName slotname :UserIndex 0)))
+            (Variables|Default|SetIndex info)
+            (Transformation|SetActorLocation (Game|GetPlayerPawn 0) (Class|BPVVSave|GetPos :self sv))
+            (Variables|Default|SetTut (select (== info 1) 3 7))
+            (else
+              (Variables|Default|SetIndex 0)
+              (Variables|Default|SetTut 0)
+              (Variables|Default|SetTutPos (Transformation|GetActorLocation (Game|GetPlayerPawn 0)))))
+          (Variables|Default|SetTutT 0.0)
+          (Variables|Default|SetStarted true)
+          (Variables|Default|SetMenu false)
+          (Input|EnableInput :self (Game|GetPlayerPawn 0) :PlayerController mpc))))
+    (else
+      (if (Variables|Default|GetMenu)
+        (if (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "A") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Left")) (Variables|Default|SetMenuTab (select (<= tab 0) 4 (- tab 1))))
+        (if (or (Game|Player|WasInputKeyJustPressed :self mpc :Key "D") (Game|Player|WasInputKeyJustPressed :self mpc :Key "Right")) (Variables|Default|SetMenuTab (select (>= tab 4) 0 (+ tab 1))))
+        (if (and (== tab 4) (or up down)) (Variables|Default|SetMenuSel (- 1 sel)))
+        (if (or esc (and ok (and (== tab 4) (== sel 0))))
+          (Variables|Default|SetMenu false)
+          (Input|EnableInput :self (Game|GetPlayerPawn 0) :PlayerController mpc))
+        (if (and ok (and (== tab 4) (== sel 1)))
+          (Game|QuitGame :SpecificPlayer mpc))
+        (else
+          (if esc
+            (Variables|Default|SetMenu true)
+            (Variables|Default|SetMenuTab 0)
+            (Variables|Default|SetMenuSel 0)
+            (Input|DisableInput :self (Game|GetPlayerPawn 0) :PlayerController mpc))))))
   (bind _returnvalue (Game|GetPlayerPawn 0))
   (bind _returnvalue_1 (Transformation|GetActorLocation _returnvalue))
   (bind _index (Variables|Default|GetIndex))
@@ -50,7 +101,8 @@
     (Utilities|Array|Clear (Variables|Default|GetTrail))
     (Class|BPCopCar|SetIndex :self cop :Index 0)
     (Transformation|SetActorLocation cop (Math|Vector|MakeVector (- (.x _returnvalue_1) (* 4000.0 (.x (Transformation|GetActorForwardVector _returnvalue)))) (- (.y _returnvalue_1) (* 4000.0 (.y (Transformation|GetActorForwardVector _returnvalue)))) -6840.0))
-    (Development|PrintString "WANTED. Lose the cop." true true "(R=1.000000,G=0.250000,B=0.200000,A=1.000000)" 4.0))
+    (Variables|Default|SetMsg "You're wanted. Lose the cop.")
+    (Variables|Default|SetMsgT 4.0))
   (if (> (Variables|Default|GetStars) 0)
     (Variables|Default|SetTrailT (+ (Variables|Default|GetTrailT) DeltaSeconds))
     (if (> (Variables|Default|GetTrailT) 0.25)
@@ -61,7 +113,8 @@
     (if (> (Variables|Default|GetCalm) 10.0)
       (Variables|Default|SetStars 0)
       (Variables|Default|SetCalm -1.0)
-      (Development|PrintString "You lost them." true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 4.0))
+      (Variables|Default|SetMsg "You lost them.")
+      (Variables|Default|SetMsgT 4.0))
     (if (and (< d 450.0) (< (Math|Vector|VectorLength (Transformation|GetVelocity _returnvalue)) 400.0))
       (Variables|Default|SetStars 0)
       (Variables|Default|SetBusted 3.0)))
@@ -79,7 +132,7 @@
   (bind wmesh (Class|Character|GetMesh :self walker))
   (bind pc (Game|GetPlayerController 0))
   (Variables|Default|SetPunchT (- (Variables|Default|GetPunchT) DeltaSeconds))
-  (if (and (and (and (not incar) (not (Variables|Default|GetMenu))) (<= (Variables|Default|GetPunchT) 0.0)) (and (<= (Variables|Default|GetWasted) 0.0) (or (Game|Player|WasInputKeyJustPressed :self pc :Key "LeftMouseButton") (Game|Player|WasInputKeyJustPressed :self pc :Key "F"))))
+  (if (and (and (and (not incar) (not (Variables|Default|GetMenu))) (and (Variables|Default|GetStarted) (<= (Variables|Default|GetPunchT) 0.0))) (and (<= (Variables|Default|GetWasted) 0.0) (or (Game|Player|WasInputKeyJustPressed :self pc :Key "LeftMouseButton") (Game|Player|WasInputKeyJustPressed :self pc :Key "F"))))
     (Variables|Default|SetPunchT 0.9)
     (Variables|Default|SetPosed true)
     (Components|Animation|PlayAnimation :self wmesh :NewAnimToPlay "/Game/Characters/Joshua2/JoshuaHero_m/SkeletalMeshes/JoshuaHero_mRight_Jab_from_Guard.JoshuaHero_mRight_Jab_from_Guard" :bLooping false)
@@ -89,8 +142,7 @@
     (Variables|Default|SetStars 0)
     (Variables|Default|SetPosed true)
     (Components|Animation|PlayAnimation :self wmesh :NewAnimToPlay "/Game/Characters/Joshua2/JoshuaHero_m/SkeletalMeshes/JoshuaHero_mfalling_down.JoshuaHero_mfalling_down" :bLooping false)
-    (Input|DisableInput :self walker :PlayerController pc)
-    (Development|PrintString "WASTED" true true "(R=0.850000,G=0.100000,B=0.080000,A=1.000000)" 0.1))
+    (Input|DisableInput :self walker :PlayerController pc))
   (if (> (Variables|Default|GetWasted) 0.0)
     (Variables|Default|SetWasted (- (Variables|Default|GetWasted) DeltaSeconds))
     (if (<= (Variables|Default|GetWasted) 0.0)
@@ -99,7 +151,8 @@
       (Variables|Default|SetHealth 100.0)
       (Variables|Default|SetCalm 0.0)
       (Input|EnableInput :self walker :PlayerController pc)
-      (Development|PrintString "St. Paul's Hospital. That one's on the house." true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 4.0))
+      (Variables|Default|SetMsg "St. Paul's Hospital. That one's on the house.")
+      (Variables|Default|SetMsgT 5.0))
     (else
       (Variables|Default|SetHealth (Math|Float|Clamp(Float) (+ (Variables|Default|GetHealth) (* 2.0 DeltaSeconds)) -1.0 100.0))))
   (if (and (Variables|Default|GetPosed) (and (<= (Variables|Default|GetPunchT) 0.0) (<= (Variables|Default|GetWasted) 0.0)))
@@ -107,11 +160,31 @@
     (Components|Animation|SetAnimationMode :self wmesh :InAnimationMode "AnimationBlueprint"))
   (if (< _index (Utilities|Array|Length _targets))
     (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector (.x (select (and _returnvalue_3 (not incar)) (Transformation|GetActorLocation car) _output)) (.y (select (and _returnvalue_3 (not incar)) (Transformation|GetActorLocation car) _output)) (+ (.z _returnvalue_1) 1160.0)))
-    (if (not (Variables|Default|GetMenu))
-      (Development|PrintString (Utilities|String|Append "Mission: " _output_1) true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 0.0 "mission"))
-    (if (or (and _returnvalue_3 (< (Variables|Default|GetCalm) 0.0)) (and (not _returnvalue_3) (< (Math|Vector|Distance2D(Vector) _returnvalue_1 _output) 400.0)))
-      (Development|PrintString (Utilities|String|Append "Mission complete: " _output_1) true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 4.0)
-      (Variables|Default|SetIndex (+ _index 1)))
+    (if (and (Variables|Default|GetStarted) (or (and _returnvalue_3 (< (Variables|Default|GetCalm) 0.0)) (and (not _returnvalue_3) (< (Math|Vector|Distance2D(Vector) _returnvalue_1 _output) 400.0))))
+      (Variables|Default|SetPassed 4.0)
+      (Variables|Default|SetPassedName _output_1)
+      (Variables|Default|SetIndex (+ _index 1))
+      (bind sv (Utilities|Casting|CastToBP_VVSave (SaveGame|CreateSaveGameObject :SaveGameClass "/Game/VancouverVice/BP_VVSave.BP_VVSave_C")))
+      (Class|BPVVSave|SetIndex :self sv :Index (+ _index 1))
+      (Class|BPVVSave|SetPos :self sv :Pos (Math|Vector|MakeVector (.x _returnvalue_1) (.y _returnvalue_1) (+ (.z _returnvalue_1) 50.0)))
+      (SaveGame|SaveGametoSlot :SaveGameObject sv :SlotName (Variables|Default|GetSlotName) :UserIndex 0))
     (else
-      (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector 0.0 0.0 -100000.0))
-      (Development|PrintString "All missions done. Vancouver is yours." true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 0.0 "mission"))))
+      (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector 0.0 0.0 -100000.0))))
+  ; tutorial: one help box at a time, each step waits for the player to actually do it
+  (bind tut (Variables|Default|GetTut))
+  (Variables|Default|SetTutT (+ (Variables|Default|GetTutT) DeltaSeconds))
+  (Variables|Default|SetHelp
+    (select (== tut 0) "Use W A S D to move and the mouse to look around."
+    (select (== tut 1) "The staff saw you take the Mac minis. Press F or left click to punch."
+    (select (== tut 2) "Run. Follow the yellow marker on the map, bottom left."
+    (select (== tut 3) "Steal a car: walk up to the yellow marker and press E."
+    (select (== tut 4) "W to drive, S to brake and reverse, A and D to steer."
+    (select (== tut 5) "The stars top right are your wanted level. Get far from the cop to lose him."
+    (select (== tut 6) "Free roam: the whole Lower Mainland is open. Esc for the map and pause menu." ""))))))))
+  (if (and (== tut 0) (> (Math|Vector|Distance2D(Vector) _returnvalue_1 (Variables|Default|GetTutPos)) 300.0)) (Variables|Default|SetTut 1))
+  (if (and (== tut 1) (> (Variables|Default|GetPunchT) 0.0)) (Variables|Default|SetTut 2))
+  (if (and (== tut 2) (>= _index 1)) (Variables|Default|SetTut 3))
+  (if (and (== tut 3) incar) (Variables|Default|SetTut 4) (Variables|Default|SetTutT 0.0))
+  (if (and (== tut 4) (> (Variables|Default|GetTutT) 6.0)) (Variables|Default|SetTut 5))
+  (if (and (== tut 5) (>= _index 2)) (Variables|Default|SetTut 6) (Variables|Default|SetTutT 0.0))
+  (if (and (== tut 6) (> (Variables|Default|GetTutT) 9.0)) (Variables|Default|SetTut 7)))
