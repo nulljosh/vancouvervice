@@ -125,6 +125,13 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Glasses on Joshua (attach a glasses mesh to the head socket)
 - [ ] In-game graphics setting: a Low/Medium/High key that sets the tileset MaximumScreenSpaceError (12/6/3) at runtime, so nearby streets are sharp and far tiles stay cheap on 16 GB
 
+## Queued 2026-11-02 (Joshua, in order)
+- [ ] Mission one starts inside the store: grab a few Mac minis, fight the employees to get out, then a getaway car and losing the cops. This is the next build.
+- [ ] Guns in the packaged build: pick one up, fire it with muzzle flash and a reload, ammo that runs out.
+- [ ] Cops scale with stars: more cops, and tougher ones, as the wanted stars rise.
+- [ ] Car damage: dents and lost panels that show on the car, not just smoke and fire.
+- [ ] Lag: the packaged build still feels laggy. Profile the frame spikes and cut them before the next art pass.
+
 ## Queued 2026-10-01 (Joshua, in order)
 - [ ] Body reads as a lean 6 ft man (Masculine/Feminine +2, rebuild running). Photo for the brother.
 - [ ] City renders as you walk: splash screen holds until the tiles around the player are loaded, sharp tiles near the player, cheap far away. No sky spawn, no waiting on Cesium.
