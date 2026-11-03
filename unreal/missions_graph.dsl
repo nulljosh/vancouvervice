@@ -1,9 +1,10 @@
 ; BP_Missions EventGraph (read back with read_graph_dsl, edited, written with write_graph_dsl). The objective is a
 ; glowing beam (Marker component, M_Marker) instead of a debug sphere. BeginPlay clamps camera pitch (-40 to 25) so the
-; packaged build never starts looking straight down.
+; packaged build never starts looking straight down, and puts up BP_VVHud (minimap; the game mode's HUD class does not stick).
 (event EventBeginPlay
   (Class|PlayerCameraManager|SetViewPitchMin :self (Game|GetPlayerCameraManager 0) :ViewPitchMin -40.0)
-  (Class|PlayerCameraManager|SetViewPitchMax :self (Game|GetPlayerCameraManager 0) :ViewPitchMax 25.0))
+  (Class|PlayerCameraManager|SetViewPitchMax :self (Game|GetPlayerCameraManager 0) :ViewPitchMax 25.0)
+  (HUD|ClientSetHUD :self (Game|GetPlayerController 0) :NewHUDClass "/Game/VancouverVice/HUD/BP_VVHud.BP_VVHud_C"))
 
 (event Collision|EventActorBeginOverlap (OtherActor))
 
