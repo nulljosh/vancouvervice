@@ -5,7 +5,7 @@ import unreal
 
 EAL = unreal.EditorAssetLibrary; AT = unreal.AssetToolsHelpers.get_asset_tools(); D = "/Game/VancouverVice/HUD"
 SRC = "/Volumes/LaCie/Unreal/dl/menu/"
-for f in ("T_KeyArt.png", "T_MenuArt.png", "T_Logo.png", "Anton.ttf"):
+for f in ("T_KeyArt.png", "T_MenuArt.png", "T_Logo.png", "Anton.ttf", "Seawall.ttf"):
     t = unreal.AssetImportTask(); t.filename = SRC + f; t.destination_path = D; t.automated = True; t.save = True; t.replace_existing = True
     AT.import_asset_tasks([t]); print("imported", t.imported_object_paths)
 
@@ -28,4 +28,13 @@ cf = font.get_editor_property("composite_font")  # Typeface isn't exposed to Pyt
 cf.import_text('(DefaultTypeface=(Fonts=((Name="Regular",Font=(FontFaceAsset="/Script/Engine.FontFace\'%s\'")))))' % face.get_path_name())
 font.set_editor_property("composite_font", cf)
 EAL.save_loaded_asset(font)
+# Seawall (brand/Seawall.ttf, tools/make_font.py), our own display face: F_Seawall replaces F_Anton in the menus
+sea = EAL.load_asset(D + "/Seawall")
+if not EAL.does_asset_exist(D + "/F_Seawall"):
+    AT.create_asset("F_Seawall", D, unreal.Font, unreal.FontFactory())
+fs = EAL.load_asset(D + "/F_Seawall")
+fs.set_editor_property("font_cache_type", unreal.FontCacheType.RUNTIME); fs.set_editor_property("legacy_font_size", 48)
+cs = fs.get_editor_property("composite_font")
+cs.import_text('(DefaultTypeface=(Fonts=((Name="Regular",Font=(FontFaceAsset="/Script/Engine.FontFace\'%s\'")))))' % sea.get_path_name())
+fs.set_editor_property("composite_font", cs); EAL.save_loaded_asset(fs)
 print("MENU assets", tex.get_path_name(), face.get_path_name(), font.get_path_name())

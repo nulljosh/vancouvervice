@@ -37,7 +37,7 @@
     ; save slots (Enter from the startup art): GTA V list, selected row white with black text
     (if (== (Class|BPMissions|GetTitleStep m) 1)
         (HUD|DrawRect :RectColor "(R=0.000000,G=0.000000,B=0.000000,A=0.450000)" :ScreenX 0.0 :ScreenY 0.0 :ScreenW SizeX :ScreenH SizeY)
-        (HUD|DrawText :Text "STORY MODE" :TextColor "(R=0.896000,G=0.879000,B=0.839000,A=1.000000)" :ScreenX (* SizeX 0.1) :ScreenY (* SizeY 0.17) :Font "/Game/VancouverVice/HUD/F_Anton.F_Anton" :Scale 1.05)
+        (HUD|DrawText :Text "STORY MODE" :TextColor "(R=0.896000,G=0.879000,B=0.839000,A=1.000000)" :ScreenX (* SizeX 0.1) :ScreenY (* SizeY 0.17) :Font "/Game/VancouverVice/HUD/F_Seawall.F_Seawall" :Scale 1.05)
         (HUD|DrawRect :RectColor "(R=0.007500,G=0.008500,B=0.012300,A=0.820000)" :ScreenX (* SizeX 0.1) :ScreenY (+ (* SizeY 0.3) 0.0) :ScreenW (* SizeX 0.36) :ScreenH 54.0)
         (HUD|DrawText :Text (Utilities|String|Append "Slot 1      " (select (< (Class|BPMissions|GetSlot0 m) 0) "New game" (Utilities|String|Append "Mission " (Utilities|String|Append (Utilities|String|ToString(Integer) (Math|Integer|Min(Integer) (+ (Class|BPMissions|GetSlot0 m) 1) nmiss)) (Utilities|String|Append " of " (Utilities|String|ToString(Integer) nmiss))))))
           :TextColor "(R=0.896000,G=0.879000,B=0.839000,A=1.000000)" :ScreenX (+ (* SizeX 0.1) 20.0) :ScreenY (+ (* SizeY 0.3) 16.0) :Scale 1.4)
@@ -99,10 +99,10 @@
           (if (or (or (> (Class|BPMissions|GetWasted m) 0.0) (> (Class|BPMissions|GetBusted m) 0.0)) (> (Class|BPMissions|GetPassed m) 0.0))
             (HUD|DrawRect :RectColor "(R=0.000000,G=0.000000,B=0.000000,A=0.550000)" :ScreenX 0.0 :ScreenY (- (* SizeY 0.4) 20.0) :ScreenW SizeX :ScreenH 150.0))
           (if (> (Class|BPMissions|GetPassed m) 0.0)
-            (HUD|DrawText :Text "MISSION PASSED" :TextColor "(R=0.807000,G=0.445000,B=0.010000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 250.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Anton.F_Anton" :Scale 1.6)
+            (HUD|DrawText :Text "MISSION PASSED" :TextColor "(R=0.807000,G=0.445000,B=0.010000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 250.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Seawall.F_Seawall" :Scale 1.6)
             (HUD|DrawText :Text (Class|BPMissions|GetPassedName m) :TextColor "(R=0.896000,G=0.879000,B=0.839000,A=1.000000)"
               :ScreenX (- (* SizeX 0.5) (* 6.3 (Utilities|String|Len (Class|BPMissions|GetPassedName m)))) :ScreenY (+ (* SizeY 0.4) 92.0) :Scale 1.5))
           (if (> (Class|BPMissions|GetWasted m) 0.0)
-            (HUD|DrawText :Text "WASTED" :TextColor "(R=0.745000,G=0.036000,B=0.025000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 170.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Anton.F_Anton" :Scale 2.2))
+            (HUD|DrawText :Text "WASTED" :TextColor "(R=0.745000,G=0.036000,B=0.025000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 170.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Seawall.F_Seawall" :Scale 2.2))
           (if (> (Class|BPMissions|GetBusted m) 0.0)
-            (HUD|DrawText :Text "BUSTED" :TextColor "(R=0.745000,G=0.036000,B=0.025000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 170.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Anton.F_Anton" :Scale 2.2)))))))
+            (HUD|DrawText :Text "BUSTED" :TextColor "(R=0.745000,G=0.036000,B=0.025000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 170.0) :ScreenY (* SizeY 0.4) :Font "/Game/VancouverVice/HUD/F_Seawall.F_Seawall" :Scale 2.2)))))))

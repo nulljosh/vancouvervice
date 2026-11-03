@@ -3,9 +3,9 @@
 One city at night in the rain, one hot red. Loud display type, quiet body text.
 
 ## Type
-- **Display: Anton**, uppercase, slanted 7 degrees (`--vv-slant`), tight line height. Wordmark, section titles, character names. Self-hosted at `site/fonts/anton.woff2`, SIL Open Font License (`brand/Anton-OFL.txt`).
+- **Display: Seawall**, our own face (`brand/Seawall.ttf`, built by `tools/make_font.py`): condensed, square-cut, chamfered corners, the 7 degree slant built in, capitals only. Wordmark, menu titles, tabs, MISSION PASSED and WASTED. Anton (`site/fonts/anton.woff2`, OFL) is retired from the game and stays on the web site until it switches.
 - **Text: the system font** (SF on Apple). Everything you read in sentences, every button, every HUD line.
-- Never set body copy in the display face. Never put type in the icon.
+- Never set body copy in the display face. The app icon is the wordmark on night (Joshua's call, 2026-11-02).
 
 ## Colour
 | Token | Hex | Use |
