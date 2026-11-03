@@ -47,12 +47,6 @@ if [ ! -f "$PROJECT" ]; then
   exit 1
 fi
 
-# TODO before any PUBLIC release: the Cesium ion token baked into the packaged build (Content's
-# CesiumIonServer asset / DefaultEngine.ini, sourced from .env's CESIUM_ION_TOKEN today) must be
-# swapped for a token restricted to this app the same way CLAUDE.md's rule locks the web token to
-# the game's domains (`.env` / `site/config.js`, "The web token is locked to the game's domains").
-# An unrestricted dev token in a shipped .app can be pulled out of the binary and abused.
-echo "reminder: verify the Cesium ion token is a RESTRICTED token before any public release (see CLAUDE.md)"
 
 mkdir -p "$ARCHDIR"
 echo "packaging to $ARCHDIR"
@@ -68,6 +62,9 @@ echo "log: $LOG"
 # FAST=1 also skips the C++ build and reuses the last binaries when nothing native changed. The first build of a
 # machine is slow (shaders from scratch, off the LaCie); after that a rebuild takes minutes.
 BUILD="-build"; [ "${FAST:-0}" = 1 ] && BUILD="-skipbuild"
+# xcodebuild fails when UBT spawns it on this Mac (no message) but works from a shell, so the engine's UBT is patched to
+# skip it under UBT_SKIP_XCODE_FINALIZE=1 (backup: /Volumes/LaCie/Unreal/AppleToolChain.cs.orig) and we run it below.
+export UBT_SKIP_XCODE_FINALIZE=1
 set +e
 "$RUNUAT" BuildCookRun \
   -project="$PROJECT" \
@@ -88,6 +85,13 @@ if [ "$STATUS" -ne 0 ]; then
   exit "$STATUS"
 fi
 
+# Finalize by hand: copies the staged paks into Binaries/Mac/VancouverVice.app, then archive that app.
+(cd "$ENGINE/Engine/Source" && UBT_NO_POST_DEPLOY=true xcodebuild build \
+  -workspace /Volumes/LaCie/Unreal/VancouverVice/Intermediate/ProjectFiles/VancouverVice_Mac_VancouverVice.xcworkspace \
+  -scheme VancouverVice -configuration Development -destination generic/platform=macOS \
+  CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION=YES -allowProvisioningUpdates UE_XCODE_BUILD_MODE=Stage \
+  -hideShellScriptEnvironment >> "$LOG" 2>&1) || { echo "xcode finalize FAILED, see $LOG" >&2; exit 1; }
+rm -rf "$ARCHDIR/Mac/VancouverVice.app"; ditto /Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app "$ARCHDIR/Mac/VancouverVice.app"
 APP=$(find "$ARCHDIR" -maxdepth 4 -name "*.app" -print -quit)
 if [ -n "$APP" ]; then
   echo "packaged: $APP"
