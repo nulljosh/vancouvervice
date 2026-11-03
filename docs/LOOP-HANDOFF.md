@@ -20,6 +20,7 @@ Joshua's call: the real game is Unreal 5.8. The three.js web game is the prototy
 2. Guns: pick one up and fire it, with muzzle flash, a reload and ammo that runs out.
 3. More cops as the wanted stars rise, and tougher ones at the top.
 4. Car damage: dents and lost panels that show on the car, not just smoke and fire.
+5. Lag: profile the frame spikes in the packaged build and cut them before the next art pass. Joshua picks this up on 2026-11-03.
 
 ## Restart prompt
 ```
