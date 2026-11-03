@@ -15,6 +15,8 @@ Joshua's call: the real game is Unreal 5.8. The three.js web game is the prototy
 - Storage: the LaCie is a spinning disk, so cold editor boots are slow. Joshua is getting a fast NVMe drive; the notes name an OWC Envoy Ultra and the memory names a Samsung T7 Shield, so check which one he bought. When it is plugged in, move UE_5.8 and the project onto it and point `unreal/open.sh` at the new paths.
 - The web game is still live. The web tree has uncommitted work from another session (site/play.html and scratch tests under tests/_*.mjs). Leave it alone and commit only exact paths.
 
+- Tonight's build (2026-11-02) packaged with exit 0 at `/Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app`, log at `/Volumes/LaCie/Unreal/Builds/2026-11-02/package.log`. headless.py hit node-creation errors on SetHealth, BPMissions GetMarker and GetPoints, so check that the fixes that use those nodes really landed before trusting the build.
+
 ## Next, in order
 1. Mission one starts inside the store: grab a few Mac minis, fight the employees to get out, then a getaway car and losing the cops.
 2. Guns: pick one up and fire it, with muzzle flash, a reload and ammo that runs out.
