@@ -15,6 +15,9 @@ Joshua's call on 2026-11-02: the real game moves to Unreal. The three.js web gam
 - **Drive the editor** with `unreal/qa.py` (file bridge) and `unreal/mcp.py` (raw HTTP on port 18000). The Unreal MCP tools do not load into a session that started before the editor was up. Read UNREAL.md for every gotcha.
 - **Storage:** the LaCie is a spinning disk at 125 MB/s, so a cold editor boot takes 15 to 25 minutes. Joshua is buying a fast NVMe drive. The handoff named a Samsung T7 Shield 2 TB and the roadmap names an OWC Envoy Ultra, so check which one he bought. When it is plugged in, copy UE_5.8 (49 GB) and the project onto it, and point `unreal/open.sh` at the new paths.
 
+## Now (2026-11-02, 22:35)
+Build of 6b876ef finishing (Enter fix, Higgsfield menu art graded to brand, brand wordmark, app icon); it relaunches fullscreen and /Volumes/LaCie/Unreal/scratch/qa_run.sh screenshots title, slots, tutorial, punch and pause tabs into /Volumes/LaCie/Unreal/scratch/qa/run. Next build: Seawall, our SF-style font (brand/Seawall.ttf from tools/make_font.py; run unreal/menu_setup.py, then write hud.dsl, which already uses F_Seawall), and menu panels 2 and 3 redone with Joshua's likeness (ask before Higgsfield, balance 446). Joshua: never show the editor window again, so make changes headless (UnrealEditor-Cmd -run=pythonscript). Builds: FAST=1 sh unreal/package.sh, add QUICK=1 to skip Xcode when only content changed. Write graphs with unreal/write_dsl.py (expands `; @include`). Lessons: a failed impure cast ends the Blueprint chain (the Enter bug); BP variables are not instance-editable, so QA only reads them; PIE ignores injected keys, so test in the packaged app.
+
 ## Rules for this Mac (16 GB)
 One heavy thing at a time. No Playwright or WebKit runs while the editor is up. No MetaHuman builds (they crash the editor). Run `sh unreal/doctor.sh lean` after boot, and restart the editor past about a 15 GB footprint.
 
