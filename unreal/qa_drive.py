@@ -42,7 +42,7 @@ def _step(dt):
             return _finish("FAIL E did not put the player in the car")
         DRIVE["stage"] = "drive"; DRIVE["t"] = 0.0; DRIVE["start"] = car.get_actor_location()
     elif DRIVE["stage"] == "drive":
-        press(Throttle, 1.0)
+        press(Throttle, 1.0); DRIVE["frames"] = DRIVE.get("frames", 0) + 1
         if DRIVE["t"] > 6.0:
             DRIVE["dist"] = (car.get_actor_location() - DRIVE["start"]).length() / 100
             press(EnterCar); DRIVE["stage"] = "wait_out"; DRIVE["t"] = 0.0
@@ -50,7 +50,7 @@ def _step(dt):
         out = pc.get_controlled_pawn() == walker and not walker.get_editor_property("hidden")
         jacked = MISSIONS.get_editor_property("Index") >= 2
         ok = DRIVE["dist"] > 5 and out and jacked
-        return _finish(f"{'PASS' if ok else 'FAIL'} drove {DRIVE['dist']:.1f} m in 6 s, got back out: {out}, mission two complete: {jacked}")
+        return _finish(f"{'PASS' if ok else 'FAIL'} drove {DRIVE['dist']:.1f} m in 6 s at {DRIVE['frames'] / 6:.0f} fps, got back out: {out}, mission two complete: {jacked}")
 
 DRIVE["h"] = unreal.register_slate_post_tick_callback(_step)
 print("driving test armed")
