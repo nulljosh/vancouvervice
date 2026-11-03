@@ -1,6 +1,10 @@
 ; BP_Missions EventGraph (read back with read_graph_dsl, edited, written with write_graph_dsl). The objective is a
 ; glowing beam (Marker component, M_Marker) instead of a debug sphere. BeginPlay clamps camera pitch (-40 to 25) so the
 ; packaged build never starts looking straight down, and puts up BP_VVHud (minimap; the game mode's HUD class does not stick).
+; Wanted level: getting in the car gives a star; the cop (BP_CopCar) follows Trail, a breadcrumb every 0.25 s of where
+; the player went. 10 s more than 150 m from the cop loses them (Calm goes to -1, which also completes mission two).
+; The cop within 4.5 m while the player is slower than 4 m/s is BUSTED: 3 s on the HUD, then back to the Apple Store
+; on foot, mission two again.
 (event EventBeginPlay
   (Class|PlayerCameraManager|SetViewPitchMin :self (Game|GetPlayerCameraManager 0) :ViewPitchMin -40.0)
   (Class|PlayerCameraManager|SetViewPitchMax :self (Game|GetPlayerCameraManager 0) :ViewPitchMax 25.0)
@@ -17,14 +21,45 @@
   (bind _missionnames (Variables|Default|GetMissionNames))
   (bind _output_1 (Utilities|Array|Get(acopy) _missionnames _index))
   (bind _returnvalue_3 (== _index 1))
+  (bind car (Actor|GetActorOfClass :ActorClass "/Game/VehicleTemplate/Blueprints/SportsCar/BP_VehicleAdvSportsCar.BP_VehicleAdvSportsCar_C"))
+  (bind cop (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/Cops/BP_CopCar.BP_CopCar_C"))
+  (bind incar (== _returnvalue car))
+  (if (and (and (== (Variables|Default|GetStars) 0) (>= (Variables|Default|GetCalm) 0.0)) incar)
+    (Variables|Default|SetStars 1)
+    (Utilities|Array|Clear (Variables|Default|GetTrail))
+    (Class|BPCopCar|SetIndex :self cop :Index 0)
+    (Transformation|SetActorLocation cop (Math|Vector|MakeVector (- (.x _returnvalue_1) (* 4000.0 (.x (Transformation|GetActorForwardVector _returnvalue)))) (- (.y _returnvalue_1) (* 4000.0 (.y (Transformation|GetActorForwardVector _returnvalue)))) -6840.0))
+    (Development|PrintString "WANTED. Lose the cop." true true "(R=1.000000,G=0.250000,B=0.200000,A=1.000000)" 4.0))
+  (if (> (Variables|Default|GetStars) 0)
+    (Variables|Default|SetTrailT (+ (Variables|Default|GetTrailT) DeltaSeconds))
+    (if (> (Variables|Default|GetTrailT) 0.25)
+      (Utilities|Array|Add (Variables|Default|GetTrail) (Math|Vector|MakeVector (.x _returnvalue_1) (.y _returnvalue_1) -6840.0))
+      (Variables|Default|SetTrailT 0.0))
+    (bind d (Math|Vector|Distance2D(Vector) (Transformation|GetActorLocation cop) _returnvalue_1))
+    (Variables|Default|SetCalm (select (> d 15000.0) (+ (Variables|Default|GetCalm) DeltaSeconds) 0.0))
+    (if (> (Variables|Default|GetCalm) 10.0)
+      (Variables|Default|SetStars 0)
+      (Variables|Default|SetCalm -1.0)
+      (Development|PrintString "You lost them." true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 4.0))
+    (if (and (< d 450.0) (< (Math|Vector|VectorLength (Transformation|GetVelocity _returnvalue)) 400.0))
+      (Variables|Default|SetStars 0)
+      (Variables|Default|SetBusted 3.0)))
+  (if (> (Variables|Default|GetBusted) 0.0)
+    (Variables|Default|SetBusted (- (Variables|Default|GetBusted) DeltaSeconds))
+    (if (<= (Variables|Default|GetBusted) 0.0)
+      (if incar
+        (bind pcast (Utilities|Casting|CastToBP_ThirdPersonPlayerController (Game|GetPlayerController 0)))
+        (Class|BPThirdPersonPlayerController|EnterorExitCar :self pcast))
+      (Transformation|SetActorLocation (Game|GetPlayerPawn 0) (Math|Vector|MakeVector -487.5 2936.1 -6740.0))
+      (Transformation|SetActorLocation cop (Math|Vector|MakeVector -6000.0 2000.0 -6840.0))
+      (Variables|Default|SetCalm 0.0)
+      (Variables|Default|SetIndex 1)))
   (if (< _index (Utilities|Array|Length _targets))
-    (bind _returnvalue_5 (Actor|GetActorOfClass "/Game/VehicleTemplate/Blueprints/SportsCar/BP_VehicleAdvSportsCar.BP_VehicleAdvSportsCar_C"))
-    (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector (.x (select _returnvalue_3 (Transformation|GetActorLocation _returnvalue_5) _output)) (.y (select _returnvalue_3 (Transformation|GetActorLocation _returnvalue_5) _output)) (+ (.z _returnvalue_1) 1160.0)))
+    (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector (.x (select (and _returnvalue_3 (not incar)) (Transformation|GetActorLocation car) _output)) (.y (select (and _returnvalue_3 (not incar)) (Transformation|GetActorLocation car) _output)) (+ (.z _returnvalue_1) 1160.0)))
     (Development|PrintString (Utilities|String|Append "Mission: " _output_1) true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 0.0 "mission")
-    (if (or (and _returnvalue_3 (== _returnvalue _returnvalue_5)) (and (not _returnvalue_3) (< (Math|Vector|Distance2D(Vector) _returnvalue_1 _output) 400.0)))
+    (if (or (and _returnvalue_3 (< (Variables|Default|GetCalm) 0.0)) (and (not _returnvalue_3) (< (Math|Vector|Distance2D(Vector) _returnvalue_1 _output) 400.0)))
       (Development|PrintString (Utilities|String|Append "Mission complete: " _output_1) true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 4.0)
       (Variables|Default|SetIndex (+ _index 1)))
     (else
       (Transformation|SetWorldLocation :self (Variables|Default|GetMarker) :NewLocation (Math|Vector|MakeVector 0.0 0.0 -100000.0))
       (Development|PrintString "All missions done. Vancouver is yours." true true "(R=0.000000,G=0.660000,B=1.000000,A=1.000000)" 0.0 "mission"))))
-

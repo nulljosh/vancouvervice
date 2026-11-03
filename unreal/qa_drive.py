@@ -1,6 +1,6 @@
 # Runs inside the editor during Play. Walks up to the getaway car, presses E, holds W for 6 s through Enhanced Input
 # injection (the same path a real keypress takes), presses E again to get out, then reports.
-# Starts BP_Missions on mission two (jack a car) and checks it completes once the player is in the car.
+# Getting in the car must give a wanted star; standing still after must get the player BUSTED by the cop car.
 import unreal
 if "DRIVE" in globals() and DRIVE.get("h"):
     unreal.unregister_slate_post_tick_callback(DRIVE["h"])
@@ -43,14 +43,18 @@ def _step(dt):
         DRIVE["stage"] = "drive"; DRIVE["t"] = 0.0; DRIVE["start"] = car.get_actor_location()
     elif DRIVE["stage"] == "drive":
         press(Throttle, 1.0); DRIVE["frames"] = DRIVE.get("frames", 0) + 1
+        DRIVE["wanted"] = DRIVE.get("wanted", False) or MISSIONS.get_editor_property("Stars") >= 1
         if DRIVE["t"] > 6.0:
             DRIVE["dist"] = (car.get_actor_location() - DRIVE["start"]).length() / 100
             press(EnterCar); DRIVE["stage"] = "wait_out"; DRIVE["t"] = 0.0
     elif DRIVE["stage"] == "wait_out" and DRIVE["t"] > 0.5:
-        out = pc.get_controlled_pawn() == walker and not walker.get_editor_property("hidden")
-        jacked = MISSIONS.get_editor_property("Index") >= 2
-        ok = DRIVE["dist"] > 5 and out and jacked
-        return _finish(f"{'PASS' if ok else 'FAIL'} drove {DRIVE['dist']:.1f} m in 6 s at {DRIVE['frames'] / 6:.0f} fps, got back out: {out}, mission two complete: {jacked}")
+        DRIVE["out"] = pc.get_controlled_pawn() == walker and not walker.get_editor_property("hidden")
+        DRIVE["stage"] = "busted"; DRIVE["t"] = 0.0
+    elif DRIVE["stage"] == "busted":  # stand still on foot: the cop should catch up and bust the player
+        busted = MISSIONS.get_editor_property("Busted") > 0
+        if busted or DRIVE["t"] > 30:
+            ok = DRIVE["dist"] > 5 and DRIVE["out"] and DRIVE["wanted"] and busted
+            return _finish(f"{'PASS' if ok else 'FAIL'} drove {DRIVE['dist']:.1f} m in 6 s at {DRIVE['frames'] / 6:.0f} fps, got back out: {DRIVE['out']}, wanted: {DRIVE['wanted']}, busted after {DRIVE['t']:.0f} s: {busted}")
 
 DRIVE["h"] = unreal.register_slate_post_tick_callback(_step)
 print("driving test armed")

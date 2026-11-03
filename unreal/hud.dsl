@@ -1,14 +1,29 @@
 ; BP_VVHud EventGraph (write with write_graph_dsl). Minimap bottom-left: RT_Minimap (300 m across, north up) in a dark
 ; frame, the player as a clay dot in the middle, the current objective (BP_Missions' Marker) as a yellow square that
 ; sticks to the edge when it is off the map. Screen up is world +X, screen right is world +Y; 240 px / 30000 cm = 0.008.
+; Top right: five wanted stars (squares, white when lit). BUSTED across the middle while BP_Missions.Busted counts down.
 (event EventReceiveDrawHUD (SizeX SizeY)
   (bind top (- SizeY 264.0))
   (bind pawnloc (Transformation|GetActorLocation (Game|GetPlayerPawn 0)))
-  (bind goal (Transformation|GetWorldLocation (Class|BPMissions|GetMarker (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/BP_Missions.BP_Missions_C"))))
+  (bind m (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/BP_Missions.BP_Missions_C"))
+  (bind goal (Transformation|GetWorldLocation (Class|BPMissions|GetMarker m)))
+  (bind stars (Class|BPMissions|GetStars m))
   (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.700000)" :ScreenX 16.0 :ScreenY (- top 4.0) :ScreenW 256.0 :ScreenH 256.0)
   (HUD|DrawTextureSimple :Texture "/Game/VancouverVice/HUD/RT_Minimap.RT_Minimap" :ScreenX 24.0 :ScreenY (+ top 4.0) :Scale 0.46875)
   (HUD|DrawRect :RectColor "(R=1.000000,G=0.800000,B=0.050000,A=1.000000)"
     :ScreenX (Math|Float|Clamp(Float) (+ 139.0 (* 0.008 (- (.y goal) (.y pawnloc)))) 26.0 254.0)
     :ScreenY (Math|Float|Clamp(Float) (+ (+ top 119.0) (* -0.008 (- (.x goal) (.x pawnloc)))) (+ top 6.0) (+ top 234.0))
     :ScreenW 10.0 :ScreenH 10.0)
-  (HUD|DrawRect :RectColor "(R=0.710000,G=0.314000,B=0.173000,A=1.000000)" :ScreenX 140.0 :ScreenY (+ top 120.0) :ScreenW 8.0 :ScreenH 8.0))
+  (HUD|DrawRect :RectColor "(R=0.710000,G=0.314000,B=0.173000,A=1.000000)" :ScreenX 140.0 :ScreenY (+ top 120.0) :ScreenW 8.0 :ScreenH 8.0)
+  (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.550000)" :ScreenX (- SizeX 160.0) :ScreenY 28.0 :ScreenW 22.0 :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=1.000000,G=1.000000,B=1.000000,A=1.000000)" :ScreenX (- SizeX 160.0) :ScreenY 28.0 :ScreenW (select (>= stars 1) 22.0 0.0) :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.550000)" :ScreenX (- SizeX 130.0) :ScreenY 28.0 :ScreenW 22.0 :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=1.000000,G=1.000000,B=1.000000,A=1.000000)" :ScreenX (- SizeX 130.0) :ScreenY 28.0 :ScreenW (select (>= stars 2) 22.0 0.0) :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.550000)" :ScreenX (- SizeX 100.0) :ScreenY 28.0 :ScreenW 22.0 :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=1.000000,G=1.000000,B=1.000000,A=1.000000)" :ScreenX (- SizeX 100.0) :ScreenY 28.0 :ScreenW (select (>= stars 3) 22.0 0.0) :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.550000)" :ScreenX (- SizeX 70.0) :ScreenY 28.0 :ScreenW 22.0 :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=1.000000,G=1.000000,B=1.000000,A=1.000000)" :ScreenX (- SizeX 70.0) :ScreenY 28.0 :ScreenW (select (>= stars 4) 22.0 0.0) :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=0.020000,G=0.022000,B=0.030000,A=0.550000)" :ScreenX (- SizeX 40.0) :ScreenY 28.0 :ScreenW 22.0 :ScreenH 22.0)
+  (HUD|DrawRect :RectColor "(R=1.000000,G=1.000000,B=1.000000,A=1.000000)" :ScreenX (- SizeX 40.0) :ScreenY 28.0 :ScreenW (select (>= stars 5) 22.0 0.0) :ScreenH 22.0)
+  (if (> (Class|BPMissions|GetBusted m) 0.0)
+    (HUD|DrawText :Text "BUSTED" :TextColor "(R=1.000000,G=0.250000,B=0.200000,A=1.000000)" :ScreenX (- (* SizeX 0.5) 150.0) :ScreenY (* SizeY 0.4) :Scale 5.0)))
