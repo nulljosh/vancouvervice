@@ -86,13 +86,21 @@ if [ "$STATUS" -ne 0 ]; then
   exit "$STATUS"
 fi
 
-# Finalize by hand: copies the staged paks into Binaries/Mac/VancouverVice.app, then archive that app.
+# Finalize. QUICK=1 (content-only change, the app already exists): copy the staged files straight into the app's
+# Contents/UE and re-sign ad hoc, a few seconds instead of the Xcode Stage pass (about 2 min). Otherwise run Xcode,
+# which also compiles Build/Mac/Resources/Assets.xcassets (the app icon).
+APP=/Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app
+STAGED=/Volumes/LaCie/Unreal/VancouverVice/Saved/StagedBuilds/Mac
+if [ "${QUICK:-0}" = 1 ] && [ -d "$APP/Contents/UE" ]; then
+  rsync -a --delete "$STAGED/Engine" "$STAGED/VancouverVice" "$APP/Contents/UE/" && cp "$STAGED/NOTICES.txt" "$STAGED/UECommandLine.txt" "$APP/Contents/UE/" \
+    && codesign --force --deep -s - "$APP" >> "$LOG" 2>&1 || { echo "quick finalize FAILED, see $LOG" >&2; exit 1; }
+  echo "packaged (quick): $APP"; exit 0
+fi
 (cd "$ENGINE/Engine/Source" && UBT_NO_POST_DEPLOY=true xcodebuild build \
   -workspace /Volumes/LaCie/Unreal/VancouverVice/Intermediate/ProjectFiles/VancouverVice_Mac_VancouverVice.xcworkspace \
   -scheme VancouverVice -configuration Development -destination generic/platform=macOS \
   CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION=YES -allowProvisioningUpdates UE_XCODE_BUILD_MODE=Stage \
   -hideShellScriptEnvironment >> "$LOG" 2>&1) || { echo "xcode finalize FAILED, see $LOG" >&2; exit 1; }
-APP=/Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app
 if [ -n "$APP" ]; then
   echo "packaged: $APP"
 else

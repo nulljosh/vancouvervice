@@ -1,19 +1,20 @@
-"""Title screen assets: the key art (site/img/key-art.png, downscaled to 2048 wide in /Volumes/LaCie/Unreal/dl/menu) as
+"""Title screen assets: the Higgsfield panel atlas and logo (T_MenuArt, T_Logo, made from brand/menu), the old key art (site/img/key-art.png, downscaled to 2048 wide in /Volumes/LaCie/Unreal/dl/menu) as
 a UI texture, and Anton (site/fonts/anton.woff2 decompressed to TTF) as a runtime font for HUD DrawText.
 Run once: python3 unreal/qa.py "$(cat unreal/menu_setup.py)"."""
 import unreal
 
 EAL = unreal.EditorAssetLibrary; AT = unreal.AssetToolsHelpers.get_asset_tools(); D = "/Game/VancouverVice/HUD"
 SRC = "/Volumes/LaCie/Unreal/dl/menu/"
-for f in ("T_KeyArt.png", "Anton.ttf"):
+for f in ("T_KeyArt.png", "T_MenuArt.png", "T_Logo.png", "Anton.ttf"):
     t = unreal.AssetImportTask(); t.filename = SRC + f; t.destination_path = D; t.automated = True; t.save = True; t.replace_existing = True
     AT.import_asset_tasks([t]); print("imported", t.imported_object_paths)
 
-tex = EAL.load_asset(D + "/T_KeyArt")
-tex.set_editor_property("lod_group", unreal.TextureGroup.TEXTUREGROUP_UI)
-tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
-tex.set_editor_property("never_stream", True)
-EAL.save_loaded_asset(tex)
+for n in ("T_KeyArt", "T_MenuArt", "T_Logo"):  # T_MenuArt: 2 x 2 Higgsfield panels (brand/menu), T_Logo: title lettering
+    tex = EAL.load_asset(D + "/" + n)
+    tex.set_editor_property("lod_group", unreal.TextureGroup.TEXTUREGROUP_UI)
+    tex.set_editor_property("mip_gen_settings", unreal.TextureMipGenSettings.TMGS_NO_MIPMAPS)
+    tex.set_editor_property("never_stream", True)
+    EAL.save_loaded_asset(tex)
 
 face = EAL.load_asset(D + "/Anton")
 if not isinstance(face, unreal.FontFace):
