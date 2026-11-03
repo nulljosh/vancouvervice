@@ -58,7 +58,9 @@ echo "log: $LOG"
 # keeps the log readable. -unattended avoids any interactive prompt blocking an unattended run.
 # Redirect (not `| tee`) so $? below is RunUAT's real exit status, not sh(1)'s pipefail-less
 # pipeline status; tail the log from another terminal to watch it live.
-# Speed: -iterate re-cooks only changed packages (the shader and cook caches stay in Saved/ and DerivedDataCache/);
+# Speed (Joshua 2026-11-02: "it's a game not rocket science"): -cookincremental re-cooks only changed packages (the old
+# -iterate recooked all 2226 every time, 6 min), -ForceUncompressed skips 2 min of pak compression, and there is no
+# archive copy: play the app straight from Binaries/Mac. Old note: -iterate re-cooks only changed packages (the shader and cook caches stay in Saved/ and DerivedDataCache/);
 # FAST=1 also skips the C++ build and reuses the last binaries when nothing native changed. The first build of a
 # machine is slow (shaders from scratch, off the LaCie); after that a rebuild takes minutes.
 BUILD="-build"; [ "${FAST:-0}" = 1 ] && BUILD="-skipbuild"
@@ -70,8 +72,7 @@ set +e
   -project="$PROJECT" \
   -platform=Mac \
   -clientconfig=Development \
-  $BUILD -cook -iterate -stage -pak -archive \
-  -archivedirectory="$ARCHDIR" \
+  $BUILD -cook -cookincremental -stage -pak -ForceUncompressed \
   -nop4 -utf8output -unattended \
   > "$LOG" 2>&1
 STATUS=$?
@@ -91,8 +92,7 @@ fi
   -scheme VancouverVice -configuration Development -destination generic/platform=macOS \
   CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION=YES -allowProvisioningUpdates UE_XCODE_BUILD_MODE=Stage \
   -hideShellScriptEnvironment >> "$LOG" 2>&1) || { echo "xcode finalize FAILED, see $LOG" >&2; exit 1; }
-rm -rf "$ARCHDIR/Mac/VancouverVice.app"; ditto /Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app "$ARCHDIR/Mac/VancouverVice.app"
-APP=$(find "$ARCHDIR" -maxdepth 4 -name "*.app" -print -quit)
+APP=/Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app
 if [ -n "$APP" ]; then
   echo "packaged: $APP"
 else

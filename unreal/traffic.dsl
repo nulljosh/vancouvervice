@@ -16,6 +16,6 @@
       (bind m (Actor|GetActorOfClass :ActorClass "/Game/VancouverVice/BP_Missions.BP_Missions_C"))
       (Class|BPMissions|SetHealth :self m :Health (- (Class|BPMissions|GetHealth m) (* 400.0 DeltaSeconds)))
       (bind fwd (Transformation|GetActorForwardVector))
-      (Pawn|Character|LaunchCharacter :self walker :LaunchVelocity (Math|Vector|MakeVector (* 1400.0 (.x fwd)) (* 1400.0 (.y fwd)) 500.0) :bXYOverride true :bZOverride true))
+      (Character|LaunchCharacter :self walker :LaunchVelocity (Math|Vector|MakeVector (* 1400.0 (.x fwd)) (* 1400.0 (.y fwd)) 500.0) :bXYOverride true :bZOverride true))
     (if (< (Math|Vector|Distance(Vector) next target) 120.0)
       (Variables|Default|SetIndex (select (>= (+ i 1) n) 0 (+ i 1))))))
