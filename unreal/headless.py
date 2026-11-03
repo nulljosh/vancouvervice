@@ -31,7 +31,8 @@ else:
         try:
             code = re.sub(r"^\s*; @include (\S+)\s*$", lambda m: open(os.path.join(HERE, m.group(1))).read(),
                           open(os.path.join(HERE, f)).read(), flags=re.M)
-            bp = BlueprintTools.write_graph_dsl(graph(ref), code)
+            BlueprintTools.write_graph_dsl(graph(ref), code)  # returns None through the tool wrapper
+            bp = unreal.load_asset(ref.split(":")[0])
             BlueprintTools.compile_blueprint(bp)
             unreal.EditorAssetLibrary.save_loaded_asset(bp)
             print("HEADLESS wrote", f)
