@@ -6,6 +6,8 @@ import unreal
 EAL = unreal.EditorAssetLibrary; AT = unreal.AssetToolsHelpers.get_asset_tools(); D = "/Game/VancouverVice/HUD"
 SRC = "/Volumes/LaCie/Unreal/dl/menu/"
 for f in ("T_KeyArt.png", "T_MenuArt.png", "T_Logo.png", "Anton.ttf", "Seawall.ttf"):
+    if f.endswith(".ttf") and EAL.does_asset_exist(D + "/" + f[:-4]):
+        continue  # re-importing a font face asks a Slate question and kills the windowless editor (headless.sh)
     t = unreal.AssetImportTask(); t.filename = SRC + f; t.destination_path = D; t.automated = True; t.save = True; t.replace_existing = True
     AT.import_asset_tasks([t]); print("imported", t.imported_object_paths)
 
