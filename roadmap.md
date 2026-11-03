@@ -67,7 +67,6 @@ Honest grade today: GTA 1/2 A-, GTA 3 C, GTA 4 D, GTA 5 and 6 F.
 
 Converge here first, then fan out. Joshua as himself (real skin, fitted glasses, black polo) bursts out of the Apple Store on Georgia, employees chase him out, he jacks the car at the curb, the cops come, he loses them, he pawns the Mac minis on Granville. Package it as a Mac .app, QA the real app, ship it as 1.27.
 
-- [ ] unreal/package.sh: RunUAT BuildCookRun, Development, Mac, editor closed so it gets the RAM; restricted Cesium token in the build.
 - [ ] In-game autoplayer behind a launch flag (-autoplay) so the packaged app tests itself, writes a PASS/FAIL file and a screenshot.
 - [ ] Build in the editor without Play; QA on the packaged app at each milestone.
 
@@ -80,7 +79,6 @@ After the slice: fan out across graphics (street-level tile detail, lighting), s
 - [ ] Wardrobe on the male body: black polo (rebuild, straight hem, clean shoulder) and a grey hoodie with a parody "Gastown Polo" bear logo top left (bear in a blue-and-green toque holding a coffee, no real brand marks).
 - [ ] Smooth walk: hidden mannequin drives, Joshua's body follows (leader pose, wired, needs a PIE check).
 - [ ] Fast travel on Tab between Vancouver, Victoria, Seattle, Toronto, New York (unreal/fasttravel.dsl).
-- [ ] Cops and stars (docs/COPS.md): BP_Heat, pursuit cars, search circle.
 - [ ] Minimap top right: top-down scene capture of the Google tiles, stars beside it.
 - [ ] Apple Store opener: two employees chase you out, Mac minis line in the corner.
 - [ ] Pawn shop on Granville, cash counter.
