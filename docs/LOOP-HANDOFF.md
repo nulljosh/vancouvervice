@@ -1,4 +1,4 @@
-# Vancouver Vice loop handoff (2026-11-02, night)
+# Vancouver Vice loop handoff (2026-11-03, morning)
 
 ## What the loop is
 Joshua's call: the real game is Unreal 5.8. The three.js web game is the prototype and the source of the idea (missions, the heist, guns, free roam, real map data). Each pass closes one gap between the game and GTA V (menus, HUD, missions, driving, cops, combat, free roam, world), fixes the top bug it finds, builds, checks the packaged Mac app with a screenshot or clip, commits, and reports in one line.
