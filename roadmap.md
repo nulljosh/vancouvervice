@@ -11,13 +11,11 @@ Joshua's v1 shipped as 2.0.0 (free roam on foot or by car across the Lower Mainl
 - [ ] People: replace the crowd with Higgsfield-rigged people (eight or so looks, men and women, all ages) wearing Joshua's walk, run, jab and fall, like the store staff now.
 - [ ] Stores you walk into: a gun store where you buy guns and ammo, a barber that changes Joshua's hair, a clothing store that changes his outfit, a cafe and a pawn shop, each with its own interior.
 - [ ] Guns that look like guns: a model per weapon in his hand, muzzle flash, shell casings, a reload, and recoil in the camera.
-- [ ] Mission 1, cinematic: a short intro cutscene, the Macs into a bag he carries, sliding doors that open for him, staff who grab at him on the way out.
 - [ ] All of Vancouver: join Kits, East Van and the downtown map into one city, then Richmond and Burnaby, with streaming so it stays fast.
 - [ ] Open ocean west of the old map edge on the big-road map (Overture has no ocean polygons; use the land polygons and fill the rest as sea).
 - [ ] Parked cars against walls you can still steal and drive (snap a stolen car onto the nearest lane).
 - [ ] Brookswood landmarks across the whole neighbourhood, not just 40 Avenue.
 - [ ] The story on the real streets: missions, heroes, weapons and radio from play.html running on city.html.
-- [ ] One save across every map.
 - [ ] Polish carried over: the Port Mann overhead, buildings inside the fort and the Big House, music for the trailer, Richmond Centre, Coquitlam and Port Coquitlam.
 
 ## Where we are (end of 2026-09-22)
@@ -76,12 +74,10 @@ After the slice: fan out across graphics (street-level tile detail, lighting), s
 
 - [ ] Core Data look: fair freckled skin, curly ginger hair, male body, black crewneck over a white collar.
 - [ ] Wardrobe on the male body: black polo (rebuild, straight hem, clean shoulder) and a grey hoodie with a parody "Gastown Polo" bear logo top left (bear in a blue-and-green toque holding a coffee, no real brand marks).
-- [ ] Smooth walk: hidden mannequin drives, Joshua's body follows (leader pose, wired, needs a PIE check).
 - [ ] Fast travel on Tab between Vancouver, Victoria, Seattle, Toronto, New York (unreal/fasttravel.dsl).
 - [ ] Minimap top right: top-down scene capture of the Google tiles, stars beside it.
 - [ ] Apple Store opener: two employees chase you out, Mac minis line in the corner.
 - [ ] Pawn shop on Granville, cash counter.
-- [ ] Guns: rifle from the first-person template on a third-person aim.
 - [ ] Ben and Alexandre as switchable MetaHumans (face scans).
 - [ ] Brian (Dad), Christine (Mom) and Sarah (sister) as MetaHumans from iPhone face scans (/face-scan), for the garage, dinner and dock scenes.
 - [ ] Missions 5 to 14 from docs/STORY.md.
