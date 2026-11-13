@@ -149,3 +149,9 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 ## Ingested 2026-10-25
 - [ ] Poster-style landing built from our own story renders (original, not a copy of Rockstar's site)
 - [ ] Rename to one word. (Probe Apple/store names first, one name everywhere.)
+
+## Ingested 2026-11-13
+- [ ] README has stale screenshots. Clean it up a bit. We have me walking around in the city already.
+- [ ] Next: multiple people, and the entire city fully mapped out.
+- [ ] Hella QA, testing, no crashing.
+- [ ] Probably better menu design, plus tutorial and onboarding.
