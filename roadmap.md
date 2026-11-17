@@ -151,7 +151,7 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Rename to one word. (Probe Apple/store names first, one name everywhere.)
 
 ## Ingested 2026-11-13
-- [ ] README has stale screenshots. Clean it up a bit. We have me walking around in the city already.
+- [ ] README has stale screenshots. Clean it up a bit. (2026-11-16 note: "You know which. I've asked this 10x. Remove them.") We have me walking around in the city already.
 - [ ] Next: multiple people, and the entire city fully mapped out.
 - [ ] Hella QA, testing, no crashing.
 - [ ] Probably better menu design, plus tutorial and onboarding.
