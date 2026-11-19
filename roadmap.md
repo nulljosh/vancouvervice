@@ -33,6 +33,8 @@ Honest grade today: GTA 1/2 A-, GTA 3 C, GTA 4 D, GTA 5 and 6 F.
 
 ## Next up, in order
 
+- [ ] Rebuild the Unreal project on a new NVMe drive from tools/ and unreal/ scripts, committed with Git LFS.
+
 1. ~~**Unreal version.** UE 5.8.2 installed, MCP server running on 18000, real Vancouver from Google 3D Tiles streams live, player placed at Granville & Georgia, three heroes (Joshua, Ben, Alexandre) ready to play.~~
 2. **Drivable car** (so players can get around, test vehicle physics, cops follow you). Commit and test it headless.
 3. **Funny Vancouver chaos** (Joshua asked for all of these, GTA-style satire, nobody vulnerable as the punchline): bike lane rage cyclist, seagulls steal your hot dog at English Bay, SkyTrain surfing, crypto bro in a Patagonia vest, condo presale campout brawl, rain rage road fights, Lululemon sale stampede in Kits, Tesla bros drag racing in Coal Harbour, film crew blocking the street (steal the prop cop car), weed delivery mission, open house real estate agent chasing you, 2011-style hockey riot, wet coast driver doing 30 in the fast lane.

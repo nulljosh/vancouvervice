@@ -1,6 +1,6 @@
 # Vancouver Vice
 
-A GTA-style game in the real Vancouver. Live at vancouvervice.heyitsmejosh.com, repo nulljosh/vancouvervice.
+A GTA-style game in the real Vancouver. Live at vancouvervice.jaybulb.com, repo nulljosh/vancouvervice.
 
 ## Run
 `cd site && python3 -m http.server 8765`, then open /play.html (main game) or /city.html (real streets, `?area=victoria|kits|langley`).
