@@ -35,3 +35,14 @@ Buildings are merged into a handful of meshes. Traffic, lamps and trees are inst
 
 ## Shipping
 `npx wrangler deploy` publishes `site/` and the online worker. Tagging `v*` makes GitHub Actions build every app and attach it to a release. Apps are signed when signing secrets exist, unsigned otherwise.
+## Benchmarks
+
+Headless, Playwright on swiftshader, 1280x720, Mac Mini M4. Real GPUs run far faster; these are the numbers the tests hold the line on. `node tests/bench.mjs` regenerates them.
+
+| Scene | Boot | Island build | Frames per 10 s |
+|---|---|---|---|
+| Downtown, OpenStreetMap extrusions only | 8.1 s | | 5 |
+| Downtown plus the Granville and Georgia island | 2.5 s | 10.9 s | 5 |
+
+The island is 10 buildings, 84 frontages and 69 tenant signs drawn at start-up from one spec, with no binary assets. The same spec exports an 8.7 MB glTF for Unreal in one headless Blender run.
+

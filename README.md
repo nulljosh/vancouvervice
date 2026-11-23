@@ -20,17 +20,12 @@ It's the real city: the Unreal build streams Google's 3D scan of Vancouver, so y
 ## Cast
 Your family gets pulled in. Brian, your dad, has the garage, the boat, and a thing he wants back: his hard drive. Christine calls at terrible moments. Sarah is smarter than all three of you and refuses to help. Then she's the best one on the job.
 
-| | |
-|---|---|
-| <img src="docs/img/vv-downtown.jpg" alt="Downtown Vancouver towers streamed into Unreal"> | <img src="docs/img/unreal-joshua.jpg" alt="Joshua's face scan as the player in Unreal"> |
-
 ## The game
 A title screen, settings for graphics, sound and mouse, and a save that picks up where you left off. Pawn the Apple Store loot at Granville Pawn. Press T to fast travel between Gastown, Kits and Victoria. Joshua looks like Joshua: ginger, tortoiseshell glasses, black crewneck.
 
 | | |
 |---|---|
-| <img src="docs/img/web-title.jpg" alt="Title screen: New Game, Settings, Quit"> | <img src="docs/img/web-joshua.jpg" alt="Joshua on the Canada Place waterfront"> |
-| <img src="docs/img/web-pawn.jpg" alt="Granville Pawn buys six Mac minis and two phones for $980"> | <img src="docs/img/web-travel.jpg" alt="Fast travel menu"> |
+| <img src="docs/img/web-joshua.jpg" alt="Joshua walking the Canada Place waterfront"> | <img src="docs/img/vv-downtown.jpg" alt="Downtown Vancouver towers streamed into Unreal"> |
 
 ## Play
 Free. Download it for Mac, Windows, Linux or Android from [releases](https://github.com/nulljosh/vancouvervice/releases/latest). There's no browser version: the game runs in the app.
@@ -40,21 +35,5 @@ W A S D to move, Shift to run, Space to jump. Mouse to look, click to shoot, F t
 
 On Android: stick on the left, drag to look, buttons on the right.
 
-## Benchmarks
-
-Headless, Playwright on swiftshader, 1280x720, Mac Mini M4. Real GPUs run far faster; these are the numbers the tests hold the line on. `node tests/bench.mjs` regenerates them.
-
-| Scene | Boot | Island build | Frames per 10 s |
-|---|---|---|---|
-| Downtown, OpenStreetMap extrusions only | 8.1 s | | 5 |
-| Downtown plus the Granville and Georgia island | 2.5 s | 10.9 s | 5 |
-
-The island is 10 buildings, 84 frontages and 69 tenant signs drawn at start-up from one spec, with no binary assets. The same spec exports an 8.7 MB glTF for Unreal in one headless Blender run.
-
-## Two builds
-The browser build plays anywhere. The Unreal build is the real-looking one, Mac only for now, and you can scan your own face in with an iPhone.
-
 ---
-<sub>Apache 2.0 license. Map data © OpenStreetMap contributors. People by Microsoft Rocketbox (MIT). Car model by vicent091036 (CC-BY 4.0). Privacy: [vancouvervice.jaybulb.com/privacy.html](https://vancouvervice.jaybulb.com/privacy.html).</sub>
-
-<sub>[Changelog](CHANGELOG.md) · [Roadmap](roadmap.md) · [How it works](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)</sub>
+<sub>Apache 2.0 · Map data © OpenStreetMap contributors · People by Microsoft Rocketbox (MIT) · Car by vicent091036 (CC-BY 4.0) · [Privacy](https://vancouvervice.jaybulb.com/privacy.html) · [Changelog](CHANGELOG.md) · [Roadmap](roadmap.md) · [How it works](docs/ARCHITECTURE.md)</sub>

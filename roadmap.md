@@ -108,7 +108,7 @@ After the slice: fan out across graphics (street-level tile detail, lighting), s
 - Add the vancouvervice domain to the Cesium token so the 3D beta works there.
 - Signing keys for Windows, Mac notarisation and Android so apps install without warnings (`apps/README.md`).
 - App Store: screenshots, description, privacy answers, $0.99 upfront per GTM.md.
-- Refresh README screenshots (the 7-Eleven shot still shows the old soldier model).
+
 - Move the old technical README notes into `docs/ARCHITECTURE.md`.
 
 ## How to pick this up
@@ -153,7 +153,7 @@ Open Claude Code in `~/Documents/Code/vancouvervice` and paste:
 - [ ] Rename to one word. (Probe Apple/store names first, one name everywhere.)
 
 ## Ingested 2026-11-13
-- [ ] README has stale screenshots. Clean it up a bit. (2026-11-16 note: "You know which. I've asked this 10x. Remove them.") We have me walking around in the city already.
+- [x] README has stale screenshots. Clean it up a bit. (2026-11-16 note: "You know which. I've asked this 10x. Remove them.") We have me walking around in the city already.
 - [ ] Next: multiple people, and the entire city fully mapped out.
 - [ ] Hella QA, testing, no crashing.
 - [ ] Probably better menu design, plus tutorial and onboarding.
