@@ -9,7 +9,7 @@ const HEROES := {
 	"Brian": {"scene": "res://assets/brian.glb", "at": Vector2(-2668, 1636),
 		"anims": {"idle": "walk", "walk": "walk", "freeze_idle": true, "strip_root": "Bip01"}},
 }
-const SAVE := "user://save.json"
+var SAVE := "user://save.json"  # QA runs use their own file so they never touch a real save
 const CFG := "user://settings.json"
 
 var city: Node3D
@@ -32,7 +32,7 @@ func _ready() -> void:
 	for a in [["forward", KEY_W], ["back", KEY_S], ["left", KEY_A], ["right", KEY_D], ["run", KEY_SHIFT], ["jump", KEY_SPACE], ["swap", KEY_TAB]]:
 		InputMap.add_action(a[0]); var ev := InputEventKey.new(); ev.physical_keycode = a[1]; InputMap.action_add_event(a[0], ev)
 	var args := OS.get_cmdline_user_args(); var i := args.find("--qa")
-	if i >= 0 and i + 1 < args.size(): qa = args[i + 1]
+	if i >= 0 and i + 1 < args.size(): qa = args[i + 1]; SAVE = "user://qa_save.json"; DirAccess.remove_absolute(SAVE)
 	var f := FileAccess.get_file_as_string(CFG)
 	if f != "": settings.merge(JSON.parse_string(f), true)
 	_sky()
@@ -48,7 +48,7 @@ func _ready() -> void:
 	for h in HEROES: spots[h] = city.open_spot(HEROES[h].at)
 	drone = Camera3D.new(); drone.far = 4000; drone.fov = 55; add_child(drone); drone.current = true
 	for k in settings: set_setting(k, settings[k], false)
-	state = "intro"; ui.intro()
+	_dusk(true); state = "intro"; ui.intro()
 
 func _sky() -> void:
 	env = Environment.new(); var sky := Sky.new(); var mat := ProceduralSkyMaterial.new()
@@ -60,9 +60,18 @@ func _sky() -> void:
 	sun = DirectionalLight3D.new(); sun.rotation_degrees = Vector3(-40, -35, 0); sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 120.0; sun.light_energy = 1.2; add_child(sun)
 
+## The opening and title sit in a pink Vancouver dusk; the game itself is a clear day.
+func _dusk(on: bool) -> void:
+	var m: ProceduralSkyMaterial = env.sky.sky_material
+	m.sky_top_color = Color("#5a6fa8") if on else Color("#4f7fb5")
+	m.sky_horizon_color = Color("#f2b8c6") if on else Color("#c4d4e4"); m.ground_horizon_color = m.sky_horizon_color
+	env.fog_light_color = m.sky_horizon_color; env.fog_density = (0.45 if on else 1.4) / settings.view
+	sun.light_color = Color("#ffd2b8") if on else Color.WHITE; sun.rotation_degrees = Vector3(-18 if on else -40, -35, 0)
+
 # --- flow ------------------------------------------------------------------
 
 func show_title() -> void:
+	_dusk(true)
 	state = "title"; ui.hud.visible = false; drone.current = true; Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if player: player.visible = false; _freeze(true)
 	ui.title(_save_summary())
@@ -79,6 +88,7 @@ func continue_game() -> void:
 	_start()
 
 func _start() -> void:
+	_dusk(false)
 	if not player:
 		player = preload("res://scripts/player.gd").new(); add_child(player)
 	player.visible = true; player.sens = settings.sens
@@ -166,7 +176,7 @@ func _fly(dt: float) -> void:
 		drone.look_at(c.lerp(Vector3(-200, 20, 0), k))
 	else:
 		var a := drone_t * 0.035
-		drone.global_position = c + Vector3(cos(a) * 900, 300, sin(a) * 900)
+		drone.global_position = c + Vector3(cos(a) * 560, 190, sin(a) * 560)
 		drone.look_at(c + Vector3(0, 40, 0))
 
 func _qa(dt: float) -> void:
