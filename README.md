@@ -23,7 +23,19 @@ Your family gets pulled in. Brian, your dad, has the garage, the boat, and a thi
 ## The game
 Five story missions, then endless side jobs. Fists, pistol, shotgun and SMG. Cars that smoke, burn and blow up, and five-star cops who shoot back. Pawn the Apple Store loot at Granville Pawn, rob the 7-Eleven, walk into Dad's garage in Kits. Live Vancouver weather, radio, XP and a save that picks up where you left off. Joshua looks like Joshua: ginger, tortoiseshell glasses, black crewneck.
 
-An Unreal Engine build on Google's photoreal 3D Vancouver is being rebuilt from the scripts in `tools/` and `unreal/`. See the [roadmap](roadmap.md).
+## Native build (new)
+The real game is moving to a native app built with Godot, an engine light enough for an 8 GB iMac. It loads the real downtown map from the same data as the web build: 17,659 buildings and 19,483 streets. It opens on a fly-over, then a title screen with Continue, New game, Settings and Quit. You play as Joshua outside the Apple Store on Georgia. Tab switches to Dad in Kits, and Esc pauses and saves.
+
+Run it with `~/Applications/Godot.app/Contents/MacOS/Godot --path godot`, or build `Vancouver Vice.app` with `sh tools/godot_app.sh`. To test it with no window, run `Godot --headless --path godot -- --qa /tmp/qa`. It checks the opening, title, walking, street names, switching characters, pause, save and continue.
+
+| Benchmark (iMac 2017, i5, 8 GB, Radeon Pro 570) | |
+|---|---|
+| City build | 1.8 s |
+| Frame (process) | 4.9 ms, 60 fps capped |
+| Memory | 155 MB |
+| City geometry | 546 meshes, 629k triangles |
+
+The Unreal build on Google's photoreal 3D Vancouver will be rebuilt from `tools/` and `unreal/` on the Mac Mini.
 
 ## Play
 Free. Download it for Mac, Windows, Linux or Android from [releases](https://github.com/nulljosh/vancouvervice/releases/latest). There's no browser version: the game runs in the app.
