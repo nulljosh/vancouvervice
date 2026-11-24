@@ -67,12 +67,12 @@ for (const [k, v] of Object.entries(r)) check(v, k);
 check(p.errs.length === 0, "no page errors during play: " + p.errs.slice(0, 2).join(" | "));
 await p.close();
 
-// three heroes: Tab cycles Joshua -> Ben -> Alexandre -> Joshua
+// four heroes: Tab cycles Joshua -> Ben -> Alexandre -> Brian -> Joshua
 p = await page(undefined, () => localStorage.clear()); await p.keyboard.press("Enter");
-check(await p.evaluate(async () => { const n = []; for (let i = 0; i < 3; i++) { dispatchEvent(new KeyboardEvent("keydown", { code: "Tab" })); dispatchEvent(new KeyboardEvent("keyup", { code: "Tab" })); await new Promise(r => setTimeout(r, 150)); for (let k = 0; k < 250 && window.GS_SW?.t >= 0; k++) await new Promise(r => setTimeout(r, 100)); n.push(G.heroes[G.cur].name + ":" + GS.hood(G.player.x, G.player.y).name); } return n.join(",") === `Ben:Kitsilano,Alexandre:Victoria,Joshua:${GS.hood(GS.ROOMS[1].door.x, GS.ROOMS[1].door.y).name}` && GS.inRoom(G.player)?.name === "the store on Georgia"; }), "Tab cycles Ben (Kitsilano), Alexandre (Victoria), Joshua (back in the store on Georgia)");
+check(await p.evaluate(async () => { const n = []; for (let i = 0; i < 4; i++) { dispatchEvent(new KeyboardEvent("keydown", { code: "Tab" })); dispatchEvent(new KeyboardEvent("keyup", { code: "Tab" })); await new Promise(r => setTimeout(r, 150)); for (let k = 0; k < 250 && window.GS_SW?.t >= 0; k++) await new Promise(r => setTimeout(r, 100)); n.push(G.heroes[G.cur].name + ":" + GS.hood(G.player.x, G.player.y).name); } return n.join(",") === `Ben:Kitsilano,Alexandre:Victoria,Brian:${GS.hood(GS.ROOMS[2].out.x, GS.ROOMS[2].out.y).name},Joshua:${GS.hood(GS.ROOMS[1].door.x, GS.ROOMS[1].door.y).name}` && GS.inRoom(G.player)?.name === "the store on Georgia"; }), "Tab cycles Ben (Kitsilano), Alexandre (Victoria), Brian (Dad's garage), Joshua (back in the store on Georgia)");
 await p.close();
 p = await page(undefined, () => localStorage.gs = JSON.stringify({ game: { heroes: [{ name: "Joshua", p: { x: 2120, y: 1340 }, a: 0 }, { name: "Alexandre", p: { x: 1340, y: 3940 }, a: 0 }], cur: 1, score: 7, step: 5, mission: 0, ammoW: [0, 60, 16, 120] } }));
-check(await p.evaluate(() => G.heroes.length === 3 && G.heroes[G.cur].name === "Alexandre" && G.score === 7), "old two-hero save upgrades to three heroes");
+check(await p.evaluate(() => G.heroes.length === 4 && G.heroes[G.cur].name === "Alexandre" && G.heroes[3].name === "Brian" && G.score === 7), "old two-hero save upgrades to four heroes");
 await p.close();
 
 // perks change the numbers

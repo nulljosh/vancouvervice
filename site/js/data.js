@@ -19,8 +19,9 @@ export const PERKS = {
   Joshua: { blurb: "Gastown hustler: +50% mission cash, cops lose interest twice as fast", cash: 1.5, cool: 2 },
   Ben: { blurb: "Kits athlete: runs 40% faster, jumps higher, drops people in two punches", run: 1.4, jump: 1.35, fists: 2 },
   Alexandre: { blurb: "Victoria fixer: steady aim (+50% range), faster cars, shrugs off 30% of damage", aim: 1.5, drive: 1.15, armor: .7 },
+  Brian: { blurb: "Dad: thirty years of garage doors. Shrugs off half the damage, hits like a torsion spring, drives like it's his truck", armor: .5, fists: 2, drive: 1.1, run: .9 },
 };
-export const HERO_LOOK = { Joshua: 0xe8b21a, Ben: 0x2a5fb8, Alexandre: 0x1c1c1f };
+export const HERO_LOOK = { Joshua: 0xe8b21a, Ben: 0x2a5fb8, Alexandre: 0x1c1c1f, Brian: 0x6b7f99 };
 export const STARS = [1, 20, 60, 140, 260];
 export const WEAPONS = [{ name: "Fists" }, { name: "Pistol", dmg: 1, range: 600, rate: 250, max: 90, mag: 12, reload: 1.2 }, { name: "Shotgun", dmg: 3, range: 220, rate: 800, pellets: 3, max: 30, mag: 6, reload: 2.2 }, { name: "SMG", dmg: 1, range: 450, rate: 90, max: 240, mag: 30, reload: 1.6 }, { name: "Revolver", dmg: 2, range: 650, rate: 600, max: 36, mag: 6, reload: 2 }, { name: "Assault rifle", dmg: 1, range: 750, rate: 110, max: 300, mag: 30, reload: 1.8 }, { name: "Sniper rifle", dmg: 5, range: 1500, rate: 1300, max: 20, mag: 5, reload: 2.6 }];
 export const ACH = { first: "First Blood", thief: "Grand Theft Auto", five: "Five Star Menace", copkill: "Cop Killer", island: "Island Hopper", tourist: "Tourist: every landmark", courier: "Courier: 5 deliveries", taxi: "Night Shift: first fare", ghost: "Ghost: lost a 3 star chase", champ: "Level 5" };
@@ -64,4 +65,4 @@ export const LOOT = { mac: ["Mac mini", 150], book: ["MacBook", 300], phone: ["p
 export const SKIN = [0xf1c9a5, 0xd9a680, 0xb67b53, 0x8d5a3b, 0x5c3a24];
 export const HAIR = [0x1c140f, 0x3b2616, 0x6b4a2b, 0xb58a4c, 0x8f8f8f];
 export const PANTS = [0x2b3440, 0x1f1f24, 0x4a3b2a, 0x3b4f6b, 0x5a5a5a];
-export const HERO_BODY = { Joshua: "hero", Ben: "male_adult_05", Alexandre: "male_adult_09" };
+export const HERO_BODY = { Joshua: "hero", Ben: "male_adult_05", Alexandre: "male_adult_09", Brian: "male_adult_07" };
