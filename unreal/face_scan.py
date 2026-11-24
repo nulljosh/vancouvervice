@@ -9,7 +9,8 @@ from qa import run
 
 zip_path, name = sys.argv[1], sys.argv[2]
 frame = int(sys.argv[3]) if len(sys.argv) > 3 else 60
-dest = f"/Volumes/LaCie/Unreal/Captures/{name}"
+if not os.environ.get("VV_DRIVE"): sys.exit("set VV_DRIVE to the drive holding Unreal/ (see unreal/drive.sh)")
+dest = os.path.join(os.environ["VV_DRIVE"], "Unreal", "Captures", name)
 zipfile.ZipFile(zip_path).extractall(dest)
 take = next(r for r, _, f in os.walk(dest) if "take.json" in f)
 mov = next(os.path.join(take, f) for f in os.listdir(take) if f.endswith(".mov"))

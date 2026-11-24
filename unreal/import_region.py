@@ -2,10 +2,11 @@
 z -6840, complex-as-simple double-sided collision, actors in the City/<Area> outliner folder.
 Run: QA_TIMEOUT=1500 python3 unreal/qa.py "AREA='surrey'; $(cat unreal/import_region.py)"
 One town per call keeps the editor's memory flat on the 16 GB Mac."""
-import unreal
+import os, unreal
 
 Z = -6840
-SRC = "/Volumes/LaCie/Unreal/dl/region/%s.glb" % AREA
+VV = os.path.dirname(os.path.normpath(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())))  # <drive>/Unreal
+SRC = os.path.join(VV, "dl", "region", "%s.glb" % AREA)
 DST = "/Game/City/" + AREA.title()
 EAS = unreal.EditorActorSubsystem()
 

@@ -25,3 +25,5 @@ node_modules
 package.json
 package-lock.json
 tools/overture-corridor.json
+unreal/.drive
+__pycache__/

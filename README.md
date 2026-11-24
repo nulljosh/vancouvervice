@@ -13,19 +13,17 @@
 
 Rent is four grand and it rains nine months a year. Steal a car on Granville, rob the 7-Eleven, lose the cops on the Burrard Bridge. The more trouble you cause, the more stars you get.
 
-It's the real city: the Unreal build streams Google's 3D scan of Vancouver, so you start outside the actual Apple Store on Georgia. Play as Joshua downtown, Ben in Kits or Alexandre in Victoria, and switch any time.
+It's the real city: 3,359 real downtown buildings and 8,378 named streets from OpenStreetMap, plus Kits, Victoria and 20-odd more Lower Mainland areas. Play as Joshua in Gastown, Ben in Kits or Alexandre in Victoria, and switch any time.
 
-<p align="center"><img src="docs/img/vv-english-bay.jpg" alt="English Bay and the West End, streamed live into Unreal Engine"></p>
+<p align="center"><img src="docs/img/web-joshua.jpg" alt="Joshua walking the Canada Place waterfront"></p>
 
 ## Cast
 Your family gets pulled in. Brian, your dad, has the garage, the boat, and a thing he wants back: his hard drive. Christine calls at terrible moments. Sarah is smarter than all three of you and refuses to help. Then she's the best one on the job.
 
 ## The game
-A title screen, settings for graphics, sound and mouse, and a save that picks up where you left off. Pawn the Apple Store loot at Granville Pawn. Press T to fast travel between Gastown, Kits and Victoria. Joshua looks like Joshua: ginger, tortoiseshell glasses, black crewneck.
+Five story missions, then endless side jobs. Fists, pistol, shotgun and SMG. Cars that smoke, burn and blow up, and five-star cops who shoot back. Pawn the Apple Store loot at Granville Pawn, rob the 7-Eleven, walk into Dad's garage in Kits. Live Vancouver weather, radio, XP and a save that picks up where you left off. Joshua looks like Joshua: ginger, tortoiseshell glasses, black crewneck.
 
-| | |
-|---|---|
-| <img src="docs/img/web-joshua.jpg" alt="Joshua walking the Canada Place waterfront"> | <img src="docs/img/vv-downtown.jpg" alt="Downtown Vancouver towers streamed into Unreal"> |
+An Unreal Engine build on Google's photoreal 3D Vancouver is being rebuilt from the scripts in `tools/` and `unreal/`. See the [roadmap](roadmap.md).
 
 ## Play
 Free. Download it for Mac, Windows, Linux or Android from [releases](https://github.com/nulljosh/vancouvervice/releases/latest). There's no browser version: the game runs in the app.

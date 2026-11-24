@@ -1,10 +1,10 @@
-"""Title screen assets: the Higgsfield panel atlas and logo (T_MenuArt, T_Logo, made from brand/menu), the old key art (site/img/key-art.png, downscaled to 2048 wide in /Volumes/LaCie/Unreal/dl/menu) as
+"""Title screen assets: the Higgsfield panel atlas and logo (T_MenuArt, T_Logo, made from brand/menu), the old key art (site/img/key-art.png, downscaled to 2048 wide in <drive>/Unreal/dl/menu) as
 a UI texture, and Anton (site/fonts/anton.woff2 decompressed to TTF) as a runtime font for HUD DrawText.
 Run once: python3 unreal/qa.py "$(cat unreal/menu_setup.py)"."""
-import unreal
+import os, unreal
 
 EAL = unreal.EditorAssetLibrary; AT = unreal.AssetToolsHelpers.get_asset_tools(); D = "/Game/VancouverVice/HUD"
-SRC = "/Volumes/LaCie/Unreal/dl/menu/"
+SRC = os.path.join(os.path.dirname(os.path.normpath(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir()))), "dl", "menu") + "/"
 for f in ("T_KeyArt.png", "T_MenuArt.png", "T_Logo.png", "Anton.ttf", "Seawall.ttf"):
     if f.endswith(".ttf") and EAL.does_asset_exist(D + "/" + f[:-4]):
         continue  # re-importing a font face asks a Slate question and kills the windowless editor (headless.sh)

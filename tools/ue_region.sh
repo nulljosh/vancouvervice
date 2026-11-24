@@ -1,8 +1,8 @@
 #!/bin/sh
 # Builds every Lower Mainland town plus the big-road corridor between them as Unreal city chunks, on one world
 # whose origin is downtown. The corridor leaves out each town's box so nothing is built twice.
-# Run: sh tools/ue_region.sh [outdir]   (default /Volumes/LaCie/Unreal/dl/region)
-set -e; cd "$(dirname "$0")/.."; OUT=${1:-/Volumes/LaCie/Unreal/dl/region}; B=/Applications/Blender.app/Contents/MacOS/Blender; mkdir -p "$OUT"
+# Run: sh tools/ue_region.sh [outdir]   (default $VV_DRIVE/Unreal/dl/region)
+set -e; cd "$(dirname "$0")/.."; OUT=${1:-${VV_DRIVE:?set VV_DRIVE or pass an outdir}/Unreal/dl/region}; B=/Applications/Blender.app/Contents/MacOS/Blender; mkdir -p "$OUT"
 TOWNS="ambleside lonsdale metrotown newwest portmoody steveston ladner surrey cloverdale whiterock brookswood walnutgrove fortlangley mapleridge abbotsford mission chilliwack harrison"
 python3 - $TOWNS downtown > "$OUT/exclude.json" <<'PY'
 import json, math, sys

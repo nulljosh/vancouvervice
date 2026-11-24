@@ -2,8 +2,8 @@
 # Mission one on autoplay, recorded. Starts Play, lets the city stream in, runs the walk test (out of the Apple Store)
 # then the drive test (jack the car, floor it), screen-records the editor window the whole time, stops Play, writes a GIF.
 #   sh unreal/demo.sh [seconds]      default 75
-HERE=$(cd "$(dirname "$0")" && pwd); OUT=${OUT:-/tmp/vv_demo}; SECS=${1:-75}; mkdir -p "$OUT"
-open -a /Volumes/LaCie/UE_5.8/Engine/Binaries/Mac/UnrealEditor.app
+HERE=$(cd "$(dirname "$0")" && pwd); . "$HERE/drive.sh"; OUT=${OUT:-/tmp/vv_demo}; SECS=${1:-75}; mkdir -p "$OUT"
+open -a "$UE_APP"
 python3 -c "import sys; sys.path.insert(0,'$HERE'); import qa; qa.mcp('EditorToolset.EditorAppToolset','StartPIE',{'options':{'bSimulate':False,'playMode':'PlayMode_InViewPort','warmupSeconds':5}})"
 WID=$(swift "$HERE/wid.swift" 2>/dev/null | awk '/Unreal Editor/{print $1}')
 [ -n "$WID" ] && screencapture -x -v -V "$SECS" -l "$WID" "$OUT/demo.mov" &

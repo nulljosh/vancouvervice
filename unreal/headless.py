@@ -2,7 +2,8 @@
 DSL graph, compiles and saves. Run by unreal/headless.sh inside UnrealEditor-Cmd -run=pythonscript.
 VV_FIND="a,b" only prints matching node type ids (against the BP_Missions graph) and changes nothing."""
 import os, re, sys, traceback, unreal
-sys.stdout = open("/Volumes/LaCie/Unreal/scratch/headless.out", "w", buffering=1)  # print() never reaches the commandlet log
+VV = os.path.dirname(os.path.normpath(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())))  # <drive>/Unreal
+sys.stdout = open(os.path.join(VV, "scratch", "headless.out"), "w", buffering=1)  # print() never reaches the commandlet log
 from editor_toolset.toolsets.blueprint import BlueprintTools
 
 HERE = os.path.dirname(os.path.abspath(__file__))

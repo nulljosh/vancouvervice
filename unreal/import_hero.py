@@ -1,6 +1,8 @@
 # Imports a rigged hero GLB (metre scale, see tools/hero_unscale in the scratch notes), builds an IK rig, retargets
 # the third-person movement set (ABP_Unarmed) from Manny onto it. Run inside the editor: python3 unreal/qa.py "$(cat unreal/import_hero.py)"
-SRC, DST, NAME = "/Volumes/LaCie/Unreal/dl/hero/JoshuaHero_m.glb", "/Game/Characters/Joshua2", "JoshuaHero_m"
+import os
+VV = os.path.dirname(os.path.normpath(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())))  # <drive>/Unreal
+SRC, DST, NAME = os.path.join(VV, "dl", "hero", "JoshuaHero_m.glb"), "/Game/Characters/Joshua2", "JoshuaHero_m"
 AT = unreal.AssetToolsHelpers.get_asset_tools(); R = "/Game/Characters/Retarget"
 unreal.EditorAssetLibrary.delete_directory(DST)
 t = unreal.AssetImportTask(); t.filename = SRC; t.destination_path = DST; t.automated = True; t.save = True; t.replace_existing = True

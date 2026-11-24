@@ -6,17 +6,18 @@
 #
 #   sh unreal/package.sh
 #
-# Output: /Volumes/LaCie/Unreal/Builds/<YYYY-MM-DD>/, with the .app inside Mac/.
-# Log: /Volumes/LaCie/Unreal/Builds/<YYYY-MM-DD>/package.log (also unreal/package.log, a symlink
+# Output: $VV/Builds/<YYYY-MM-DD>/, with the .app inside Mac/.
+# Log: $VV/Builds/<YYYY-MM-DD>/package.log (also unreal/package.log, a symlink
 # to the latest run, so `tail -f unreal/package.log` works from a fresh session).
 
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
-ENGINE=/Volumes/LaCie/UE_5.8
+. "$HERE/drive.sh"
+ENGINE=$UE
 RUNUAT="$ENGINE/Engine/Build/BatchFiles/RunUAT.sh"
-PROJECT=/Volumes/LaCie/Unreal/VancouverVice/VancouverVice.uproject
+PROJECT=$VV/VancouverVice/VancouverVice.uproject
 DATE=$(date +%Y-%m-%d)
-ARCHDIR="/Volumes/LaCie/Unreal/Builds/$DATE"
+ARCHDIR="$VV/Builds/$DATE"
 LOG="$ARCHDIR/package.log"
 
 # --- guards, same idea as doctor.sh's thresholds ---
@@ -38,7 +39,7 @@ if [ "${F:-0}" -lt 25 ] || [ "${S:-100}" -gt 80 ]; then
 fi
 
 if [ ! -x "$RUNUAT" ]; then
-  echo "RunUAT not found at $RUNUAT (checked the installed 5.8.2 engine on LaCie)" >&2
+  echo "RunUAT not found at $RUNUAT (checked the installed 5.8.2 engine on $VV_DRIVE)" >&2
   exit 1
 fi
 
@@ -62,10 +63,10 @@ echo "log: $LOG"
 # -iterate recooked all 2226 every time, 6 min), -ForceUncompressed skips 2 min of pak compression, and there is no
 # archive copy: play the app straight from Binaries/Mac. Old note: -iterate re-cooks only changed packages (the shader and cook caches stay in Saved/ and DerivedDataCache/);
 # FAST=1 also skips the C++ build and reuses the last binaries when nothing native changed. The first build of a
-# machine is slow (shaders from scratch, off the LaCie); after that a rebuild takes minutes.
+# machine is slow (shaders from scratch, off the external drive); after that a rebuild takes minutes.
 BUILD="-build"; [ "${FAST:-0}" = 1 ] && BUILD="-skipbuild"
 # xcodebuild fails when UBT spawns it on this Mac (no message) but works from a shell, so the engine's UBT is patched to
-# skip it under UBT_SKIP_XCODE_FINALIZE=1 (backup: /Volumes/LaCie/Unreal/AppleToolChain.cs.orig) and we run it below.
+# skip it under UBT_SKIP_XCODE_FINALIZE=1 (backup: $VV/AppleToolChain.cs.orig) and we run it below.
 export UBT_SKIP_XCODE_FINALIZE=1
 set +e
 "$RUNUAT" BuildCookRun \
@@ -89,15 +90,15 @@ fi
 # Finalize. QUICK=1 (content-only change, the app already exists): copy the staged files straight into the app's
 # Contents/UE and re-sign ad hoc, a few seconds instead of the Xcode Stage pass (about 2 min). Otherwise run Xcode,
 # which also compiles Build/Mac/Resources/Assets.xcassets (the app icon).
-APP=/Volumes/LaCie/Unreal/VancouverVice/Binaries/Mac/VancouverVice.app
-STAGED=/Volumes/LaCie/Unreal/VancouverVice/Saved/StagedBuilds/Mac
+APP=$VV/VancouverVice/Binaries/Mac/VancouverVice.app
+STAGED=$VV/VancouverVice/Saved/StagedBuilds/Mac
 if [ "${QUICK:-0}" = 1 ] && [ -d "$APP/Contents/UE" ]; then
   rsync -a --delete "$STAGED/Engine" "$STAGED/VancouverVice" "$APP/Contents/UE/" && cp "$STAGED/NOTICES.txt" "$STAGED/UECommandLine.txt" "$APP/Contents/UE/" \
     && codesign --force --deep -s - "$APP" >> "$LOG" 2>&1 || { echo "quick finalize FAILED, see $LOG" >&2; exit 1; }
   echo "packaged (quick): $APP"; exit 0
 fi
 (cd "$ENGINE/Engine/Source" && UBT_NO_POST_DEPLOY=true xcodebuild build \
-  -workspace /Volumes/LaCie/Unreal/VancouverVice/Intermediate/ProjectFiles/VancouverVice_Mac_VancouverVice.xcworkspace \
+  -workspace $VV/VancouverVice/Intermediate/ProjectFiles/VancouverVice_Mac_VancouverVice.xcworkspace \
   -scheme VancouverVice -configuration Development -destination generic/platform=macOS \
   CODE_SIGN_ALLOW_ENTITLEMENTS_MODIFICATION=YES -allowProvisioningUpdates UE_XCODE_BUILD_MODE=Stage \
   -hideShellScriptEnvironment >> "$LOG" 2>&1) || { echo "xcode finalize FAILED, see $LOG" >&2; exit 1; }
